@@ -1,7 +1,45 @@
 import loginImage from "../assets/login-background.png";
 import "./Login.scss";
+import { json, redirect } from "react-router";
 
 function LoginPage() {
+  async function submitHandler(event){
+    event.preventDefault();
+    const form = new FormData(event.target);
+    const username=form.get('username');
+    const password=form.get('password');
+    const userData = {
+      username, password
+    };
+
+    const response = await fetch("http://localhost:8080/api/v1/auth/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(userData)
+    })
+
+    if(!response.ok){
+      throw json(
+        { message: "could not login" },
+        {
+          status: 500,
+        }
+      );
+    }
+    
+      
+  const resData = await response.json();
+  const accessToken = resData.user.accessToken;
+  const refreshToken = resData.user.refreshToken;
+
+  localStorage.setItem("accessToken", accessToken);
+  localStorage.setItem("refreshToken",refreshToken);
+  return redirect("/settings");
+  
+  }
+
   return (
     <>
       <div className="login">
@@ -10,12 +48,12 @@ function LoginPage() {
         </div>
         <div className="content-right">
           <div className="modal-content rounded-4 shadow content">
-            <div className="modal-header p-5 pb-4 border-bottom-0 align-self-center">
+            <div className=" p-5 pb-4 border-bottom-0 align-self-center">
               <h1 className="fw-bold mb-0 fs-2 ">Log In</h1>
             </div>
 
             <div className="modal-body p-5 pt-0">
-              <form className="">
+              <form onSubmit={submitHandler}>
                 <button
                   className="w-100 py-2 mb-2 btn btn-outline-secondary rounded-3"
                   type="submit"
@@ -41,6 +79,7 @@ function LoginPage() {
                     className="form-control rounded-3"
                     id="username"
                     placeholder="username"
+                    name="username"
                   />
                   <label htmlFor="username">Username</label>
                 </div>
@@ -50,6 +89,7 @@ function LoginPage() {
                     className="form-control rounded-3"
                     id="password"
                     placeholder="Password"
+                    name="password"
                   />
                   <label htmlFor="password">Password</label>
                 </div>
