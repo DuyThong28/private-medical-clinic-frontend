@@ -1,11 +1,29 @@
-import "./SideBar.scss";
+import { useQuery } from "@tanstack/react-query";
 import { NavLink, Link } from "react-router-dom";
+import { useState } from "react";
+
+import { logout } from "../util/auth";
 
 function SideBar() {
+  const [isLogout, setIsLogout] = useState(false);
+
+  useQuery({
+    queryKey: ["logout"],
+    queryFn: logout,
+    enabled: isLogout,
+  });
+
+  async function logoutHandler() {
+    setIsLogout(true);
+  }
+
   return (
     <>
       <div>
-        <div className="d-flex flex-column  p-3 bg-body-tertiary sidebar">
+        <div
+          className="d-flex flex-column  p-3 bg-body-tertiary"
+          style={{ width: "220px", height: "100%" }}
+        >
           <div>
             <Link
               to="home"
@@ -143,12 +161,15 @@ function SideBar() {
           <div className="mt-auto" style={{ height: "fit-content" }}>
             <hr />
             <div>
-              <a href="#" className="nav-link link-body-emphasis">
+              <button
+                onClick={logoutHandler}
+                className="nav-link link-body-emphasis"
+              >
                 <svg className="bi pe-none me-2" width="16" height="16">
                   <use href="#table" />
                 </svg>
                 Logout
-              </a>
+              </button>
             </div>
           </div>
         </div>

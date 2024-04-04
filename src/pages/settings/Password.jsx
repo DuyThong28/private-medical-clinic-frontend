@@ -1,9 +1,10 @@
-import "./Password.scss";
-
 function PasswordView() {
   return (
     <>
-      <div className="password-container mx-auto w-50 ">
+      <div
+        className=" mx-auto w-50 "
+        style={{ height: "fit-content", "margin-top": "50px" }}
+      >
         <div className="modal-content rounded-4 shadow content ">
           <div className=" p-5 pb-4 border-bottom-0 align-self-center">
             <p className="fw-bold mb-10 fs-2 ">Password Settings</p>
