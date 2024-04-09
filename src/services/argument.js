@@ -1,13 +1,14 @@
 export async function fetchMaxNumberOfPatients() {
   const response = await fetch(
     "http://localhost:8080/api/v1/arguments/maxnumofpatients",
-    {
-      credentials: "include", // Include cookies for cross-origin requests
-    },
+
     {
       headers: {
         authorization: "Bearer",
       },
+    },
+    {
+      credentials: "include", // Include cookies for cross-origin requests
     }
   );
   console.log("This is response", response);
@@ -30,12 +31,12 @@ export async function fetchFeeConsult() {
   const response = await fetch(
     "http://localhost:8080/api/v1/arguments/feeConsult",
     {
-      credentials: "include", // Include cookies for cross-origin requests
-    },
-    {
       headers: {
         authorization: "Bearer",
       },
+    },
+    {
+      credentials: "include", // Include cookies for cross-origin requests
     }
   );
   if (!response.ok) {
@@ -55,15 +56,15 @@ export async function updateMaxNumberOfPatients({ maxNumberOfPatients }) {
   const response = await fetch(
     "http://localhost:8080/api/v1/arguments/maxnumofpatients",
     {
-      credentials: "include", // Include cookies for cross-origin requests
-    },
-    {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
         authorization: "Bearer",
       },
       body: JSON.stringify({ maxNumberOfPatients }),
+    },
+    {
+      credentials: "include", // Include cookies for cross-origin requests
     }
   );
 
@@ -85,15 +86,15 @@ export async function updateFeeConsult({ feeConsult }) {
   const response = await fetch(
     "http://localhost:8080/api/v1/arguments/feeConsult",
     {
-      credentials: "include", // Include cookies for cross-origin requests
-    },
-    {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
         authorization: "Bearer",
       },
       body: JSON.stringify({ feeConsult }),
+    },
+    {
+      credentials: "include", // Include cookies for cross-origin requests
     }
   );
 

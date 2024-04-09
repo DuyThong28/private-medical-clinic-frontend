@@ -1,5 +1,4 @@
 import loginImage from "../../assets/login-background.png";
-import "./Login.scss";
 import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import GoogleButton from "react-google-button";
@@ -48,12 +47,19 @@ function LoginPage() {
 
   return (
     <>
-      <div className="login">
-        <div className="content-left">
-          <img src={loginImage} />
+      <div className="d-flex flex-row h-100">
+        <div className="col w-100 h-100">
+          <img src={loginImage} className="w-100 h-100" />
         </div>
-        <div className="content-right">
-          <div className="modal-content rounded-4 shadow content">
+
+        <div
+          className="col h-100 position-relative"
+          style={{ backgroundColor: "#F9F9F9" }}
+        >
+          <div
+            className="w-75 modal-content rounded-4 shadow content position-absolute top-50 start-50 translate-middle"
+            style={{ backgroundColor: "#FEFEFE" }}
+          >
             <div className=" p-5 pb-4 border-bottom-0 align-self-center">
               <h1 className="fw-bold mb-0 fs-2 ">Log In</h1>
             </div>

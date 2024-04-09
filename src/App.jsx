@@ -5,7 +5,7 @@ import RootLayout from "./pages/Root";
 import HomePage from "./pages/Home";
 import ReportsPage from "./pages/Reports";
 import PatientsPage from "./pages/patients/Patients";
-import ExaminationsPage from "./pages/Examinations";
+import ExaminationsPage from "./pages/settings/examination/Examinations";
 import UsersView from "./pages/settings/users/Users";
 import PrincipleView from "./pages/settings/Principle";
 import PasswordView from "./pages/settings/Password";
@@ -17,6 +17,9 @@ import DiseasesTab from "./pages/settings/medicines/Diseases";
 import LoginSuccess from "./pages/auth/LoginSuccess";
 import LoginFail from "./pages/auth/LoginFail";
 import PatientDetail from "./pages/patients/PatientDetail";
+import ExaminationDetail from "./pages/settings/examination/ExaminationDetail";
+import PreScriptionTab from "./pages/settings/examination/PrescriptionTab";
+import HistoryTab from "./pages/settings/examination/HistoryTab";
 
 const router = createBrowserRouter([
   { path: "/login", element: <LoginPage /> },
@@ -38,6 +41,14 @@ const router = createBrowserRouter([
         element: <PatientDetail />,
       },
       { path: "examinations", element: <ExaminationsPage /> },
+      {
+        path: "examinations/:appopintmentListPatientId",
+        element: <ExaminationDetail />,
+        children: [
+          { path: "prescription", element: <PreScriptionTab /> },
+          { path: "examhistory", element: <HistoryTab /> },
+        ],
+      },
       {
         path: "settings",
         children: [

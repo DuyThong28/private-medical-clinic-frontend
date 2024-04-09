@@ -63,7 +63,8 @@ export async function addPatient(patientData) {
   }
 
   const resData = await response.json();
-  return resData;
+  const data = resData.data;
+  return data;
 }
 
 export async function fetchPatientById({ id }) {
@@ -75,7 +76,6 @@ export async function fetchPatientById({ id }) {
   }
   const resData = await response.json();
   const patientData = resData.data;
-  console.log("This is http id patient data", patientData);
   return patientData;
 }
 

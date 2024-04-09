@@ -1,15 +1,17 @@
 function PasswordView() {
   return (
-    <>
+    <div className="col">
       <div
-        className=" mx-auto w-50 "
-        style={{ height: "fit-content", "margin-top": "50px" }}
+        className="h-100 position-relative"
+        style={{ backgroundColor: "#F9F9F9" }}
       >
-        <div className="modal-content rounded-4 shadow content ">
-          <div className=" p-5 pb-4 border-bottom-0 align-self-center">
-            <p className="fw-bold mb-10 fs-2 ">Password Settings</p>
+        <div
+          className="w-50 modal-content rounded-4 shadow  content position-absolute top-50 mt-50 start-50 translate-middle"
+          style={{ height: "fit-content", backgroundColor: "#FEFEFE" }}
+        >
+          <div className=" p-4 border-bottom-0 align-self-center">
+            <p className="fw-bold mb-10 fs-2 ">Cài Đặt Mật Khẩu</p>
           </div>
-
           <div className="modal-body p-5 pt-0">
             <form>
               <div className="form-floating mb-3">
@@ -20,7 +22,7 @@ function PasswordView() {
                   placeholder="currentpassword"
                   name="currentpassword"
                 />
-                <label htmlFor="currentpassword">Current Password</label>
+                <label htmlFor="currentpassword">Mật khẩu hiện tại</label>
               </div>
               <div className="form-floating mb-3">
                 <input
@@ -30,7 +32,7 @@ function PasswordView() {
                   placeholder="newpassword"
                   name="newpassword"
                 />
-                <label htmlFor="newpassword">New Password</label>
+                <label htmlFor="newpassword">Mật khẩu mới</label>
               </div>
               <div className="form-floating mb-3">
                 <input
@@ -40,19 +42,29 @@ function PasswordView() {
                   placeholder="retypepassword"
                   name="retypepassword"
                 />
-                <label htmlFor="retypepassword">Retype Password</label>
+                <label htmlFor="retypepassword">Nhập lại mật khẩu mới</label>
               </div>
-              <button
-                className="w-100 mb-2 btn btn-lg rounded-3 btn btn-secondary"
-                type="submit"
-              >
-                Change Password
-              </button>
+              <div className="w-100 d-flex justify-content-center gap-5">
+                <button
+                  className="btn btn-lg btn btn-outline-primary rounded-pill "
+                  type="button"
+                  style={{ width: "200px" }}
+                >
+                  Đóng
+                </button>
+                <button
+                  className="btn btn-lg btn btn-primary rounded-pill "
+                  type="submit"
+                  style={{ width: "200px" }}
+                >
+                  Lưu
+                </button>
+              </div>
             </form>
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }
 
