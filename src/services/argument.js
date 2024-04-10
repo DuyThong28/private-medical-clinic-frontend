@@ -11,7 +11,7 @@ export async function fetchMaxNumberOfPatients() {
       credentials: "include", // Include cookies for cross-origin requests
     }
   );
-  console.log("This is response", response);
+
   if (!response.ok) {
     const error = new Error(
       "An error occurred while fetching max number of patients"
@@ -52,7 +52,6 @@ export async function fetchFeeConsult() {
 }
 
 export async function updateMaxNumberOfPatients({ maxNumberOfPatients }) {
-  console.log("thiss is max in ui", maxNumberOfPatients);
   const response = await fetch(
     "http://localhost:8080/api/v1/arguments/maxnumofpatients",
     {
@@ -82,7 +81,6 @@ export async function updateMaxNumberOfPatients({ maxNumberOfPatients }) {
 }
 
 export async function updateFeeConsult({ feeConsult }) {
-  console.log("This is fee consult in ui", feeConsult);
   const response = await fetch(
     "http://localhost:8080/api/v1/arguments/feeConsult",
     {

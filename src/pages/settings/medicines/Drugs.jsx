@@ -41,7 +41,6 @@ function DrugTab() {
     event.preventDefault();
     const formData = new FormData(event.target);
     const data = Object.fromEntries(formData);
-    console.log("this is all data", data);
     if (drugData !== null) {
       data.id = drugData.id;
     }

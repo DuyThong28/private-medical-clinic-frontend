@@ -1,17 +1,19 @@
 import { useRef, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useSelector, useDispatch } from "react-redux";
+
 import TableBody from "../../../components/TableBody";
 import TableHeader from "../../../components/TableHeader";
-import { useSelector, useDispatch } from "react-redux";
 import { prescriptionAction } from "../../../store/prescription";
+import { fetchRecordDetailByRecordId } from "../../../services/appointmentRecordDetails";
 
-export default function PreScriptionTab() {
+export default function PreScriptionTab({ recordId }) {
   const drugState = useSelector((state) => state.drug);
   const unitState = useSelector((state) => state.unit);
   const usagaState = useSelector((state) => state.usage);
   const prescriptionState = useSelector((state) => state.prescription);
   const searchRef = useRef("");
   const dispatch = useDispatch();
-
 
   function getUnitName({ id }) {
     const res = unitState.filter((unit) => unit.id === id)[0];
@@ -42,13 +44,35 @@ export default function PreScriptionTab() {
     setDrugs(() => drugResult);
   }
 
-  function editHandler() {
-  }
-
-
   function updateDrug({ event, id, type }) {
     const value = event.target.value;
     dispatch(prescriptionAction.updateDrug({ type, id, value }));
+  }
+
+  const recordDetailQuery = useQuery({
+    queryKey: ["recordDetail", recordId],
+    queryFn: () => fetchRecordDetailByRecordId({ id: recordId }),
+  });
+
+  const recordDetailData =
+    recordDetailQuery &&
+    recordDetailQuery.data &&
+    recordDetailQuery.data.map((record) => {
+      const drugData = drugState.filter((drug) => drug.id === record.drugId);
+      const recordDetail = {
+        id: record.drugId,
+        drugName: drugData[0]?.drugName,
+        amount: record.count,
+        unitId: drugData[0]?.unitId,
+        usageId: record.usageId,
+        count: drugData[0]?.count,
+      };
+      return recordDetail;
+    });
+
+  let prescriptionData = prescriptionState;
+  if (recordId) {
+    prescriptionData = recordDetailData;
   }
 
   return (
@@ -133,7 +157,7 @@ export default function PreScriptionTab() {
         <div className="text-start" style={{ width: "20%" }}>
           Tên thuốc
         </div>
-        <div className="text-start" style={{ width: "15%" }}>
+        <div className="text-start" style={{ width: "14%" }}>
           Số lượng
         </div>
         <div className="text-start" style={{ width: "15%" }}>
@@ -146,10 +170,11 @@ export default function PreScriptionTab() {
         <div className="text-end" style={{ width: "10%" }}>
           Thao tác
         </div>
+        <div style={{ width: "1%" }}></div>
       </TableHeader>
       <TableBody>
-        {prescriptionState &&
-          prescriptionState.map((drug) => {
+        {prescriptionData &&
+          prescriptionData.map((drug) => {
             return (
               <li
                 className="list-group-item list-group-item-primary list-group-item-action w-100 d-flex flex-row"
@@ -172,7 +197,7 @@ export default function PreScriptionTab() {
                     type="number"
                     step="1"
                     min="1"
-                    max={drug.count}
+                    max={drug.count ?? ""}
                     defaultValue={drug.amount}
                     name="amount"
                     onChange={(event) =>
@@ -203,19 +228,6 @@ export default function PreScriptionTab() {
                   </select>
                 </div>
                 <div className="text-end" style={{ width: "10%" }}>
-                  <span className="p-2" onClick={() => editHandler()}>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="16"
-                      height="16"
-                      fill="#1B59F8"
-                      className="bi bi-pencil-square"
-                      viewBox="0 0 16 16"
-                    >
-                      <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
-                      <path d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z" />
-                    </svg>
-                  </span>
                   <span
                     className="p-2"
                     onClick={() => deleteHandler({ id: drug.id })}

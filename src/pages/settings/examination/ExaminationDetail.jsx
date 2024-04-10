@@ -1,4 +1,4 @@
-import { NavLink, Outlet, useParams } from "react-router-dom";
+import { NavLink, Outlet, useParams, useNavigate } from "react-router-dom";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { fetchAppointentListPatientById } from "../../../services/appointmentListPatients";
 import { createAppointmentRecord } from "../../../services/appointmentRecords";
@@ -6,9 +6,15 @@ import "./ExaminationDetail.scss";
 import Card from "../../../components/Card";
 import { convertDate } from "../../../util/date";
 import { createAppointmentRecordDetail } from "../../../services/appointmentRecordDetails";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import Form from "react-bootstrap/Form";
+import { useState } from "react";
+import { prescriptionAction } from "../../../store/prescription";
 
 export default function ExaminationDetail() {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const [validated, setValidated] = useState(false);
   const { appopintmentListPatientId } = useParams();
   const appointmentListPatientQuery = useQuery({
     queryKey: ["appointmentlistpatient", appopintmentListPatientId],
@@ -16,6 +22,7 @@ export default function ExaminationDetail() {
       fetchAppointentListPatientById({ id: appopintmentListPatientId }),
   });
   const prescriptionState = useSelector((state) => state.prescription);
+  const diseaseState = useSelector((state) => state.disease);
 
   const appointmentListPatientData = appointmentListPatientQuery.data;
 
@@ -38,12 +45,20 @@ export default function ExaminationDetail() {
           usageId,
         });
       });
+      navigate("/systems/examinations");
     },
   });
 
   function finishExamHandler(event) {
     event.preventDefault();
-    const formData = new FormData(event.target);
+    const form = event.currentTarget;
+
+    if (form.checkValidity() === false) {
+      setValidated(true);
+      return;
+    }
+
+    const formData = new FormData(form);
     const appointmentRecordData = Object.fromEntries(formData);
     const symptoms = appointmentRecordData.symptoms;
     const diseaseId = appointmentRecordData.diagnostic;
@@ -55,13 +70,17 @@ export default function ExaminationDetail() {
       patientId,
       appointmentListId,
     });
+    dispatch(prescriptionAction.removeAll());
+    setValidated(false);
   }
 
   return (
     <Card>
-      <form
+      <Form
         className="w-100 h-100 d-flex flex-row  gap-3"
         onSubmit={finishExamHandler}
+        noValidate
+        validated={validated}
       >
         <div style={{ width: "40%" }}>
           <div className="row">
@@ -208,6 +227,7 @@ export default function ExaminationDetail() {
                 name="symptoms"
                 id="symptoms"
                 rows="3"
+                required
               ></textarea>
             </div>
           </div>
@@ -216,12 +236,21 @@ export default function ExaminationDetail() {
               <label htmlFor="diagnostic" className="col-form-label fw-bold">
                 Chuẩn đoán
               </label>
-              <input
-                className="form-control"
-                type="text"
+              <select
+                className="form-select"
                 name="diagnostic"
                 id="diagnostic"
-              ></input>
+                required
+              >
+                {diseaseState &&
+                  diseaseState.map((disease) => {
+                    return (
+                      <option key={disease.id} value={disease.id}>
+                        {disease.diseaseName}
+                      </option>
+                    );
+                  })}
+              </select>
             </div>
           </div>
         </div>
@@ -268,7 +297,7 @@ export default function ExaminationDetail() {
             <Outlet />
           </div>
         </div>
-      </form>
+      </Form>
     </Card>
   );
 }

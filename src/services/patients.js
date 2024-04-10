@@ -1,5 +1,7 @@
-export async function fetchAllPatients() {
-  const response = await fetch("http://localhost:8080/api/v1/patients", {
+export async function fetchAllPatients({ name, phoneNumber }) {
+  const fullName = name.toLowerCase().trim();
+  const phone = phoneNumber.trim();
+  const response = await fetch(`http://localhost:8080/api/v1/patients`, {
     headers: {
       authorization: "Bearer",
     },
@@ -10,7 +12,43 @@ export async function fetchAllPatients() {
   }
 
   const resData = await response.json();
-  const patients = resData.data;
+  let patients;
+  if (fullName !== "" || phone !== "") {
+    patients = resData.data.filter(
+      (patient) =>
+        patient.fullName.toLowerCase().includes(fullName) &&
+        patient.phoneNumber.toLowerCase().includes(phone)
+    );
+  } else {
+    patients = resData.data;
+  }
+  return patients;
+}
+
+export async function fetchOnePatient({ name, phoneNumber }) {
+  const fullName = name.toLowerCase().trim();
+  const phone = phoneNumber.trim();
+  const response = await fetch(`http://localhost:8080/api/v1/patients`, {
+    headers: {
+      authorization: "Bearer",
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error("can not fetch all patients");
+  }
+
+  const resData = await response.json();
+  let patients;
+  if (fullName !== "" || phone !== "") {
+    patients = resData.data.filter(
+      (patient) =>
+        patient.fullName.toLowerCase().includes(fullName) &&
+        patient.phoneNumber.toLowerCase().includes(phone)
+    );
+  } else {
+    patients = [];
+  }
   return patients;
 }
 

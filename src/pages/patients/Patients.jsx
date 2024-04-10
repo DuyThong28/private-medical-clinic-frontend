@@ -5,49 +5,76 @@ import {
   fetchPatientById,
   deletePatientById,
 } from "../../services/patients";
-import { useState } from "react";
-import Modal from "react-bootstrap/Modal";
-import { queryClient } from "../../App";
+import { useRef, useState } from "react";
 import Card from "../../components/Card";
 import TableHeader from "../../components/TableHeader";
 import TableBody from "../../components/TableBody";
+import MainModal from "../../components/MainModal";
+import Form from "react-bootstrap/Form";
 
 function PatientsPage() {
+  const modalRef = useRef();
+  const searchRef = useRef();
   const [patientData, setPatientData] = useState(null);
-  const [show, setShow] = useState(false);
-  const [modalState, setModalState] = useState({
-    header: "",
-    isEditable: true,
-  });
+  const [validated, setValidated] = useState(false);
 
   const patientsQuery = useQuery({
-    queryKey: ["patients"],
-    queryFn: fetchAllPatients,
+    queryKey: ["patientlist"],
+    queryFn: () => {
+      const formData = new FormData(searchRef.current);
+      const searchData = Object.fromEntries(formData);
+      const name = searchData.name;
+      const phoneNumber = searchData.phonenumber;
+      return fetchAllPatients({ name: name, phoneNumber: phoneNumber });
+    },
   });
 
   const addPatientMutate = useMutation({
     mutationFn: addPatient,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["patients"] });
-      setShow(() => {
-        setPatientData(() => {
-          return null;
-        });
-        return false;
+      modalRef.current.close();
+      setPatientData(() => {
+        return null;
       });
+      patientsQuery.refetch();
     },
   });
 
   const patients = patientsQuery.data;
 
+  function closeHandler() {
+    setPatientData(() => {
+      return null;
+    });
+    modalRef.current.close();
+  }
+
+  function showHandler() {
+    setValidated(false);
+    setPatientData(() => null);
+    modalRef.current.show({ isEditable: true, header: "Thêm mới" });
+  }
+
+  function searchHandler() {
+    patientsQuery.refetch();
+  }
+
   function submitHandler(event) {
     event.preventDefault();
-    const formData = new FormData(event.target);
+    const form = event.currentTarget;
+
+    if (form.checkValidity() === false) {
+      setValidated(true);
+      return;
+    }
+
+    const formData = new FormData(form);
     const data = Object.fromEntries(formData);
     if (patientData !== null) {
       data.id = patientData.id;
     }
     addPatientMutate.mutate({ ...data });
+    setValidated(false);
   }
 
   async function editPatientHandler({ id, action }) {
@@ -56,49 +83,49 @@ function PatientsPage() {
       return { ...data };
     });
     if (action === "edit") {
-      setModalState(() => {
-        return { isEditable: true, header: "Chỉnh sửa thông tin" };
+      modalRef.current.show({
+        isEditable: true,
+        header: "Chỉnh sửa thông tin",
       });
     }
     if (action === "view") {
-      setModalState(() => {
-        return { isEditable: false, header: "Thông tin chi tiết" };
+      modalRef.current.show({
+        isEditable: false,
+        header: "Thông tin chi tiết",
       });
     }
-    setShow(true);
   }
 
   async function deletePatientHandler(id) {
     await deletePatientById({ id });
-    queryClient.invalidateQueries({ queryKey: ["patients"] });
+    patientsQuery.refetch();
   }
-
-  function closeHandler() {
-    setShow(() => {
-      setPatientData(() => {
-        return null;
-      });
-      return false;
-    });
-  }
-  function showHandler() {
-    setModalState(() => {
-      return { isEditable: true, header: "Thêm mới" };
-    });
-    setShow(true);
-  }
-
 
   return (
     <Card>
-      <Modal show={show} onHide={closeHandler}>
-        <Modal.Header closeButton style={{ height: "50px" }}>
-          <Modal.Title>{modalState.header}</Modal.Title>
-        </Modal.Header>
+      <MainModal ref={modalRef}>
         <div tabIndex="-1">
           <div className="modal-body">
-            <form onSubmit={submitHandler}>
+            <Form onSubmit={submitHandler} noValidate validated={validated}>
               <div className="row gap-3">
+                {patientData && (
+                  <div className="col">
+                    <label
+                      htmlFor="fullname"
+                      className="col-form-label fw-bold"
+                    >
+                      Mã bệnh nhân
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      id="patientId"
+                      name="patientId"
+                      defaultValue={patientData?.id ?? ""}
+                      disabled={true}
+                    />
+                  </div>
+                )}
                 <div className="col">
                   <label htmlFor="fullname" className="col-form-label fw-bold">
                     Tên bệnh nhân
@@ -109,7 +136,8 @@ function PatientsPage() {
                     id="fullname"
                     name="fullname"
                     defaultValue={patientData?.fullName ?? ""}
-                    disabled={!modalState.isEditable}
+                    disabled={!modalRef.current?.isEditable() || false}
+                    required
                   />
                 </div>
                 <div className="col">
@@ -124,7 +152,8 @@ function PatientsPage() {
                     id="phonenumber"
                     name="phonenumber"
                     defaultValue={patientData?.phoneNumber ?? ""}
-                    disabled={!modalState.isEditable}
+                    disabled={!modalRef.current?.isEditable() || false}
+                    required
                   ></input>
                 </div>
               </div>
@@ -133,13 +162,17 @@ function PatientsPage() {
                   <label htmlFor="gender" className="col-form-label fw-bold">
                     Giới tính
                   </label>
-                  <input
-                    className="form-control"
+                  <select
+                    className="form-select"
                     id="gender"
                     name="gender"
                     defaultValue={patientData?.gender ?? ""}
-                    disabled={!modalState.isEditable}
-                  ></input>
+                    disabled={!modalRef.current?.isEditable() || false}
+                    required
+                  >
+                    <option value="Nam">Nam</option>
+                    <option value="Nữ">Nữ</option>
+                  </select>
                 </div>
                 <div className="col">
                   <label htmlFor="birthyear" className="col-form-label fw-bold">
@@ -150,7 +183,8 @@ function PatientsPage() {
                     id="birthyear"
                     name="birthyear"
                     defaultValue={patientData?.birthYear ?? ""}
-                    disabled={!modalState.isEditable}
+                    disabled={!modalRef.current?.isEditable() || false}
+                    required
                   ></input>
                 </div>
                 <div className="col">
@@ -162,7 +196,8 @@ function PatientsPage() {
                     id="address"
                     name="address"
                     defaultValue={patientData?.address ?? ""}
-                    disabled={!modalState.isEditable}
+                    disabled={!modalRef.current?.isEditable() || false}
+                    required
                   ></input>
                 </div>
               </div>
@@ -175,16 +210,16 @@ function PatientsPage() {
                 >
                   Đóng
                 </button>
-                {modalState.isEditable && (
+                {modalRef.current?.isEditable() && (
                   <button type="submit" className="col btn btn-primary">
                     Lưu
                   </button>
                 )}
               </div>
-            </form>
+            </Form>
           </div>
         </div>
-      </Modal>
+      </MainModal>
 
       <div className="w-100 h-100 d-flex flex-column gap-3">
         <div className="row w-100  d-flex flex-row justify-content-around">
@@ -192,42 +227,114 @@ function PatientsPage() {
             <label>Bệnh nhân</label>
           </div>
           <div className="col">
-            <button
-              className="col btn btn-primary float-end fw-bold"
-              onClick={showHandler}
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                fill="currentColor"
-                className="bi bi-plus-lg me-2"
-                viewBox="0 2 16 16"
+            <div className="row">
+              <form
+                ref={searchRef}
+                className="row gap-3"
+                onChange={searchHandler}
               >
-                <path d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2" />
-              </svg>
-              Thêm mới
-            </button>
+                <div className="col input-group flex-nowrap">
+                  <span
+                    className="input-group-text"
+                    id="addon-wrapping"
+                    style={{ backgroundColor: "white" }}
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="16"
+                      height="16"
+                      fill="currentColor"
+                      className="bi bi-search"
+                      viewBox="0 0 16 16"
+                    >
+                      <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
+                    </svg>
+                  </span>
+                  <input
+                    name="name"
+                    type="search"
+                    className="form-control"
+                    placeholder="Tên bệnh nhân"
+                    aria-describedby="addon-wrapping"
+                  />
+                </div>
+                <div className="col input-group flex-nowrap">
+                  <span
+                    className="input-group-text"
+                    id="addon-wrapping"
+                    style={{ backgroundColor: "white" }}
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="16"
+                      height="16"
+                      fill="currentColor"
+                      className="bi bi-search"
+                      viewBox="0 0 16 16"
+                    >
+                      <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
+                    </svg>
+                  </span>
+                  <input
+                    type="search"
+                    name="phonenumber"
+                    className="form-control"
+                    placeholder="Số điện thoại"
+                    aria-label="medicine"
+                    aria-describedby="addon-wrapping"
+                  />
+                </div>
+                <div style={{ width: "fit-content" }}>
+                  <button
+                    type="button"
+                    className=" btn btn-primary float-end fw-bold"
+                    onClick={showHandler}
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="16"
+                      height="16"
+                      fill="currentColor"
+                      className="bi bi-plus-lg me-2"
+                      viewBox="0 2 16 16"
+                    >
+                      <path d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2" />
+                    </svg>
+                    Thêm mới
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
         </div>
 
         <div className=" w-100 h-100 overflow-hidden d-flex flex-column gap-3">
           <TableHeader>
-            <div className="text-start" style={{ width: "30%" }}>
+            <div className="text-start" style={{ width: "5%" }}>
+              STT
+            </div>
+            <div className="text-start" style={{ width: "14%" }}>
+              Mã bệnh nhân
+            </div>
+            <div className="text-start" style={{ width: "15%" }}>
               Họ và tên
             </div>
-            <div className="text-start" style={{ width: "20%" }}>
+            <div className="text-start" style={{ width: "15%" }}>
               Số điện thoại
             </div>
-            <div className="text-start" style={{ width: "20%" }}>
+            <div className="text-start" style={{ width: "10%" }}>
               Giới tính
             </div>
-            <div className="text-start" style={{ width: "20%" }}>
+            <div className="text-start" style={{ width: "15%" }}>
               Năm sinh
             </div>
-            <div className="text-end" style={{ width: "10%" }}>
+            <div className="text-start" style={{ width: "15%" }}>
+              Địa chỉ
+            </div>
+            <div className="text-center" style={{ width: "10%" }}>
               Thao tác
             </div>
+            <div className="text-end" style={{ width: "1%" }}></div>
           </TableHeader>
           <TableBody>
             {patients &&
@@ -237,18 +344,27 @@ function PatientsPage() {
                     className="list-group-item list-group-item-primary list-group-item-action w-100 d-flex flex-row"
                     key={patient.id}
                   >
-                    <div className="text-start" style={{ width: "30%" }}>
+                    <div className="text-start" style={{ width: "5%" }}>
+                      {patients.indexOf(patient) + 1}
+                    </div>
+                    <div className="text-start" style={{ width: "15%" }}>
+                      {patient.id}
+                    </div>
+                    <div className="text-start" style={{ width: "15%" }}>
                       {patient.fullName}
                     </div>
-                    <div className="text-start" style={{ width: "20%" }}>
+                    <div className="text-start" style={{ width: "15%" }}>
                       {" "}
                       {patient.phoneNumber}
                     </div>
-                    <div className="text-start" style={{ width: "20%" }}>
+                    <div className="text-start" style={{ width: "10%" }}>
                       {patient.gender}
                     </div>
-                    <div className="text-start" style={{ width: "20%" }}>
+                    <div className="text-start" style={{ width: "15%" }}>
                       {patient.birthYear}
+                    </div>
+                    <div className="text-start" style={{ width: "15%" }}>
+                      {patient.address}
                     </div>
                     <div className="text-end" style={{ width: "10%" }}>
                       <span

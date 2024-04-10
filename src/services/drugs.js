@@ -24,7 +24,6 @@ export async function createNewDrug(data) {
   const unitId = data.unitid;
   const drugID = data?.id ?? null;
 
-  console.log("This is http", { drugName, price, count, unitId });
   let response;
   if (drugID) {
     response = await fetch(`http://localhost:8080/api/v1/drugs/${drugID}`, {

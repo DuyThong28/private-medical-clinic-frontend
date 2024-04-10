@@ -1,24 +1,26 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { useState } from "react";
-import Modal from "react-bootstrap/Modal";
+import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   createAppointmentPatientList,
+  deleteAppointmentListPatientById,
   fetchAllAppointmentListPatients,
 } from "../../../services/appointmentListPatients";
 import { queryClient } from "../../../App";
 import Card from "../../../components/Card";
 import TableHeader from "../../../components/TableHeader";
 import TableBody from "../../../components/TableBody";
-import { convertDate } from "../../../util/date";
+import { convertDate, inputDateFormat } from "../../../util/date";
+import { fetchOnePatient } from "../../../services/patients";
+import MainModal from "../../../components/MainModal";
+import Form from "react-bootstrap/Form";
 
 function ExaminationsPage() {
   const navigate = useNavigate();
-  const [show, setShow] = useState(false);
-  const [modalState, setModalState] = useState({
-    header: "",
-    isEditable: true,
-  });
+  const searchRef = useRef();
+  const modalRef = useRef();
+  const [patientData, setPatientData] = useState(null);
+  const [validated, setValidated] = useState(false);
 
   const appointmentListPatientsQuery = useQuery({
     queryKey: ["appointmentList"],
@@ -29,103 +31,162 @@ function ExaminationsPage() {
     mutationFn: createAppointmentPatientList,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["appointmentList"] });
+      modalRef.current.close();
     },
   });
 
   const appointmentListPatients = appointmentListPatientsQuery.data;
 
-  function closeHandler() {
-    setShow(() => {
-      return false;
-    });
-  }
   function showHandler() {
-    setModalState(() => {
-      return { isEditable: true, header: "Đăng ký ca khám" };
-    });
-    setShow(true);
+    setValidated(false);
+    setPatientData(() => null);
+    modalRef.current.show({ isEditable: true, header: "Đăng ký ca khám" });
   }
 
-  function submitHandler(event) {
+  function closeHandler() {
+    modalRef.current.close();
+  }
+
+  async function submitHandler(event) {
     event.preventDefault();
-    const formData = new FormData(event.target);
+    const form = event.currentTarget;
+
+    if (form.checkValidity() === false) {
+      setValidated(true);
+      return;
+    }
+    const formData = new FormData(form);
     const data = Object.fromEntries(formData);
-    const scheduledate = data.scheduledate;
-    const patientInfo = {
-      fullname: data?.fullname,
-      phonenumber: data?.phonenumber,
-      gender: data?.gender,
-      birthyear: data?.birthyear,
-      address: data?.address,
-    };
-    appointmentPatientListMutate.mutate({ scheduledate, patientInfo });
+    const scheduledate = data?.scheduledate;
+
+    if (patientData.appointmentId) {
+      appointmentPatientListMutate.mutate({
+        scheduledate,
+        appointmentData: {
+          id: patientData?.appointmentId,
+          patientId: patientData?.id,
+        },
+      });
+    } else {
+      const patientInfo = {
+        fullname: data?.fullname,
+        phonenumber: data?.phonenumber,
+        gender: data?.gender,
+        birthyear: data?.birthyear,
+        address: data?.address,
+      };
+      appointmentPatientListMutate.mutate({ scheduledate, patientInfo });
+    }
+    setValidated(false);
+  }
+
+  async function searchHandler() {
+    const formData = new FormData(searchRef.current);
+    const searchData = Object.fromEntries(formData);
+    const name = searchData.name;
+    const phoneNumber = searchData.phonenumber;
+    const resData = await fetchOnePatient({
+      name: name,
+      phoneNumber: phoneNumber,
+    });
+    setPatientData(() => (resData && resData[0]) || null);
   }
 
   function acceptHandler(data) {
     navigate(`${data.id}/prescription`);
   }
 
+  function editAppointmentHandler({ data }) {
+    setPatientData(() => {
+      const patient = data?.patient;
+      const currentData = { ...patient };
+      currentData.scheduleDate = data.appointmentList.scheduleDate;
+      currentData.appointmentId = data.id;
+      return {
+        ...currentData,
+      };
+    });
+    modalRef.current.show({ isEditable: false, header: "Chỉnh sửa thông tin" });
+  }
+
+  async function deleteAppointmentHandler({ id }) {
+    await deleteAppointmentListPatientById({ id });
+    queryClient.invalidateQueries({ queryKey: ["appointmentList"] });
+  }
+
   return (
     <Card>
-      <Modal show={show} onHide={closeHandler}>
-        <Modal.Header closeButton style={{ height: "50px" }}>
-          <Modal.Title>{modalState.header}</Modal.Title>
-        </Modal.Header>
+      <MainModal ref={modalRef}>
         <div tabIndex="-1">
           <div className="modal-body">
-            <div className="row gap-3">
-              <div className="col input-group flex-nowrap">
-                <span
-                  className="input-group-text"
-                  id="addon-wrapping"
-                  style={{ backgroundColor: "white" }}
+            {!patientData?.appointmentId && (
+              <div className="row">
+                <form
+                  ref={searchRef}
+                  className="row gap-3"
+                  onChange={searchHandler}
                 >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="16"
-                    height="16"
-                    fill="currentColor"
-                    className="bi bi-search"
-                    viewBox="0 0 16 16"
-                  >
-                    <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
-                  </svg>
-                </span>
-                <input
-                  type="search"
-                  className="form-control"
-                  placeholder="Tên bệnh nhân"
-                  aria-label="medicine"
-                  aria-describedby="addon-wrapping"
-                />
+                  <div className="col input-group flex-nowrap">
+                    <span
+                      className="input-group-text"
+                      id="addon-wrapping"
+                      style={{ backgroundColor: "white" }}
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        fill="currentColor"
+                        className="bi bi-search"
+                        viewBox="0 0 16 16"
+                      >
+                        <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
+                      </svg>
+                    </span>
+                    <input
+                      name="name"
+                      type="search"
+                      className="form-control"
+                      placeholder="Tên bệnh nhân"
+                      aria-describedby="addon-wrapping"
+                    />
+                  </div>
+                  <div className="col input-group flex-nowrap">
+                    <span
+                      className="input-group-text"
+                      id="addon-wrapping"
+                      style={{ backgroundColor: "white" }}
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        fill="currentColor"
+                        className="bi bi-search"
+                        viewBox="0 0 16 16"
+                      >
+                        <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
+                      </svg>
+                    </span>
+                    <input
+                      type="search"
+                      name="phonenumber"
+                      className="form-control"
+                      placeholder="Số điện thoại"
+                      aria-label="medicine"
+                      aria-describedby="addon-wrapping"
+                    />
+                  </div>
+                </form>
               </div>
-              <div className="col input-group flex-nowrap">
-                <span
-                  className="input-group-text"
-                  id="addon-wrapping"
-                  style={{ backgroundColor: "white" }}
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="16"
-                    height="16"
-                    fill="currentColor"
-                    className="bi bi-search"
-                    viewBox="0 0 16 16"
-                  >
-                    <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
-                  </svg>
-                </span>
-                <input
-                  type="search"
-                  className="form-control"
-                  placeholder="Số điện thoại"
-                  aria-label="medicine"
-                  aria-describedby="addon-wrapping"
-                />
-              </div>
-            </div>
-            <form onSubmit={submitHandler}>
+            )}
+
+            <Form
+              className="needs-validation"
+              onSubmit={submitHandler}
+              noValidate
+              validated={validated}
+            >
               <div className="row">
                 <label className="col-form-label fw-bold">
                   THÔNG TIN BỆNH NHÂN
@@ -141,7 +202,8 @@ function ExaminationsPage() {
                     className="form-control"
                     id="patientid"
                     name="patientid"
-                    disabled={!modalState.isEditable}
+                    disabled={true}
+                    defaultValue={patientData?.id ?? ""}
                   />
                 </div>
                 <div className="col">
@@ -153,7 +215,9 @@ function ExaminationsPage() {
                     className="form-control"
                     id="fullname"
                     name="fullname"
-                    disabled={!modalState.isEditable}
+                    disabled={patientData || !modalRef.current?.isEditable()}
+                    defaultValue={patientData?.fullName ?? ""}
+                    required
                   />
                 </div>
                 <div className="col">
@@ -167,7 +231,10 @@ function ExaminationsPage() {
                     className="form-control"
                     id="phonenumber"
                     name="phonenumber"
-                    disabled={!modalState.isEditable}
+                    type="tel"
+                    defaultValue={patientData?.phoneNumber ?? ""}
+                    disabled={patientData || !modalRef.current?.isEditable()}
+                    required
                   ></input>
                 </div>
               </div>
@@ -176,12 +243,18 @@ function ExaminationsPage() {
                   <label htmlFor="gender" className="col-form-label fw-bold">
                     Giới tính
                   </label>
-                  <input
-                    className="form-control"
+                  <select
+                    className="form-select"
                     id="gender"
                     name="gender"
-                    disabled={!modalState.isEditable}
-                  ></input>
+                    defaultValue={patientData?.gender ?? ""}
+                    disabled={patientData || !modalRef.current?.isEditable()}
+                    value={patientData?.gender}
+                    required
+                  >
+                    <option value="Nam">Nam</option>
+                    <option value="Nữ">Nữ</option>
+                  </select>
                 </div>
                 <div className="col">
                   <label htmlFor="birthyear" className="col-form-label fw-bold">
@@ -191,7 +264,12 @@ function ExaminationsPage() {
                     className="form-control"
                     id="birthyear"
                     name="birthyear"
-                    disabled={!modalState.isEditable}
+                    type="number"
+                    defaultValue={patientData?.birthYear ?? ""}
+                    disabled={patientData || !modalRef.current?.isEditable()}
+                    required
+                    min="0"
+                    max={new Date().getFullYear()}
                   ></input>
                 </div>
                 <div className="col">
@@ -202,7 +280,9 @@ function ExaminationsPage() {
                     className="form-control"
                     id="address"
                     name="address"
-                    disabled={!modalState.isEditable}
+                    defaultValue={patientData?.address ?? ""}
+                    disabled={patientData || !modalRef.current?.isEditable()}
+                    required
                   ></input>
                 </div>
               </div>
@@ -224,6 +304,10 @@ function ExaminationsPage() {
                     type="date"
                     name="scheduledate"
                     id="scheduledate"
+                    defaultValue={
+                      inputDateFormat(patientData?.scheduleDate) ?? ""
+                    }
+                    required
                   ></input>
                 </div>
               </div>
@@ -236,16 +320,14 @@ function ExaminationsPage() {
                 >
                   Đóng
                 </button>
-                {modalState.isEditable && (
-                  <button type="submit" className="col btn btn-primary">
-                    Tạo ca khám
-                  </button>
-                )}
+                <button type="submit" className="col btn btn-primary">
+                  Lưu
+                </button>
               </div>
-            </form>
+            </Form>
           </div>
         </div>
-      </Modal>
+      </MainModal>
 
       <div className="w-100 h-100 d-flex flex-column gap-3">
         <div className="row w-100  d-flex flex-row justify-content-around">
@@ -275,7 +357,13 @@ function ExaminationsPage() {
 
         <div className=" w-100 h-100 overflow-hidden d-flex flex-column gap-3">
           <TableHeader>
-            <div className="text-start" style={{ width: "20%" }}>
+            <div className="text-start" style={{ width: "5%" }}>
+              STT
+            </div>
+            <div className="text-start" style={{ width: "14%" }}>
+              Mã ca khám
+            </div>
+            <div className="text-start" style={{ width: "15%" }}>
               Họ và tên
             </div>
             <div className="text-start" style={{ width: "15%" }}>
@@ -284,15 +372,16 @@ function ExaminationsPage() {
             <div className="text-start" style={{ width: "15%" }}>
               Số điện thoại
             </div>
-            <div className="text-start" style={{ width: "20%" }}>
+            <div className="text-start" style={{ width: "15%" }}>
               Ngày khám
             </div>
-            <div className="text-start" style={{ width: "15%" }}>
+            <div className="text-start" style={{ width: "10%" }}>
               Trạng thái
             </div>
-            <div className="text-start" style={{ width: "15%" }}>
+            <div className="text-end" style={{ width: "10%" }}>
               Thanh toán
             </div>
+            <div className="text-start" style={{ width: "1%" }}></div>
           </TableHeader>
           <TableBody>
             {appointmentListPatients &&
@@ -304,7 +393,24 @@ function ExaminationsPage() {
                   >
                     <div
                       className="text-start"
-                      style={{ width: "20%" }}
+                      data-bs-toggle="dropdown"
+                      aria-expanded="false"
+                      style={{ width: "5%" }}
+                    >
+                      {appointmentListPatients.indexOf(appointmentListPatient) +
+                        1}
+                    </div>
+                    <div
+                      className="text-start"
+                      style={{ width: "15%" }}
+                      data-bs-toggle="dropdown"
+                      aria-expanded="false"
+                    >
+                      {appointmentListPatient.id}
+                    </div>
+                    <div
+                      className="text-start"
+                      style={{ width: "15%" }}
                       data-bs-toggle="dropdown"
                       aria-expanded="false"
                     >
@@ -328,7 +434,7 @@ function ExaminationsPage() {
                     </div>
                     <div
                       className="text-start"
-                      style={{ width: "20%" }}
+                      style={{ width: "15%" }}
                       data-bs-toggle="dropdown"
                       aria-expanded="false"
                     >
@@ -338,13 +444,13 @@ function ExaminationsPage() {
                     </div>
                     <div
                       className="text-start"
-                      style={{ width: "15%" }}
+                      style={{ width: "10%" }}
                       data-bs-toggle="dropdown"
                       aria-expanded="false"
                     ></div>
                     <div
                       className="text-start"
-                      style={{ width: "15%" }}
+                      style={{ width: "10%" }}
                       data-bs-toggle="dropdown"
                       aria-expanded="false"
                     ></div>
@@ -354,14 +460,36 @@ function ExaminationsPage() {
                         <span
                           onClick={() => acceptHandler(appointmentListPatient)}
                         >
-                          Tiếp nhận ca khám
+                          Tiếp nhận
                         </span>
                       </li>
                       <li className="dropdown-item">
-                        <span>Cập nhật ca khám</span>
+                        <span
+                        >
+                          Thanh toán
+                        </span>
                       </li>
                       <li className="dropdown-item">
-                        <span>Hủy ca khám</span>
+                        <span
+                          onClick={() =>
+                            editAppointmentHandler({
+                              data: appointmentListPatient,
+                            })
+                          }
+                        >
+                          Cập nhật
+                        </span>
+                      </li>
+                      <li className="dropdown-item">
+                        <span
+                          onClick={() =>
+                            deleteAppointmentHandler({
+                              id: appointmentListPatient.id,
+                            })
+                          }
+                        >
+                          Hủy
+                        </span>
                       </li>
                     </ul>
                   </li>

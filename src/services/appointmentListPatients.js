@@ -3,7 +3,13 @@ import { addPatient } from "./patients";
 
 export async function fetchAllAppointmentListPatients() {
   const response = await fetch(
-    "http://localhost:8080/api/v1/appointmentlistpatients"
+    "http://localhost:8080/api/v1/appointmentlistpatients",
+    {
+      headers: {
+        "Content-Type": "application/json",
+        authorization: "Bearer",
+      },
+    }
   );
   if (!response.ok) {
     const error = new Error(
@@ -22,28 +28,44 @@ export async function fetchAllAppointmentListPatients() {
 export async function createAppointmentPatientList({
   scheduledate,
   patientInfo,
+  appointmentData,
 }) {
   const appointmentListData = await createAppointmentList({
     scheduledate,
   });
-  console.log("This is appointmnetdata", appointmentListData);
-  const patientData = await addPatient(patientInfo);
-  console.log("this is paitent data", patientData);
 
-  const patientId = patientData.id;
   const appointmentListId = appointmentListData.id;
-  console.log("This is all data", patientId, appointmentListId);
-  const response = await fetch(
-    "http://localhost:8080/api/v1/appointmentlistpatients",
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        authorization: "Bearer",
-      },
-      body: JSON.stringify({ patientId, appointmentListId }),
-    }
-  );
+  let response;
+  if (appointmentData) {
+    const id = appointmentData.id;
+    const patientId = appointmentData.patientId;
+    response = await fetch(
+      `http://localhost:8080/api/v1/appointmentlistpatients/${id}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          authorization: "Bearer",
+        },
+        body: JSON.stringify({ patientId, appointmentListId }),
+      }
+    );
+  } else {
+    const patientData = await addPatient(patientInfo);
+    const patientId = patientData.id;
+
+    response = await fetch(
+      "http://localhost:8080/api/v1/appointmentlistpatients",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          authorization: "Bearer",
+        },
+        body: JSON.stringify({ patientId, appointmentListId }),
+      }
+    );
+  }
 
   if (!response.ok) {
     const error = new Error(
@@ -61,7 +83,13 @@ export async function createAppointmentPatientList({
 
 export async function fetchAppointentListPatientById({ id }) {
   const response = await fetch(
-    `http://localhost:8080/api/v1/appointmentlistpatients/${id}`
+    `http://localhost:8080/api/v1/appointmentlistpatients/${id}`,
+    {
+      headers: {
+        "Content-Type": "application/json",
+        authorization: "Bearer",
+      },
+    }
   );
   if (!response.ok) {
     if (!response.ok) {
@@ -71,4 +99,28 @@ export async function fetchAppointentListPatientById({ id }) {
   const resData = await response.json();
   const data = resData.data;
   return data;
+}
+
+export async function deleteAppointmentListPatientById({ id }) {
+  const response = await fetch(
+    `http://localhost:8080/api/v1/appointmentlistpatients/${id}`,
+    {
+      method: "DELETE",
+      headers: {
+        authorization: "Bearer",
+        "Content-Type": "application/json",
+      },
+    }
+  );
+
+  if (!response.ok) {
+    const error = new Error(
+      "An error occurred while deleting appointment list patient"
+    );
+    error.code = response.status;
+    error.info = await response.json();
+    throw error;
+  }
+
+  return response.json();
 }

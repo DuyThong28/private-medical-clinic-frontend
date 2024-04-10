@@ -24,6 +24,9 @@ const prescriptionSlice = createSlice({
       });
       return newPrescriptionData;
     },
+    removeAll() {
+      return [];
+    },
     updateDrug(state, action) {
       const { type, id, value } = action.payload;
       if (type === "amount") {
