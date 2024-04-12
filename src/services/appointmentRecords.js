@@ -88,3 +88,27 @@ export async function fetchAppointmentRecordById({ id }) {
   const data = resData.data;
   return data;
 }
+
+export async function deleteAppointmentRecordById({ id }) {
+  const response = await fetch(
+    `http://localhost:8080/api/v1/appointmentrecords/${id}`,
+    {
+      method: "DELETE",
+      headers: {
+        authorization: "Bearer",
+        "Content-Type": "application/json",
+      },
+    }
+  );
+
+  if (!response.ok) {
+    const error = new Error(
+      "An error occurred while deleting appointment record"
+    );
+    error.code = response.status;
+    error.info = await response.json();
+    throw error;
+  }
+
+  return response.json();
+}

@@ -30,6 +30,7 @@ export async function createAppointmentPatientList({
   patientInfo,
   appointmentData,
 }) {
+
   const appointmentListData = await createAppointmentList({
     scheduledate,
   });

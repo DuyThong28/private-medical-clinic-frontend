@@ -1,64 +1,56 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
+import { useState, useRef, useEffect } from "react";
+
 import {
   createNewDisease,
   deleteDisease,
   fetchAllDisease,
 } from "../../../services/diseases";
 import { queryClient } from "../../../App";
-import { useState } from "react";
-import { Modal } from "react-bootstrap";
+
+import TableHeader from "../../../components/TableHeader";
+import TableBody from "../../../components/TableBody";
+import Card from "../../../components/Card";
+import MainDialog from "../../../components/MainDialog";
 
 function DiseasesTab() {
+  const dialogRef = useRef();
+  const [dialogState, setDialogState] = useState({
+    data: null,
+    isEditable: true,
+  });
+  const [listState, setListState] = useState([]);
+
   const diseasesQuery = useQuery({
     queryKey: ["diseases"],
     queryFn: fetchAllDisease,
   });
-
-  const [diseaseData, setDiseaseData] = useState(null);
-  const [show, setShow] = useState(false);
-  const [modalState, setModalState] = useState({
-    header: "",
-    isEditable: true,
-  });
-
   const diseases = diseasesQuery.data;
 
-  const addDiseaseMutate = useMutation({
-    mutationFn: createNewDisease,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["diseases"] });
-      setShow(() => {
-        setDiseaseData(() => {
-          return null;
-        });
-        return false;
-      });
-    },
-  });
+  function setData({ data, isEditable }) {
+    setDialogState((prevState) => {
+      return {
+        ...prevState,
+        data: data,
+        isEditable: isEditable,
+      };
+    });
+  }
 
-  function submitHandler(event) {
-    event.preventDefault();
-    const formData = new FormData(event.target);
-    const data = Object.fromEntries(formData);
-    if (diseaseData !== null) data.id = diseaseData.id;
-    addDiseaseMutate.mutate({ ...data });
+  useEffect(() => {
+   setListState(() => diseases);
+  }, [diseases]);
+
+  function searchHandler(event) {
+    const textSearch = event.target.value.toLowerCase().trim();
+    const result = diseases.filter((disease) =>
+      disease.diseaseName.toLowerCase().includes(textSearch)
+    );
+    setListState(() => result);
   }
 
   function editDiseaseHandler({ disease, action }) {
-    setDiseaseData(() => {
-      return { ...disease };
-    });
-    if (action === "edit") {
-      setModalState(() => {
-        return { isEditable: true, header: "Chỉnh sửa thông tin" };
-      });
-    }
-    if (action === "view") {
-      setModalState(() => {
-        return { isEditable: false, header: "Thông tin chi tiết" };
-      });
-    }
-    setShow(true);
+    dialogRef.current.edit({ action, data: disease });
   }
 
   async function deleteDiseaseHandnler(id) {
@@ -66,186 +58,170 @@ function DiseasesTab() {
     queryClient.invalidateQueries({ queryKey: ["diseases"] });
   }
 
-  function closeHandler() {
-    setShow(() => {
-      setDiseaseData(() => {
-        return null;
-      });
-      return false;
-    });
-  }
-  function showHandler() {
-    setModalState(() => {
-      return { isEditable: true, header: "Thêm mới" };
-    });
-    setShow(true);
-  }
-
   return (
-    <>
-      <Modal
-        show={show}
-        onHide={closeHandler}
-        style={{ height: "fit-content" }}
-      >
-        <Modal.Header closeButton style={{ height: "50px" }}>
-          <Modal.Title>{modalState.header}</Modal.Title>
-        </Modal.Header>
-        <div tabIndex="-1">
-          <div className="modal-body">
-            <form onSubmit={submitHandler}>
-              <div className="mb-3">
-                <label htmlFor="diseasename" className="col-form-label">
-                  Loại bệnh
-                </label>
+    <div className="h-100 w-100">
+      <Card>
+        <div className="w-100 h-100 d-flex flex-column gap-3">
+          <div className=" w-100  d-flex flex-row justify-content-around">
+            <div className="col fw-bold fs-4">
+              <label>Bệnh</label>
+            </div>
+            <div className="row gap-3">
+              <div className="col input-group flex-nowrap">
+                <span
+                  className="input-group-text"
+                  id="addon-wrapping"
+                  style={{ backgroundColor: "white" }}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    fill="currentColor"
+                    className="bi bi-search"
+                    viewBox="0 0 16 16"
+                  >
+                    <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
+                  </svg>
+                </span>
                 <input
-                  type="text"
+                  name="name"
+                  type="search"
                   className="form-control"
-                  id="diseasename"
-                  name="diseasename"
-                  defaultValue={diseaseData?.diseaseName ?? ""}
-                  disabled={!modalState.isEditable}
+                  placeholder="Loại bệnh"
+                  aria-describedby="addon-wrapping"
+                  onInput={searchHandler}
                 />
               </div>
-
-              <div className="modal-footer">
-                <button
-                  type="button"
-                  className="btn btn-secondary"
-                  data-bs-dismiss="modal"
-                  onClick={closeHandler}
+              <div style={{ width: "fit-content" }}>
+                <MainDialog
+                  ref={dialogRef}
+                  addFn={createNewDisease}
+                  keyQuery={["diseases"]}
+                  onEdit={setData}
                 >
-                  Đóng
-                </button>
-                {modalState.isEditable && (
-                  <button type="submit" className="btn btn-primary">
-                    Lưu
-                  </button>
-                )}
+                  <div>
+                    <label htmlFor="drugname" className="col-form-label">
+                      Bệnh
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      id="usagedes"
+                      name="usagedes"
+                      defaultValue={dialogState.data?.diseaseName ?? ""}
+                      disabled={!dialogState.isEditable}
+                      required
+                    />
+                  </div>
+                </MainDialog>
               </div>
-            </form>
+            </div>
           </div>
-        </div>
-      </Modal>
-      <div className="w-100 h-100 d-flex flex-column">
-        <div className="w-100  d-flex flex-row justify-content-around my-4">
-          <div className="col fw-bold fs-4">
-            <label>Đơn vị</label>
-          </div>
-          <div className="col">
-            <button
-              className="col btn btn-primary float-end fw-bold"
-              onClick={showHandler}
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                fill="currentColor"
-                className="bi bi-plus-lg me-2"
-                viewBox="0 2 16 16"
-              >
-                <path d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2" />
-              </svg>
-              Thêm mới
-            </button>
-          </div>
-        </div>
+          <div className=" w-100 h-100 overflow-hidden d-flex flex-column gap-3">
+            <TableHeader>
+              <div className="text-start" style={{ width: "5%" }}>
+                STT
+              </div>
+              <div className="text-start" style={{ width: "84%" }}>
+                Mô tả
+              </div>
+              <div className="text-start" style={{ width: "10%" }}>
+                Thao tác
+              </div>
+              <div className="text-start" style={{ width: "1%" }}></div>
+            </TableHeader>
+            <TableBody>
+              {listState &&
+                listState.map((disease) => {
+                  return (
+                    <li
+                      className=" dropdown-center list-group-item list-group-item-primary list-group-item-action w-100 d-flex flex-row"
+                      key={disease.id}
+                    >
+                      <div
+                        className="text-start"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false"
+                        style={{ width: "5%" }}
+                      >
+                        {listState.indexOf(disease) + 1}
+                      </div>
+                      <div
+                        className="text-start"
+                        style={{ width: "85%" }}
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false"
+                      >
+                        {disease.diseaseName}
+                      </div>
 
-        <div className=" w-100 h-100 shadow border rounded-4 p-3 bg-white">
-          <div className="w-100">
-            <table className="table table-hover w-100">
-              <thead className="w-100">
-                <tr>
-                  <th
-                    style={{
-                      color: "#1B59F8",
-                      backgroundColor: "#E8EEFE",
-                    }}
-                  >
-                    Tên
-                  </th>
-                  <th
-                    className="text-center"
-                    style={{
-                      width: "20%",
-                      color: "#1B59F8",
-                      backgroundColor: "#E8EEFE",
-                    }}
-                  ></th>
-                </tr>
-              </thead>
-              <tbody>
-                {diseases &&
-                  diseases.map((disease) => {
-                    return (
-                      <tr key={disease.id}>
-                        <td className="text-left fw-bold">
-                          {" "}
-                          {disease.diseaseName}
-                        </td>
-                        <td className="text-end">
-                          <span
-                            className="p-2"
-                            onClick={() =>
-                              editDiseaseHandler({ disease, action: "view" })
-                            }
+                      <div
+                        className="text-start"
+                        style={{ width: "10%" }}
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false"
+                      >
+                        <span
+                          className="p-2"
+                          onClick={() =>
+                            editDiseaseHandler({ disease, action: "view" })
+                          }
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="16"
+                            height="16"
+                            fill="#1B59F8"
+                            className="bi bi-eye-fill"
+                            viewBox="0 0 16 16"
                           >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="16"
-                              height="16"
-                              fill="#1B59F8"
-                              className="bi bi-eye-fill"
-                              viewBox="0 0 16 16"
-                            >
-                              <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0" />
-                              <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8m8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7" />
-                            </svg>
-                          </span>
-                          <span
-                            className="p-2"
-                            onClick={() =>
-                              editDiseaseHandler({ disease, action: "edit" })
-                            }
+                            <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0" />
+                            <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8m8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7" />
+                          </svg>
+                        </span>
+                        <span
+                          className="p-2"
+                          onClick={() =>
+                            editDiseaseHandler({ disease, action: "edit" })
+                          }
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="16"
+                            height="16"
+                            fill="#1B59F8"
+                            className="bi bi-pencil-square"
+                            viewBox="0 0 16 16"
                           >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="16"
-                              height="16"
-                              fill="#1B59F8"
-                              className="bi bi-pencil-square"
-                              viewBox="0 0 16 16"
-                            >
-                              <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
-                              <path d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z" />
-                            </svg>
-                          </span>
-                          <span
-                            className="p-2"
-                            onClick={() => deleteDiseaseHandnler(disease.id)}
+                            <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
+                            <path d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z" />
+                          </svg>
+                        </span>
+                        <span
+                          className="p-2"
+                          onClick={() => deleteDiseaseHandnler(disease.id)}
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="16"
+                            height="16"
+                            fill="#1B59F8"
+                            className="bi bi-archive-fill"
+                            viewBox="0 0 16 16"
                           >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="16"
-                              height="16"
-                              fill="#1B59F8"
-                              className="bi bi-archive-fill"
-                              viewBox="0 0 16 16"
-                            >
-                              <path d="M12.643 15C13.979 15 15 13.845 15 12.5V5H1v7.5C1 13.845 2.021 15 3.357 15zM5.5 7h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1 0-1M.8 1a.8.8 0 0 0-.8.8V3a.8.8 0 0 0 .8.8h14.4A.8.8 0 0 0 16 3V1.8a.8.8 0 0 0-.8-.8z" />
-                            </svg>
-                          </span>
-                        </td>
-                      </tr>
-                    );
-                  })}
-              </tbody>
-            </table>
+                            <path d="M12.643 15C13.979 15 15 13.845 15 12.5V5H1v7.5C1 13.845 2.021 15 3.357 15zM5.5 7h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1 0-1M.8 1a.8.8 0 0 0-.8.8V3a.8.8 0 0 0 .8.8h14.4A.8.8 0 0 0 16 3V1.8a.8.8 0 0 0-.8-.8z" />
+                          </svg>
+                        </span>
+                      </div>
+                    </li>
+                  );
+                })}
+            </TableBody>
           </div>
         </div>
-      </div>
-    </>
+      </Card>
+    </div>
   );
 }
 

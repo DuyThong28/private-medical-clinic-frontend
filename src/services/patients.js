@@ -58,7 +58,7 @@ export async function addPatient(patientData) {
   const birthYear = patientData.birthyear;
   const gender = patientData.gender;
   const phoneNumber = patientData.phonenumber;
-  const patientID = patientData?.id ?? null;
+  const patientID = patientData?.id ?? patientData?.patientid ?? null;
   let response;
 
   if (patientID) {

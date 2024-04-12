@@ -18,7 +18,7 @@ function SideBar() {
   }
 
   return (
-    <div className="bg-white border-end border  nav-bar-border">
+    <div className="bg-white border-end border h-100 nav-bar-border">
       <div className="d-flex flex-column p-3 h-100">
         <div>
           <Link

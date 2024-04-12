@@ -37,7 +37,7 @@ const router = createBrowserRouter([
       { path: "reports", element: <ReportsPage /> },
       { path: "patients", element: <PatientsPage /> },
       {
-        path: "patients/:id",
+        path: "patients/:patientId",
         element: <PatientDetail />,
       },
       { path: "examinations", element: <ExaminationsPage /> },
@@ -45,7 +45,10 @@ const router = createBrowserRouter([
         path: "examinations/:appopintmentListPatientId",
         element: <ExaminationDetail />,
         children: [
-          { path: "prescription", element: <PreScriptionTab /> },
+          {
+            path: "prescription",
+            element: <PreScriptionTab isEditable={true} />,
+          },
           { path: "examhistory", element: <HistoryTab /> },
         ],
       },

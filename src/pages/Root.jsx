@@ -5,8 +5,12 @@ function RootLayout() {
   return (
     <>
       <div className="d-flex felx-row h-100">
-        <SideBar />
-        <Outlet />
+        <div  style={{ width: "280px", height:"100%" }}>
+          <SideBar />
+        </div>
+        <div  style={{ width: "100%", height:"100%" }}>
+          <Outlet />
+        </div>
       </div>
     </>
   );

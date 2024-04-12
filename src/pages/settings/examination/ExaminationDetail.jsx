@@ -1,31 +1,48 @@
 import { NavLink, Outlet, useParams, useNavigate } from "react-router-dom";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { fetchAppointentListPatientById } from "../../../services/appointmentListPatients";
-import { createAppointmentRecord } from "../../../services/appointmentRecords";
+import { useSelector, useDispatch } from "react-redux";
+import { useState } from "react";
+import Form from "react-bootstrap/Form";
+
 import "./ExaminationDetail.scss";
 import Card from "../../../components/Card";
-import { convertDate } from "../../../util/date";
-import { createAppointmentRecordDetail } from "../../../services/appointmentRecordDetails";
-import { useSelector, useDispatch } from "react-redux";
-import Form from "react-bootstrap/Form";
-import { useState } from "react";
+import MainInput from "../../../components/MainInput";
+import MainSelect from "../../../components/MainSelect";
+import MainTextarea from "../../../components/MainTextarea";
+
+import { inputDateFormat } from "../../../util/date";
 import { prescriptionAction } from "../../../store/prescription";
+
+import { fetchAppointentListPatientById } from "../../../services/appointmentListPatients";
+import { createAppointmentRecordDetail } from "../../../services/appointmentRecordDetails";
+import { createAppointmentRecord } from "../../../services/appointmentRecords";
 
 export default function ExaminationDetail() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [validated, setValidated] = useState(false);
   const { appopintmentListPatientId } = useParams();
+  const [dataState, setDataState] = useState({
+    data: null,
+    isEditable: true,
+  });
+
+  function getDiseaseName({ id }) {
+    const res = diseaseState.filter((disease) => {
+      return disease.id == id;
+    })[0];
+    return res?.diseaseName ?? "";
+  }
+
+  const prescriptionState = useSelector((state) => state.prescription);
+  const diseaseState = useSelector((state) => state.disease);
+
   const appointmentListPatientQuery = useQuery({
     queryKey: ["appointmentlistpatient", appopintmentListPatientId],
     queryFn: () =>
       fetchAppointentListPatientById({ id: appopintmentListPatientId }),
   });
-  const prescriptionState = useSelector((state) => state.prescription);
-  const diseaseState = useSelector((state) => state.disease);
-
   const appointmentListPatientData = appointmentListPatientQuery.data;
-
   const recordDetailMutate = useMutation({
     mutationFn: createAppointmentRecordDetail,
   });
@@ -45,6 +62,7 @@ export default function ExaminationDetail() {
           usageId,
         });
       });
+      dispatch(prescriptionAction.removeAll());
       navigate("/systems/examinations");
     },
   });
@@ -52,16 +70,15 @@ export default function ExaminationDetail() {
   function finishExamHandler(event) {
     event.preventDefault();
     const form = event.currentTarget;
-
     if (form.checkValidity() === false) {
       setValidated(true);
       return;
     }
 
     const formData = new FormData(form);
-    const appointmentRecordData = Object.fromEntries(formData);
-    const symptoms = appointmentRecordData.symptoms;
-    const diseaseId = appointmentRecordData.diagnostic;
+    const examData = Object.fromEntries(formData);
+    const symptoms = examData.symptoms;
+    const diseaseId = examData.diagnostic;
     const patientId = appointmentListPatientData.patientId;
     const appointmentListId = appointmentListPatientData.appointmentListId;
     appointmentRecordMutate.mutate({
@@ -70,7 +87,6 @@ export default function ExaminationDetail() {
       patientId,
       appointmentListId,
     });
-    dispatch(prescriptionAction.removeAll());
     setValidated(false);
   }
 
@@ -89,169 +105,126 @@ export default function ExaminationDetail() {
             </label>
           </div>
           <div className="row gap-3">
-            <div className="col">
-              <label htmlFor="patientid" className="col-form-label fw-bold">
-                Mã bệnh nhân
-              </label>
-              <input
-                type="text"
-                className="form-control"
-                id="patientid"
-                name="patientid"
-                defaultValue={
-                  appointmentListPatientData &&
-                  appointmentListPatientData.patientId
-                }
-                disabled={true}
-              />
-            </div>
-            <div className="col">
-              <label htmlFor="fullname" className="col-form-label fw-bold">
-                Tên bệnh nhân
-              </label>
-              <input
-                type="text"
-                className="form-control"
-                id="fullname"
-                defaultValue={
-                  appointmentListPatientData &&
-                  appointmentListPatientData.patient.fullName
-                }
-                disabled={true}
-              />
-            </div>
-            <div className="col">
-              <label htmlFor="phonenumber" className="col-form-label fw-bold">
-                Số điện thoại
-              </label>
-              <input
-                className="form-control"
-                id="phonenumber"
-                defaultValue={
-                  appointmentListPatientData &&
-                  appointmentListPatientData.patient.phoneNumber
-                }
-                disabled={true}
-              ></input>
-            </div>
+            <MainInput
+              name={"patientid"}
+              isEditable={false}
+              defaultValue={
+                appointmentListPatientData && appointmentListPatientData.patientId
+              }
+              label={"Mã bệnh nhân"}
+            />
+            <MainInput
+              name={"fullname"}
+              isEditable={false}
+              defaultValue={
+                appointmentListPatientData &&
+                appointmentListPatientData.patient.fullName
+              }
+              label={"Tên bệnh nhân"}
+            />
+
+            <MainInput
+              name={"phonenumber"}
+              isEditable={false}
+              defaultValue={
+                appointmentListPatientData &&
+                appointmentListPatientData.patient.phoneNumber
+              }
+              label={"Số điện thoại"}
+            />
           </div>
           <div className="row gap-3">
-            <div className="col">
-              <label htmlFor="gender" className="col-form-label fw-bold">
-                Giới tính
-              </label>
-              <input
-                className="form-control"
-                id="gender"
-                defaultValue={
-                  appointmentListPatientData &&
-                  appointmentListPatientData.patient.gender
-                }
-                disabled={true}
-              ></input>
-            </div>
-            <div className="col">
-              <label htmlFor="birthyear" className="col-form-label fw-bold">
-                Năm sinh
-              </label>
-              <input
-                className="form-control"
-                id="birthyear"
-                defaultValue={
-                  appointmentListPatientData &&
-                  appointmentListPatientData.patient.birthYear
-                }
-                disabled={true}
-              ></input>
-            </div>
-            <div className="col">
-              <label htmlFor="address" className="col-form-label fw-bold">
-                Địa chỉ
-              </label>
-              <input
-                className="form-control"
-                id="address"
-                defaultValue={
-                  appointmentListPatientData &&
-                  appointmentListPatientData.patient.address
-                }
-                disabled={true}
-              ></input>
-            </div>
+            <MainInput
+              name={"gender"}
+              isEditable={false}
+              defaultValue={
+                appointmentListPatientData &&
+                appointmentListPatientData.patient.gender
+              }
+              label={"Giới tính"}
+            />
+            <MainInput
+              name={"birthyear"}
+              isEditable={false}
+              defaultValue={
+                appointmentListPatientData &&
+                appointmentListPatientData.patient.birthYear
+              }
+              label={"Năm sinh"}
+            />
+            <MainInput
+              name={"address"}
+              isEditable={false}
+              defaultValue={
+                appointmentListPatientData &&
+                appointmentListPatientData.patient.address
+              }
+              label={"Địa chỉ"}
+            />
           </div>
           <div className="row">
             <label className="col-form-label fw-bold">THÔNG TIN CA KHÁM</label>
           </div>
           <div className="row gap-3">
-            <div className="col">
-              <label htmlFor="appointmentid" className="col-form-label fw-bold">
-                Mã ca khám
-              </label>
-              <input
-                className="form-control"
-                type="text"
-                name="appointmentid"
-                id="appointmentid"
-                defaultValue={
-                  appointmentListPatientData && appointmentListPatientData.id
-                }
-                disabled={true}
-              ></input>
-            </div>
-            <div className="col">
-              <label htmlFor="scheduledate" className="col-form-label fw-bold">
-                Ngày khám
-              </label>
-              <input
-                className="form-control"
-                type="text"
-                id="scheduledate"
-                defaultValue={
-                  appointmentListPatientData &&
-                  convertDate(
-                    appointmentListPatientData.appointmentList.scheduleDate
-                  )
-                }
-                disabled={true}
-              ></input>
-            </div>
+            <MainInput
+              name={"appointmentid"}
+              isEditable={false}
+              defaultValue={
+                appointmentListPatientData && appointmentListPatientData.id
+              }
+              label={"Mã ca khám"}
+            />
+            <MainInput
+              name="scheduledate"
+              defaultValue={
+                appointmentListPatientData &&
+                inputDateFormat(
+                  appointmentListPatientData.appointmentList.scheduleDate
+                )
+              }
+              isEditable={false}
+              label={"Ngày khám"}
+              type={"date"}
+            />
+            <div className="col"></div>
           </div>
           <div className="row">
-            <div className="col">
-              <label htmlFor="symptoms" className="col-form-label fw-bold">
-                Triệu chứng
-              </label>
-              <textarea
-                className="form-control"
-                type="text"
-                name="symptoms"
-                id="symptoms"
-                rows="3"
-                required
-              ></textarea>
-            </div>
+            <MainTextarea
+              name="symptoms"
+              defaultValue={
+                appointmentListPatientData &&
+                appointmentListPatientData.symptoms
+              }
+              isEditable={dataState.isEditable}
+              label={"Triệu chứng"}
+            />
           </div>
           <div className="row">
-            <div className="col">
-              <label htmlFor="diagnostic" className="col-form-label fw-bold">
-                Chuẩn đoán
-              </label>
-              <select
-                className="form-select"
-                name="diagnostic"
-                id="diagnostic"
-                required
-              >
-                {diseaseState &&
-                  diseaseState.map((disease) => {
-                    return (
-                      <option key={disease.id} value={disease.id}>
-                        {disease.diseaseName}
-                      </option>
-                    );
-                  })}
-              </select>
-            </div>
+            <MainSelect
+              name={"diagnostic"}
+              defaultValue={
+                appointmentListPatientData &&
+                appointmentListPatientData.diseaseId
+              }
+              isEditable={dataState.isEditable}
+              label={"Chuẩn đoán"}
+              options={
+                diseaseState &&
+                diseaseState.map((disease) => {
+                  return (
+                    <option key={disease.id} value={disease.id}>
+                      {disease.diseaseName}
+                    </option>
+                  );
+                })
+              }
+              text={
+                appointmentListPatientData &&
+                getDiseaseName({
+                  id: appointmentListPatientData.diseaseId,
+                })
+              }
+            />
           </div>
         </div>
         <div

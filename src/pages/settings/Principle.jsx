@@ -5,16 +5,40 @@ import {
   updateFeeConsult,
   updateMaxNumberOfPatients,
 } from "../../services/argument";
+import Card from "../../components/Card";
+import { useState } from "react";
+import { queryClient } from "../../App";
 
 function PrincipleView() {
+  const [dataState, setDataState] = useState({
+    maxpatients: null,
+    feeconsult: null,
+    isEditable: false,
+  });
   const maxpatientsQuery = useQuery({
     queryKey: ["maxpatients"],
-    queryFn: fetchMaxNumberOfPatients,
+    queryFn: async () => {
+      const res = await fetchMaxNumberOfPatients();
+      setDataState((prevState) => {
+        return {
+          ...prevState,
+          maxpatients: res,
+        };
+      });
+    },
   });
 
   const feeConsultQuery = useQuery({
     queryKey: ["feeconsult"],
-    queryFn: fetchFeeConsult,
+    queryFn: async () => {
+      const res = await fetchFeeConsult();
+      setDataState((prevState) => {
+        return {
+          ...prevState,
+          feeconsult: res,
+        };
+      });
+    },
   });
 
   const maxPatientsMutate = useMutation({
@@ -29,76 +53,140 @@ function PrincipleView() {
     event.preventDefault();
     const formData = new FormData(event.target);
     const data = Object.fromEntries(formData);
-    if (data.maxpatients!==maxpatientsQuery.data) {
+    if (data.maxpatients !== maxpatientsQuery.data) {
       const maxnumberofpatients = data.maxpatients;
       maxPatientsMutate.mutate({ maxNumberOfPatients: maxnumberofpatients });
     }
 
-    if (data.feeconsult!==feeConsultQuery.data) {
+    if (data.feeconsult !== feeConsultQuery.data) {
       const feeconsult = data.feeconsult;
       feeConsultMutate.mutate({ feeConsult: feeconsult });
+    }
+
+    setDataState(() => {
+      return {
+        isEditable: false,
+        maxpatients: maxPatientsMutate.data,
+        feeconsult: feeConsultMutate.data,
+      };
+    });
+  }
+
+  function editHandler() {
+    setDataState((prevState) => {
+      return {
+        ...prevState,
+        isEditable: true,
+      };
+    });
+  }
+
+  function cancelHandler() {
+    queryClient.invalidateQueries({ queryKey: ["feeconsult"] });
+    queryClient.invalidateQueries({ queryKey: ["maxpatients"] });
+    setDataState((prevState) => {
+      return {
+        ...prevState,
+        isEditable: false,
+      };
+    });
+  }
+
+  function onChangeHandler({ event, name }) {
+    if (name === "feeconsult") {
+      setDataState((prevState) => {
+        return {
+          ...prevState,
+          feeconsult: event.target.value,
+        };
+      });
+    }
+
+    if (name == "maxpatients") {
+      setDataState((prevState) => {
+        return {
+          ...prevState,
+          maxpatients: event.target.value,
+        };
+      });
     }
   }
 
   return (
-    <div className="col">
+    <div className="col h-100">
       <div
         className="h-100 position-relative"
         style={{ backgroundColor: "#F9F9F9" }}
       >
-        <div
-          className="w-50 modal-content rounded-4 shadow  content position-absolute top-50 mt-50 start-50 translate-middle"
-          style={{ height: "fit-content", backgroundColor: "#FEFEFE" }}
-        >
-          <div className=" p-5 pb-4 border-bottom-0 align-self-center">
-            <p className="fw-bold mb-10 fs-2 ">Principle Settings</p>
-          </div>
+        <div className="position-absolute top-50 mt-50 start-50 translate-middle">
+          <Card>
+            <div className="col fw-bold fs-4 text-center">
+              <label>Quy Định Phòng Khám</label>
+            </div>
+            <div>
+              <form onSubmit={submitHanlder}>
+                <div className="row fw-bold">
+                  <label htmlFor="maxpatients" className="col-form-label">
+                    Số Bệnh Nhân Tối Đa Trong Ngày
+                  </label>
+                  <input
+                    type="number"
+                    id="maxpatients"
+                    className="form-control"
+                    name="maxpatients"
+                    value={dataState.maxpatients}
+                    disabled={!dataState.isEditable}
+                    onChange={(event) =>
+                      onChangeHandler({ event, name: "maxpatients" })
+                    }
+                    required
+                  />
+                </div>
+                <div className="row fw-bold">
+                  <label htmlFor="feeconsult" className="col-form-label">
+                    Phí Khám Bệnh
+                  </label>
+                  <input
+                    type="number"
+                    id="feeconsult"
+                    className="form-control"
+                    name="feeconsult"
+                    value={dataState.feeconsult}
+                    disabled={!dataState.isEditable}
+                    onChange={(event) =>
+                      onChangeHandler({ event, name: "feeconsult" })
+                    }
+                    required
+                  />
+                </div>
 
-          <div className="modal-body p-5 pt-0">
-            <form onSubmit={submitHanlder}>
-              <div className="form-floating mb-3">
-                <input
-                  type="number"
-                  className="form-control rounded-3"
-                  id="maxpatients"
-                  placeholder="maxpatients"
-                  name="maxpatients"
-                  defaultValue={maxpatientsQuery && maxpatientsQuery?.data}
-                />
-                <label htmlFor="maxpatients">
-                  Số bệnh nhân tối đa trong ngày
-                </label>
-              </div>
-              <div className="form-floating mb-3">
-                <input
-                  type="number"
-                  className="form-control rounded-3"
-                  id="feeconsult"
-                  placeholder="feeconsult"
-                  name="feeconsult"
-                  defaultValue={feeConsultQuery && feeConsultQuery?.data}
-                />
-                <label htmlFor="feeconsult">Phí khám bệnh</label>
-              </div>
-
-              <div className="w-100 d-flex justify-content-center gap-5">
-                <button
-                  className="btn btn-lg btn btn-outline-primary rounded-pill "
-                  type="button"
-                  style={{ width: "200px" }}
-                >
-                  Cancel
-                </button>
-                <button
-                  className="btn btn-lg btn btn-primary rounded-pill "
-                  type="submit"
-                  style={{ width: "200px" }}
-                >
-                  Save
-                </button>
-              </div>
-            </form>
-          </div>
+                <div className="d-flex gap-3 mt-3 justify-content-center">
+                  {!dataState.isEditable ? (
+                    <button
+                      type="button"
+                      className="btn btn-primary fw-bold"
+                      onClick={editHandler}
+                    >
+                      Chỉnh sửa
+                    </button>
+                  ) : (
+                    <>
+                      <button
+                        type="button"
+                        className="btn btn-secondary fw-bold"
+                        onClick={cancelHandler}
+                      >
+                        Hủy
+                      </button>
+                      <button type="submit" className="btn btn-primary fw-bold">
+                        Lưu
+                      </button>
+                    </>
+                  )}
+                </div>
+              </form>
+            </div>
+          </Card>
         </div>
       </div>
     </div>
