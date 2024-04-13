@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { fetchAllUnit } from "../services/units";
 
-const initialState = (await fetchAllUnit()) || [];
+const initialState = localStorage.getItem("refreshToken")? (await fetchAllUnit()) : [];
 
 const unitSlice = createSlice({
   name: "unit",

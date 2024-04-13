@@ -1,11 +1,11 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { fetchAllUsage } from "../services/usage";
 
-const initialState = await fetchAllUsage();
+const initialState = localStorage.getItem("refreshToken") ? await fetchAllUsage() : [];
 
 const usageSlice = createSlice({
   name: "usage",
-  initialState: initialState || [],
+  initialState: initialState ,
   reducers: {},
 });
 

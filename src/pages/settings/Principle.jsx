@@ -18,7 +18,7 @@ function PrincipleView() {
   const maxpatientsQuery = useQuery({
     queryKey: ["maxpatients"],
     queryFn: async () => {
-      const res = await fetchMaxNumberOfPatients();
+      const res = await fetchMaxNumberOfPatients() ?? 0;
       setDataState((prevState) => {
         return {
           ...prevState,
@@ -31,7 +31,7 @@ function PrincipleView() {
   const feeConsultQuery = useQuery({
     queryKey: ["feeconsult"],
     queryFn: async () => {
-      const res = await fetchFeeConsult();
+      const res = await fetchFeeConsult() ?? 0;
       setDataState((prevState) => {
         return {
           ...prevState,
