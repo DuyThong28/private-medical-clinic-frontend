@@ -110,7 +110,12 @@ export async function addPatient(patientData) {
 }
 
 export async function fetchPatientById({ id }) {
-  const response = await fetch(`http://localhost:8080/api/v1/patients/${id}`);
+  const response = await fetch(`http://localhost:8080/api/v1/patients/${id}`, {
+    headers: {
+      "Content-Type": "application/json",
+      authorization: "Bearer",
+    },
+  });
   if (!response.ok) {
     if (!response.ok) {
       throw new Error("can not fetch all patients");

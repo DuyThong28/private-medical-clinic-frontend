@@ -1,5 +1,14 @@
 export async function fetchAllAppointmentList() {
-  const response = await fetch("http://localhost:8080/api/v1/appointmentlists");
+  const response = await fetch(
+    "http://localhost:8080/api/v1/appointmentlists",
+
+    {
+      headers: {
+        authorization: "Bearer",
+        "Content-Type": "application/json",
+      },
+    }
+  );
 
   if (!response.ok) {
     const error = new Error(

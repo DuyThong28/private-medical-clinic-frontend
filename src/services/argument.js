@@ -10,7 +10,7 @@ export async function fetchMaxNumberOfPatients() {
       },
     },
     {
-      credentials: "include", // Include cookies for cross-origin requests
+      credentials: "include", 
     }
   );
 
@@ -38,7 +38,7 @@ export async function fetchFeeConsult() {
       },
     },
     {
-      credentials: "include", // Include cookies for cross-origin requests
+      credentials: "include",
     }
   );
   if (!response.ok) {
@@ -65,7 +65,7 @@ export async function updateMaxNumberOfPatients({ maxNumberOfPatients }) {
       body: JSON.stringify({ maxNumberOfPatients }),
     },
     {
-      credentials: "include", // Include cookies for cross-origin requests
+      credentials: "include",
     }
   );
 
@@ -94,7 +94,7 @@ export async function updateFeeConsult({ feeConsult }) {
       body: JSON.stringify({ feeConsult }),
     },
     {
-      credentials: "include", // Include cookies for cross-origin requests
+      credentials: "include",
     }
   );
 

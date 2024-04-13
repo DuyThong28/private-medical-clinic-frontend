@@ -77,6 +77,7 @@ const router = createBrowserRouter([
     ],
   },
 ]);
+
 export const queryClient = new QueryClient();
 function App() {
   return (

@@ -1,6 +1,11 @@
 export async function fetchAllAppointmentRecords() {
   const response = await fetch(
-    "http://localhost:8080/api/v1/appointmentrecords"
+    "http://localhost:8080/api/v1/appointmentrecords",{
+      headers: {
+        "Content-Type": "application/json",
+        authorization: "Bearer",
+      },
+    }
   );
   if (!response.ok) {
     const error = new Error(
@@ -92,7 +97,12 @@ export async function updateAppointmentRecordById({ id, appointmentData }) {
 
 export async function fetchAppointmentRecordById({ id }) {
   const response = await fetch(
-    `http://localhost:8080/api/v1/appointmentrecords/${id}`
+    `http://localhost:8080/api/v1/appointmentrecords/${id}`, {
+      headers: {
+        "Content-Type": "application/json",
+        authorization: "Bearer",
+      },
+    }
   );
 
   if (!response.ok) {
