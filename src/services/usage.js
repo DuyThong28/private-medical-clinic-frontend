@@ -1,8 +1,9 @@
 export async function fetchAllUsage() {
   const response = await fetch("http://localhost:8080/api/v1/usage", {
+    credentials: "include",
     headers: {
       authorization: "Bearer",
-    }
+    },
   });
 
   if (!response.ok) {
@@ -26,6 +27,7 @@ export async function createNewUsage(data) {
 
   if (usageId) {
     response = await fetch(`http://localhost:8080/api/v1/usage/${usageId}`, {
+      credentials: "include",
       method: "PUT",
       body: JSON.stringify({ usageDes }),
       headers: {
@@ -36,6 +38,7 @@ export async function createNewUsage(data) {
   } else {
     response = await fetch(`http://localhost:8080/api/v1/usage`, {
       method: "POST",
+      credentials: "include",
       body: JSON.stringify({ usageDes }),
       headers: {
         "Content-Type": "application/json",
@@ -59,9 +62,10 @@ export async function createNewUsage(data) {
 export async function deleteUsage({ id }) {
   const response = await fetch(`http://localhost:8080/api/v1/usage/${id}`, {
     method: "DELETE",
+    credentials: "include",
     headers: {
       authorization: "Bearer",
-    }
+    },
   });
 
   if (!response.ok) {

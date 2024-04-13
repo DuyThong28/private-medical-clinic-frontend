@@ -1,5 +1,6 @@
 export async function fetchAllDrugs() {
   const response = await fetch("http://localhost:8080/api/v1/drugs", {
+    credentials: "include",
     headers: {
       authorization: "Bearer",
     },
@@ -27,6 +28,7 @@ export async function createNewDrug(data) {
   let response;
   if (drugID) {
     response = await fetch(`http://localhost:8080/api/v1/drugs/${drugID}`, {
+      credentials: "include",
       method: "PUT",
       body: JSON.stringify({ drugName, price, count, unitId }),
       headers: {
@@ -37,6 +39,7 @@ export async function createNewDrug(data) {
   } else {
     response = await fetch(`http://localhost:8080/api/v1/drugs`, {
       method: "POST",
+      credentials: "include",
       body: JSON.stringify({ drugName, price, count, unitId }),
       headers: {
         "Content-Type": "application/json",
@@ -60,6 +63,7 @@ export async function createNewDrug(data) {
 export async function deleteDrugById({ id }) {
   const response = await fetch(`http://localhost:8080/api/v1/drugs/${id}`, {
     method: "DELETE",
+    credentials: "include",
     headers: {
       authorization: "Bearer",
     },
@@ -77,6 +81,7 @@ export async function deleteDrugById({ id }) {
 
 export async function fetchDrugById({ id }) {
   const response = await fetch(`http://localhost:8080/api/v1/drugs/${id}`, {
+    credentials: "include",
     headers: {
       "Content-Type": "application/json",
       authorization: "Bearer",

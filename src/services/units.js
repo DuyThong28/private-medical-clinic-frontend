@@ -1,5 +1,6 @@
 export async function fetchAllUnit() {
   const response = await fetch("http://localhost:8080/api/v1/units", {
+    credentials: "include",
     headers: {
       authorization: "Bearer ",
     },
@@ -25,6 +26,7 @@ export async function createNewUnit(data) {
   if (unitID) {
     response = await fetch(`http://localhost:8080/api/v1/units/${unitID}`, {
       method: "PUT",
+      credentials: "include",
       body: JSON.stringify({ unitName }),
       headers: {
         "Content-Type": "application/json",
@@ -34,6 +36,7 @@ export async function createNewUnit(data) {
   } else {
     response = await fetch(`http://localhost:8080/api/v1/units`, {
       method: "POST",
+      credentials: "include",
       body: JSON.stringify({ unitName }),
       headers: {
         "Content-Type": "application/json",

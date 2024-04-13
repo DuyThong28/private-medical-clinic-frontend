@@ -111,6 +111,7 @@ export async function addPatient(patientData) {
 
 export async function fetchPatientById({ id }) {
   const response = await fetch(`http://localhost:8080/api/v1/patients/${id}`, {
+    credentials: "include",
     headers: {
       "Content-Type": "application/json",
       authorization: "Bearer",

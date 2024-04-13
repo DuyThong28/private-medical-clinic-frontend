@@ -8,9 +8,6 @@ export async function fetchMaxNumberOfPatients() {
         "Content-Type": "application/json",
         Authorization: "Bearer ",
       },
-    },
-    {
-      credentials: "include", 
     }
   );
 
@@ -33,6 +30,7 @@ export async function fetchFeeConsult() {
   const response = await fetch(
     "http://localhost:8080/api/v1/arguments/feeConsult",
     {
+      credentials: "include",
       headers: {
         Authorization: "Bearer ",
       },
@@ -57,6 +55,7 @@ export async function updateMaxNumberOfPatients({ maxNumberOfPatients }) {
   const response = await fetch(
     "http://localhost:8080/api/v1/arguments/maxnumofpatients",
     {
+      credentials: "include",
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -86,6 +85,7 @@ export async function updateFeeConsult({ feeConsult }) {
   const response = await fetch(
     "http://localhost:8080/api/v1/arguments/feeConsult",
     {
+      credentials: "include",
       method: "PUT",
       headers: {
         "Content-Type": "application/json",

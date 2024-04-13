@@ -5,6 +5,7 @@ export async function fetchAllAppointmentListPatients() {
   const response = await fetch(
     "http://localhost:8080/api/v1/appointmentlistpatients",
     {
+      credentials: "include",
       headers: {
         "Content-Type": "application/json",
         authorization: "Bearer",
@@ -30,7 +31,6 @@ export async function createAppointmentPatientList({
   patientInfo,
   appointmentData,
 }) {
-
   const appointmentListData = await createAppointmentList({
     scheduledate,
   });
@@ -43,6 +43,7 @@ export async function createAppointmentPatientList({
     response = await fetch(
       `http://localhost:8080/api/v1/appointmentlistpatients/${id}`,
       {
+        credentials: "include",
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -58,6 +59,7 @@ export async function createAppointmentPatientList({
     response = await fetch(
       "http://localhost:8080/api/v1/appointmentlistpatients",
       {
+        credentials: "include",
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -86,6 +88,7 @@ export async function fetchAppointentListPatientById({ id }) {
   const response = await fetch(
     `http://localhost:8080/api/v1/appointmentlistpatients/${id}`,
     {
+      credentials: "include",
       headers: {
         "Content-Type": "application/json",
         authorization: "Bearer",
@@ -106,6 +109,7 @@ export async function deleteAppointmentListPatientById({ id }) {
   const response = await fetch(
     `http://localhost:8080/api/v1/appointmentlistpatients/${id}`,
     {
+      credentials: "include",
       method: "DELETE",
       headers: {
         authorization: "Bearer",

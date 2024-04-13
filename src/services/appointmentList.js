@@ -1,8 +1,8 @@
 export async function fetchAllAppointmentList() {
   const response = await fetch(
     "http://localhost:8080/api/v1/appointmentlists",
-
     {
+      credentials: "include",
       headers: {
         authorization: "Bearer",
         "Content-Type": "application/json",
@@ -29,6 +29,7 @@ export async function createAppointmentList({ scheduledate }) {
   const response = await fetch(
     "http://localhost:8080/api/v1/appointmentlists",
     {
+      credentials: "include",
       method: "POST",
       headers: {
         authorization: "Bearer",

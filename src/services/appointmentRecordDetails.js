@@ -8,6 +8,7 @@ export async function createAppointmentRecordDetail({
     "http://localhost:8080/api/v1/appointmentrecorddetails",
     {
       method: "POST",
+      credentials: "include",
       headers: {
         "Content-Type": "application/json",
         authorization: "Bearer",
@@ -39,6 +40,7 @@ export async function fetchRecordDetailByRecordId({ id }) {
   const response = await fetch(
     `http://localhost:8080/api/v1/appointmentrecorddetails?appointmentRecordId=${id}`,
     {
+      credentials: "include",
       headers: {
         "Content-Type": "application/json",
         authorization: "Bearer",

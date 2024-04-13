@@ -7,6 +7,7 @@ export async function createAppointmentRecord({
   const response = await fetch(
     "http://localhost:8080/api/v1/appointmentrecords",
     {
+      credentials: "include",
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -39,6 +40,7 @@ export async function fetchAllAppointmentRecords() {
   const response = await fetch(
     "http://localhost:8080/api/v1/appointmentrecords",
     {
+      credentials: "include",
       headers: {
         "Content-Type": "application/json",
         authorization: "Bearer",
@@ -61,7 +63,9 @@ export async function fetchAllAppointmentRecords() {
 
 export async function fetchAppointmentRecordByPatientId({ patientId }) {
   const response = await fetch(
-    `http://localhost:8080/api/v1/appointmentrecords?patientId=${patientId}`,{
+    `http://localhost:8080/api/v1/appointmentrecords?patientId=${patientId}`,
+    {
+      credentials: "include",
       headers: {
         "Content-Type": "application/json",
         authorization: "Bearer",
@@ -84,7 +88,9 @@ export async function fetchAppointmentRecordByPatientId({ patientId }) {
 
 export async function fetchAppointmentRecordById({ id }) {
   const response = await fetch(
-    `http://localhost:8080/api/v1/appointmentrecords/${id}`,{
+    `http://localhost:8080/api/v1/appointmentrecords/${id}`,
+    {
+      credentials: "include",
       headers: {
         "Content-Type": "application/json",
         authorization: "Bearer",
@@ -109,6 +115,7 @@ export async function deleteAppointmentRecordById({ id }) {
   const response = await fetch(
     `http://localhost:8080/api/v1/appointmentrecords/${id}`,
     {
+      credentials: "include",
       method: "DELETE",
       headers: {
         authorization: "Bearer",
