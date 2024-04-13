@@ -1,56 +1,65 @@
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
+import { useEffect, useRef, useState } from "react";
+import { useSelector } from "react-redux";
+
 import {
   fetchAllDrugs,
+  deleteDrugById,
   createNewDrug,
   fetchDrugById,
-  deleteDrugById,
 } from "../../../services/drugs";
-import { useState } from "react";
-import Modal from "react-bootstrap/Modal";
 import { queryClient } from "../../../App";
 
+import TableHeader from "../../../components/TableHeader";
+import TableBody from "../../../components/TableBody";
+import Card from "../../../components/Card";
+import MainDialog from "../../../components/MainDialog";
+
 function DrugTab() {
-  const [drugData, setDrugData] = useState(null);
-  const [show, setShow] = useState(false);
+  const dialogRef = useRef();
+  const [dialogState, setDialogState] = useState({
+    data: null,
+    isEditable: true,
+  });
+  const [listState, setListState] = useState([]);
+
+  const unitState = useSelector((state) => state.unit);
+
+  function getUnitName({ id }) {
+    const res = unitState.filter((unit) => unit.id === id)[0];
+    return res?.unitName;
+  }
 
   const drugsQuery = useQuery({
     queryKey: ["drugs"],
     queryFn: fetchAllDrugs,
   });
-
-  const addDrugMutate = useMutation({
-    mutationFn: createNewDrug,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["drugs"] });
-      setShow(() => {
-        setDrugData(() => {
-          return null;
-        });
-        return false;
-      });
-    },
-  });
-
   const drugs = drugsQuery.data;
 
-  function submitHandler(event) {
-    event.preventDefault();
-    const formData = new FormData(event.target);
-    const data = Object.fromEntries(formData);
-    console.log("this is all data", data);
-    if (drugData !== null) {
-      data.id = drugData.id;
-    }
-    addDrugMutate.mutate({ ...data });
+  function setData({ data, isEditable }) {
+    setDialogState((prevState) => {
+      return {
+        ...prevState,
+        data: data,
+        isEditable: isEditable,
+      };
+    });
   }
 
-  async function editDrugHandler(id) {
-    const data = await fetchDrugById({ id });
-    console.log("this is drug by id", data);
-    setDrugData(() => {
-      return { ...data };
-    });
-    setShow(true);
+  useEffect(() => {
+    setListState(() => drugs);
+  }, [drugs]);
+
+  function searchHandler(event) {
+    const textSearch = event.target.value.toLowerCase().trim();
+    const result = drugs.filter((drug) =>
+      drug.drugName.toLowerCase().includes(textSearch)
+    );
+    setListState(() => result);
+  }
+
+  async function editDrugHandler({ id, action }) {
+    await dialogRef.current.edit({ id, action });
   }
 
   async function deleteDrugHandler(id) {
@@ -58,168 +67,258 @@ function DrugTab() {
     queryClient.invalidateQueries({ queryKey: ["drugs"] });
   }
 
-  function closeHandler() {
-    setShow(() => {
-      setDrugData(() => {
-        return null;
-      });
-      return false;
-    });
-  }
-  function showHandler() {
-    setShow(true);
-  }
-
   return (
-    <>
-      <Modal show={show} onHide={closeHandler}>
-        <Modal.Header closeButton style={{ height: "50px" }}>
-          <Modal.Title>Add New Drug</Modal.Title>
-        </Modal.Header>
-        <div tabIndex="-1">
-          <div className="modal-body">
-            <form onSubmit={submitHandler}>
-              <div className="mb-3">
-                <label htmlFor="drugname" className="col-form-label">
-                  Name
-                </label>
+    <div className="h-100 w-100">
+      <Card>
+        <div className="w-100 h-100 d-flex flex-column gap-3">
+          <div className=" w-100  d-flex flex-row justify-content-around">
+            <div className="col fw-bold fs-4">
+              <label>Thuốc</label>
+            </div>
+            <div className="row gap-3">
+              <div className="col input-group flex-nowrap">
+                <span
+                  className="input-group-text"
+                  id="addon-wrapping"
+                  style={{ backgroundColor: "white" }}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    fill="currentColor"
+                    className="bi bi-search"
+                    viewBox="0 0 16 16"
+                  >
+                    <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
+                  </svg>
+                </span>
                 <input
-                  type="text"
+                  name="name"
+                  type="search"
                   className="form-control"
-                  id="drugname"
-                  name="drugname"
-                  defaultValue={drugData?.drugName ?? ""}
+                  placeholder="Tên thuốc"
+                  aria-describedby="addon-wrapping"
+                  onInput={searchHandler}
                 />
               </div>
-              <div className="mb-3">
-                <label htmlFor="price" className="col-form-label">
-                  Price
-                </label>
-                <input
-                  className="form-control"
-                  id="price"
-                  name="price"
-                  defaultValue={drugData?.price ?? ""}
-                ></input>
-              </div>
-              <div className="mb-3">
-                <label htmlFor="count" className="col-form-label">
-                  Count
-                </label>
-                <input
-                  className="form-control"
-                  id="count"
-                  name="count"
-                  defaultValue={drugData?.count ?? ""}
-                ></input>
-              </div>
-              <div className="mb-3">
-                <label htmlFor="unitid" className="col-form-label">
-                  Unit Id
-                </label>
-                <input
-                  className="form-control"
-                  id="unitid"
-                  name="unitid"
-                  defaultValue={drugData?.unitId ?? ""}
-                ></input>
-              </div>
-              <div className="modal-footer">
-                <button
-                  type="button"
-                  className="btn btn-secondary"
-                  data-bs-dismiss="modal"
-                  onClick={closeHandler}
+              <div style={{ width: "fit-content" }}>
+                <MainDialog
+                  ref={dialogRef}
+                  addFn={createNewDrug}
+                  editFn={fetchDrugById}
+                  onEdit={setData}
+                  keyQuery={["drugs"]}
                 >
-                  Close
-                </button>
-                <button type="submit" className="btn btn-primary">
-                  Save
-                </button>
+                  <div className="row gap-3">
+                    <div className="col">
+                      <label htmlFor="drugname" className="col-form-label">
+                        Tên thuốc
+                      </label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        id="drugname"
+                        name="drugname"
+                        defaultValue={dialogState.data?.drugName ?? ""}
+                        disabled={!dialogState.isEditable}
+                        required
+                      />
+                    </div>
+                    <div className="col">
+                      <label htmlFor="price" className="col-form-label">
+                        Giá bán
+                      </label>
+                      <input
+                        className="form-control"
+                        id="price"
+                        name="price"
+                        defaultValue={dialogState.data?.price ?? ""}
+                        disabled={!dialogState.isEditable}
+                        required
+                      ></input>
+                    </div>
+                  </div>
+                  <div className="row gap-3">
+                    <div className="col">
+                      <label htmlFor="count" className="col-form-label">
+                        Số lượng
+                      </label>
+                      <input
+                        className="form-control"
+                        id="count"
+                        name="count"
+                        defaultValue={dialogState.data?.count ?? ""}
+                        disabled={!dialogState.isEditable}
+                        required
+                      ></input>
+                    </div>
+                    <div className="col">
+                      <label
+                        htmlFor="diagnostic"
+                        className="col-form-label fw-bold"
+                      >
+                        Đơn vị
+                      </label>
+                      <select
+                        className="form-select"
+                        name="unitid"
+                        id="unitid"
+                        required
+                        disabled={!dialogState.isEditable}
+                        defaultValue={dialogState.data?.unitId ?? ""}
+                      >
+                        {unitState &&
+                          unitState.map((unit) => {
+                            return (
+                              <option key={unit.id} value={unit.id}>
+                                {unit.unitName}
+                              </option>
+                            );
+                          })}
+                      </select>
+                    </div>
+                  </div>
+                </MainDialog>
               </div>
-            </form>
-          </div>
-        </div>
-      </Modal>
-
-      <div className="d-flex flex-row">
-        <div style={{ height: "100px" }}>
-          <div className="row g-3">
-            <div
-              className="col d-flex flex-column"
-              style={{
-                display: "flex",
-                "flex-direction": "column",
-                height: "fit-content",
-              }}
-            >
-              <label htmlFor="drugname" className="form-label">
-                Drug name
-              </label>
-              <input
-                type="text"
-                className="form-control"
-                id="drugname"
-                name="drugname"
-              />
-            </div>
-            <div className="col d-flex flex-column input">
-              <button
-                type="button"
-                className="btn btn-primary"
-                onClick={showHandler}
-              >
-                Add Drug
-              </button>
             </div>
           </div>
-
-          <div>
-            <table className="table table-hover">
-              <thead>
-                <tr>
-                  <th scope="col">Name</th>
-                  <th scope="col">Unit id</th>
-                  <th scope="col">Price</th>
-                  <th scope="col">Count</th>
-                  <th scope="col">Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {drugs &&
-                  drugs.map((drug) => {
-                    return (
-                      <tr key={drug.id}>
-                        <td>{drug.drugName}</td>
-                        <td> {drug.unitId}</td>
-                        <td>{drug.price}</td>
-                        <td>{drug.count}</td>
-                        <td>
-                          <button
-                            type="button"
-                            onClick={() => editDrugHandler(drug.id)}
+          <div className=" w-100 h-100 overflow-hidden d-flex flex-column gap-3">
+            <TableHeader>
+              <div className="text-start" style={{ width: "5%" }}>
+                STT
+              </div>
+              <div className="text-start" style={{ width: "24%" }}>
+                Tên
+              </div>
+              <div className="text-start" style={{ width: "20%" }}>
+                Đơn vị
+              </div>
+              <div className="text-start" style={{ width: "20%" }}>
+                Giá bán
+              </div>
+              <div className="text-start" style={{ width: "20%" }}>
+                Số lượng
+              </div>
+              <div className="text-start" style={{ width: "10%" }}>
+                Thao tác
+              </div>
+              <div className="text-start" style={{ width: "1%" }}></div>
+            </TableHeader>
+            <TableBody>
+              {listState &&
+                listState.map((drug) => {
+                  return (
+                    <li
+                      className=" dropdown-center list-group-item list-group-item-primary list-group-item-action w-100 d-flex flex-row"
+                      key={drug.id}
+                    >
+                      <div
+                        className="text-start"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false"
+                        style={{ width: "5%" }}
+                      >
+                        {listState.indexOf(drug) + 1}
+                      </div>
+                      <div
+                        className="text-start"
+                        style={{ width: "25%" }}
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false"
+                      >
+                        {drug.drugName}
+                      </div>
+                      <div
+                        className="text-start"
+                        style={{ width: "20%" }}
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false"
+                      >
+                        {getUnitName({ id: drug.unitId })}
+                      </div>
+                      <div
+                        className="text-start"
+                        style={{ width: "20%" }}
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false"
+                      >
+                        {drug.price}
+                      </div>
+                      <div
+                        className="text-start"
+                        style={{ width: "20%" }}
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false"
+                      >
+                        {drug.count}
+                      </div>
+                      <div
+                        className="text-start"
+                        style={{ width: "10%" }}
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false"
+                      >
+                        <span
+                          className="p-2"
+                          onClick={() =>
+                            editDrugHandler({ id: drug.id, action: "view" })
+                          }
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="16"
+                            height="16"
+                            fill="#1B59F8"
+                            className="bi bi-eye-fill"
+                            viewBox="0 0 16 16"
                           >
-                            View
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => editDrugHandler(drug.id)}
+                            <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0" />
+                            <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8m8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7" />
+                          </svg>
+                        </span>
+                        <span
+                          className="p-2"
+                          onClick={() =>
+                            editDrugHandler({ id: drug.id, action: "edit" })
+                          }
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="16"
+                            height="16"
+                            fill="#1B59F8"
+                            className="bi bi-pencil-square"
+                            viewBox="0 0 16 16"
                           >
-                            Edit
-                          </button>
-                          <button onClick={() => deleteDrugHandler(drug.id)}>
-                            Delete
-                          </button>
-                        </td>
-                      </tr>
-                    );
-                  })}
-              </tbody>
-            </table>
+                            <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
+                            <path d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z" />
+                          </svg>
+                        </span>
+                        <span
+                          className="p-2"
+                          onClick={() => deleteDrugHandler(drug.id)}
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="16"
+                            height="16"
+                            fill="#1B59F8"
+                            className="bi bi-archive-fill"
+                            viewBox="0 0 16 16"
+                          >
+                            <path d="M12.643 15C13.979 15 15 13.845 15 12.5V5H1v7.5C1 13.845 2.021 15 3.357 15zM5.5 7h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1 0-1M.8 1a.8.8 0 0 0-.8.8V3a.8.8 0 0 0 .8.8h14.4A.8.8 0 0 0 16 3V1.8a.8.8 0 0 0-.8-.8z" />
+                          </svg>
+                        </span>
+                      </div>
+                    </li>
+                  );
+                })}
+            </TableBody>
           </div>
         </div>
-      </div>
-    </>
+      </Card>
+    </div>
   );
 }
 

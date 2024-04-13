@@ -1,56 +1,57 @@
 import { NavLink, Outlet } from "react-router-dom";
+import "./Medicine.scss";
 
 function MedicineView() {
   return (
-    <>
-      <div className="d-flex flex-column">
-        <div style={{ height: "fit-content" }}>
-          <ul className="nav nav-tabs">
-            <li className="nav-item">
+    <div className="col h-100"  style={{ backgroundColor: "#F9F9F9" }}>
+      <div className="d-flex flex-column w-100 h-100 medicine-navigation">
+        <nav className="nav nav-pills gap-4 justify-content-center border-bottom border-2 p-2">
               <NavLink
                 className={({ isActive }) =>
-                  isActive ? "nav-link active" : "nav-link"
+                  isActive
+                    ? "nav-link shadow-sm bg-white  nav-bar"
+                    : "nav-link   nav-bar-active"
                 }
                 to="drugs"
               >
-                Drugs
+                Thuốc
               </NavLink>
-            </li>
-            <li className="nav-item">
               <NavLink
                 className={({ isActive }) =>
-                  isActive ? "nav-link active" : "nav-link"
+                  isActive
+                  ? "nav-link shadow-sm bg-white  nav-bar"
+                  : "nav-link   nav-bar-active"
                 }
                 to="units"
               >
-                Units
+                Đơn vị
               </NavLink>
-            </li>
-            <li className="nav-item">
               <NavLink
                 className={({ isActive }) =>
-                  isActive ? "nav-link active" : "nav-link"
+                  isActive
+                  ? "nav-link shadow-sm bg-white  nav-bar"
+                  : "nav-link   nav-bar-active"
                 }
                 to="usages"
               >
-                Usages
+                Dùng thuốc
               </NavLink>
-            </li>
-            <li className="nav-item">
               <NavLink
                 className={({ isActive }) =>
-                  isActive ? "nav-link active" : "nav-link"
+                  isActive
+                  ? "nav-link shadow-sm bg-white  nav-bar"
+                  : "nav-link   nav-bar-active"
                 }
                 to="diseases"
               >
-                Diseases
+                Bệnh
               </NavLink>
-            </li>
-          </ul>
-        </div>
+        </nav>
+        <div  className="row w-100 h-100 overflow-hidden">
         <Outlet />
+        </div>
       </div>
-    </>
+    </div>
   );
 }
 

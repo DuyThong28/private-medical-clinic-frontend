@@ -8,9 +8,12 @@ export async function fetchMaxNumberOfPatients() {
         "Content-Type": "application/json",
         Authorization: "Bearer ",
       },
+    },
+    {
+      credentials: "include", // Include cookies for cross-origin requests
     }
   );
-  console.log("This is response", response);
+
   if (!response.ok) {
     const error = new Error(
       "An error occurred while fetching max number of patients"
@@ -30,12 +33,12 @@ export async function fetchFeeConsult() {
   const response = await fetch(
     "http://localhost:8080/api/v1/arguments/feeConsult",
     {
-      credentials: "include", // Include cookies for cross-origin requests
-    },
-    {
       headers: {
         Authorization: "Bearer ",
       },
+    },
+    {
+      credentials: "include", // Include cookies for cross-origin requests
     }
   );
   if (!response.ok) {
@@ -51,12 +54,8 @@ export async function fetchFeeConsult() {
 }
 
 export async function updateMaxNumberOfPatients({ maxNumberOfPatients }) {
-  console.log("thiss is max in ui", maxNumberOfPatients);
   const response = await fetch(
     "http://localhost:8080/api/v1/arguments/maxnumofpatients",
-    {
-      credentials: "include", // Include cookies for cross-origin requests
-    },
     {
       method: "PUT",
       headers: {
@@ -64,6 +63,9 @@ export async function updateMaxNumberOfPatients({ maxNumberOfPatients }) {
         authorization: "Bearer",
       },
       body: JSON.stringify({ maxNumberOfPatients }),
+    },
+    {
+      credentials: "include", // Include cookies for cross-origin requests
     }
   );
 
@@ -81,12 +83,8 @@ export async function updateMaxNumberOfPatients({ maxNumberOfPatients }) {
 }
 
 export async function updateFeeConsult({ feeConsult }) {
-  console.log("This is fee consult in ui", feeConsult);
   const response = await fetch(
     "http://localhost:8080/api/v1/arguments/feeConsult",
-    {
-      credentials: "include", // Include cookies for cross-origin requests
-    },
     {
       method: "PUT",
       headers: {
@@ -94,6 +92,9 @@ export async function updateFeeConsult({ feeConsult }) {
         authorization: "Bearer",
       },
       body: JSON.stringify({ feeConsult }),
+    },
+    {
+      credentials: "include", // Include cookies for cross-origin requests
     }
   );
 

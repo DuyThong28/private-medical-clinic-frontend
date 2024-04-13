@@ -5,16 +5,40 @@ import {
   updateFeeConsult,
   updateMaxNumberOfPatients,
 } from "../../services/argument";
+import Card from "../../components/Card";
+import { useState } from "react";
+import { queryClient } from "../../App";
 
 function PrincipleView() {
+  const [dataState, setDataState] = useState({
+    maxpatients: null,
+    feeconsult: null,
+    isEditable: false,
+  });
   const maxpatientsQuery = useQuery({
     queryKey: ["maxpatients"],
-    queryFn: fetchMaxNumberOfPatients,
+    queryFn: async () => {
+      const res = await fetchMaxNumberOfPatients();
+      setDataState((prevState) => {
+        return {
+          ...prevState,
+          maxpatients: res,
+        };
+      });
+    },
   });
 
   const feeConsultQuery = useQuery({
     queryKey: ["feeconsult"],
-    queryFn: fetchFeeConsult,
+    queryFn: async () => {
+      const res = await fetchFeeConsult();
+      setDataState((prevState) => {
+        return {
+          ...prevState,
+          feeconsult: res,
+        };
+      });
+    },
   });
 
   const maxPatientsMutate = useMutation({
@@ -29,88 +53,143 @@ function PrincipleView() {
     event.preventDefault();
     const formData = new FormData(event.target);
     const data = Object.fromEntries(formData);
-    console.log(data);
-    if (data.maxpatients) {
+    if (data.maxpatients !== maxpatientsQuery.data) {
       const maxnumberofpatients = data.maxpatients;
       maxPatientsMutate.mutate({ maxNumberOfPatients: maxnumberofpatients });
     }
 
-    if (data.feeconsult) {
+    if (data.feeconsult !== feeConsultQuery.data) {
       const feeconsult = data.feeconsult;
       feeConsultMutate.mutate({ feeConsult: feeconsult });
+    }
+
+    setDataState(() => {
+      return {
+        isEditable: false,
+        maxpatients: maxPatientsMutate.data,
+        feeconsult: feeConsultMutate.data,
+      };
+    });
+  }
+
+  function editHandler() {
+    setDataState((prevState) => {
+      return {
+        ...prevState,
+        isEditable: true,
+      };
+    });
+  }
+
+  function cancelHandler() {
+    queryClient.invalidateQueries({ queryKey: ["feeconsult"] });
+    queryClient.invalidateQueries({ queryKey: ["maxpatients"] });
+    setDataState((prevState) => {
+      return {
+        ...prevState,
+        isEditable: false,
+      };
+    });
+  }
+
+  function onChangeHandler({ event, name }) {
+    if (name === "feeconsult") {
+      setDataState((prevState) => {
+        return {
+          ...prevState,
+          feeconsult: event.target.value,
+        };
+      });
+    }
+
+    if (name == "maxpatients") {
+      setDataState((prevState) => {
+        return {
+          ...prevState,
+          maxpatients: event.target.value,
+        };
+      });
     }
   }
 
   return (
-    <>
-      <>
-        <div
-          className=" mx-auto w-50 "
-          style={{ height: "fit-content", "margin-top": "50px" }}
-        >
-          <div className="modal-content rounded-4 shadow content ">
-            <div className=" p-5 pb-4 border-bottom-0 align-self-center">
-              <p className="fw-bold mb-10 fs-2 ">Principle Settings</p>
+    <div className="col h-100">
+      <div
+        className="h-100 position-relative"
+        style={{ backgroundColor: "#F9F9F9" }}
+      >
+        <div className="position-absolute top-50 mt-50 start-50 translate-middle">
+          <Card>
+            <div className="col fw-bold fs-4 text-center">
+              <label>Quy Định Phòng Khám</label>
             </div>
+            <div>
+              <form onSubmit={submitHanlder}>
+                <div className="row fw-bold">
+                  <label htmlFor="maxpatients" className="col-form-label">
+                    Số Bệnh Nhân Tối Đa Trong Ngày
+                  </label>
+                  <input
+                    type="number"
+                    id="maxpatients"
+                    className="form-control"
+                    name="maxpatients"
+                    value={dataState.maxpatients}
+                    disabled={!dataState.isEditable}
+                    onChange={(event) =>
+                      onChangeHandler({ event, name: "maxpatients" })
+                    }
+                    required
+                  />
+                </div>
+                <div className="row fw-bold">
+                  <label htmlFor="feeconsult" className="col-form-label">
+                    Phí Khám Bệnh
+                  </label>
+                  <input
+                    type="number"
+                    id="feeconsult"
+                    className="form-control"
+                    name="feeconsult"
+                    value={dataState.feeconsult}
+                    disabled={!dataState.isEditable}
+                    onChange={(event) =>
+                      onChangeHandler({ event, name: "feeconsult" })
+                    }
+                    required
+                  />
+                </div>
 
-            <div className="modal-body p-5 pt-0">
-              <form onSubmit={submitHanlder}>
-                <div className="row">
-                  <div className="mb-3 col">
-                    <label htmlFor="maxpatients" className="col-form-label">
-                      Max Number Of Patients
-                    </label>
-                  </div>
-                  <div className="mb-3 col">
-                    <input
-                      type="text"
-                      className="form-control"
-                      id="maxpatients"
-                      name="maxpatients"
-                      defaultValue={maxpatientsQuery && maxpatientsQuery?.data}
-                    />
-                  </div>
-                  <div className="col">
+                <div className="d-flex gap-3 mt-3 justify-content-center">
+                  {!dataState.isEditable ? (
                     <button
-                      className="w-50 mb-2 btn btn-xs rounded-3 btn btn-secondary "
-                      type="submit"
+                      type="button"
+                      className="btn btn-primary fw-bold"
+                      onClick={editHandler}
                     >
-                      Save
+                      Chỉnh sửa
                     </button>
-                  </div>
-                </div>
-              </form>
-              <form onSubmit={submitHanlder}>
-                <div className="row">
-                  <div className="col mb-3">
-                    <label htmlFor="feeconsult" className="col-form-label">
-                      Fee Consult
-                    </label>
-                  </div>
-                  <div className="col mb-2">
-                    <input
-                      type="text"
-                      className="form-control col"
-                      id="feeconsult"
-                      name="feeconsult"
-                      defaultValue={feeConsultQuery && feeConsultQuery?.data}
-                    />
-                  </div>
-                  <div className="col">
-                    <button
-                      className="w-50 mb-2 btn btn-xs rounded-3 btn btn-secondary "
-                      type="submit"
-                    >
-                      Save
-                    </button>
-                  </div>
+                  ) : (
+                    <>
+                      <button
+                        type="button"
+                        className="btn btn-secondary fw-bold"
+                        onClick={cancelHandler}
+                      >
+                        Hủy
+                      </button>
+                      <button type="submit" className="btn btn-primary fw-bold">
+                        Lưu
+                      </button>
+                    </>
+                  )}
                 </div>
               </form>
             </div>
-          </div>
+          </Card>
         </div>
-      </>
-    </>
+      </div>
+    </div>
   );
 }
 

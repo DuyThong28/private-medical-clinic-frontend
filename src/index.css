@@ -1,8 +1,9 @@
   * {
     box-sizing: border-box;
-    height: -webkit-fill-available;
+  
   }
 
+  
   :root {
     font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
     font-size: 16px;
@@ -12,11 +13,17 @@
     color: rgba(37, 35, 35, 0.87);
   }
   
-  body {
+  html, body {
     margin: 0;
     height: 100%;
     overflow: hidden;
+    color: #555555;
   }
+
+  #root {
+    height: 100%;
+  }
+
   
   ul {
     list-style: none;
@@ -24,4 +31,9 @@
     padding: 0;
   }
 
+  .row {
+    --bs-gutter-x: 0rem!important;
+  }
+
+ 
   
