@@ -1,8 +1,8 @@
 export async function fetchAllUnit() {
   const response = await fetch("http://localhost:8080/api/v1/units", {
     headers: {
-      authorization: "Bearer",
-    }
+      authorization: "Bearer ",
+    },
   });
 
   if (!response.ok) {
@@ -22,26 +22,25 @@ export async function createNewUnit(data) {
   const unitID = data?.id ?? null;
   let response;
 
-  if(unitID) {
+  if (unitID) {
     response = await fetch(`http://localhost:8080/api/v1/units/${unitID}`, {
-        method: "PUT",
-        body: JSON.stringify({ unitName }),
-        headers: {
-          "Content-Type": "application/json",
-          authorization: "Bearer",
-        },
-      });
+      method: "PUT",
+      body: JSON.stringify({ unitName }),
+      headers: {
+        "Content-Type": "application/json",
+        authorization: "Bearer",
+      },
+    });
   } else {
     response = await fetch(`http://localhost:8080/api/v1/units`, {
-        method: "POST",
-        body: JSON.stringify({ unitName }),
-        headers: {
-          "Content-Type": "application/json",
-          authorization: "Bearer",
-        },
-      });
+      method: "POST",
+      body: JSON.stringify({ unitName }),
+      headers: {
+        "Content-Type": "application/json",
+        authorization: "Bearer",
+      },
+    });
   }
- 
 
   if (!response.ok) {
     const error = new Error("An error occurred");
@@ -57,10 +56,11 @@ export async function createNewUnit(data) {
 
 export async function deleteUnit({ id }) {
   const response = await fetch(`http://localhost:8080/api/v1/units/${id}`, {
+    credentials: "include",
     method: "DELETE",
     headers: {
       authorization: "Bearer",
-    }
+    },
   });
 
   if (!response.ok) {

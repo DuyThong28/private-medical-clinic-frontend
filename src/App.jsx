@@ -22,10 +22,14 @@ import PreScriptionTab from "./pages/settings/examination/PrescriptionTab";
 import HistoryTab from "./pages/settings/examination/HistoryTab";
 
 const router = createBrowserRouter([
-  { path: "/login", element: <LoginPage /> },
-  { path: "/login/success", element: <LoginSuccess /> },
-  { path: "/login/fail", element: <LoginFail /> },
-
+  {
+    path: "/",
+    children: [
+      { index: true, element: <LoginPage /> },
+      { path: "/login/success", element: <LoginSuccess /> },
+      { path: "/login/fail", element: <LoginFail /> },
+    ],
+  },
   {
     path: "/systems",
     element: <RootLayout />,
