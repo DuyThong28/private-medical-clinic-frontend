@@ -3,10 +3,10 @@ export async function fetchMaxNumberOfPatients() {
     "http://localhost:8080/api/v1/arguments/maxnumofpatients",
     {
       credentials: "include", // Include cookies for cross-origin requests
-    },
-    {
       headers: {
-        authorization: "Bearer",
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: "Bearer ",
       },
     }
   );
@@ -34,7 +34,7 @@ export async function fetchFeeConsult() {
     },
     {
       headers: {
-        authorization: "Bearer",
+        Authorization: "Bearer ",
       },
     }
   );
