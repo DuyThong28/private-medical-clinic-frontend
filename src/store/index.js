@@ -4,6 +4,7 @@ import unitSlice from "./units";
 import usageSlice from "./usage";
 import drugSlice from "./drug";
 import prescriptionSlice from "./prescription";
+import userSlice from "./user";
 
 const store = configureStore({
   reducer: {
@@ -12,6 +13,7 @@ const store = configureStore({
     disease: diseaseSlice,
     drug: drugSlice,
     prescription: prescriptionSlice,
+    user: userSlice,
   },
 });
 

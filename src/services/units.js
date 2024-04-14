@@ -2,7 +2,7 @@ export async function fetchAllUnit() {
   const response = await fetch("http://localhost:8080/api/v1/units", {
     credentials: "include",
     headers: {
-      authorization: "Bearer ",
+      authorization: "Bearer",
     },
   });
 

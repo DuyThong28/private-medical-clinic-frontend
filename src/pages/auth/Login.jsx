@@ -1,18 +1,29 @@
 import loginImage from "../../assets/login-background.png";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import GoogleButton from "react-google-button";
 import { login } from "../../util/auth";
+import { useDispatch } from "react-redux";
+import { userAction } from "../../store/user";
 
 function LoginPage() {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const { mutate } = useMutation({
+    mutationKey: ["login"],
     mutationFn: login,
-    onSuccess: () => {
+    onSuccess: (data) => {
+      const user = data?.user?.user;
+      dispatch(userAction.setUser(user));
       navigate("/systems/home");
     },
   });
+
+  const isAuth = localStorage.getItem("refreshToken");
+  if (isAuth) {
+    return <Navigate to="/systems/home" />;
+  }
 
   async function localLoginHandler(event) {
     event.preventDefault();

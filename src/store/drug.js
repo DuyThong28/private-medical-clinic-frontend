@@ -1,11 +1,13 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { fetchAllDrugs } from "../services/drugs";
 
-const initialState = localStorage.getItem("refreshToken") ? await fetchAllDrugs() : [];
+const initialState = localStorage.getItem("refreshToken")
+  ? await fetchAllDrugs()
+  : [];
 
 const drugSlice = createSlice({
   name: "drug",
-  initialState: initialState ,
+  initialState: initialState,
   reducers: {},
 });
 

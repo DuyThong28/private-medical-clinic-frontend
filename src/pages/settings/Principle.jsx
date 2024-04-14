@@ -8,6 +8,7 @@ import {
 import Card from "../../components/Card";
 import { useState } from "react";
 import { queryClient } from "../../App";
+import { Form } from "react-bootstrap";
 
 function PrincipleView() {
   const [dataState, setDataState] = useState({
@@ -15,29 +16,33 @@ function PrincipleView() {
     feeconsult: null,
     isEditable: false,
   });
+  const [validated, setValidated] = useState(false);
+
   const maxpatientsQuery = useQuery({
     queryKey: ["maxpatients"],
     queryFn: async () => {
-      const res = await fetchMaxNumberOfPatients() ?? 0;
+      const res = (await fetchMaxNumberOfPatients()) ?? 0;
       setDataState((prevState) => {
         return {
           ...prevState,
           maxpatients: res,
         };
       });
+      return res;
     },
   });
 
   const feeConsultQuery = useQuery({
     queryKey: ["feeconsult"],
     queryFn: async () => {
-      const res = await fetchFeeConsult() ?? 0;
+      const res = (await fetchFeeConsult()) ?? 0;
       setDataState((prevState) => {
         return {
           ...prevState,
           feeconsult: res,
         };
       });
+      return res;
     },
   });
 
@@ -51,6 +56,12 @@ function PrincipleView() {
 
   function submitHanlder(event) {
     event.preventDefault();
+    const form = event.currentTarget;
+
+    if (form.checkValidity() === false) {
+      setValidated(true);
+      return;
+    }
     const formData = new FormData(event.target);
     const data = Object.fromEntries(formData);
     if (data.maxpatients !== maxpatientsQuery.data) {
@@ -70,6 +81,7 @@ function PrincipleView() {
         feeconsult: feeConsultMutate.data,
       };
     });
+    setValidated(false);
   }
 
   function editHandler() {
@@ -124,7 +136,12 @@ function PrincipleView() {
               <label>Quy Định Phòng Khám</label>
             </div>
             <div>
-              <form onSubmit={submitHanlder}>
+              <Form
+                onSubmit={submitHanlder}
+                noValidate
+                validated={validated}
+                className="h-100"
+              >
                 <div className="row fw-bold">
                   <label htmlFor="maxpatients" className="col-form-label">
                     Số Bệnh Nhân Tối Đa Trong Ngày
@@ -134,7 +151,7 @@ function PrincipleView() {
                     id="maxpatients"
                     className="form-control"
                     name="maxpatients"
-                    value={dataState.maxpatients}
+                    value={dataState.maxpatients ?? 0}
                     disabled={!dataState.isEditable}
                     onChange={(event) =>
                       onChangeHandler({ event, name: "maxpatients" })
@@ -151,7 +168,7 @@ function PrincipleView() {
                     id="feeconsult"
                     className="form-control"
                     name="feeconsult"
-                    value={dataState.feeconsult}
+                    value={dataState.feeconsult ?? 0}
                     disabled={!dataState.isEditable}
                     onChange={(event) =>
                       onChangeHandler({ event, name: "feeconsult" })
@@ -184,7 +201,7 @@ function PrincipleView() {
                     </>
                   )}
                 </div>
-              </form>
+              </Form>
             </div>
           </Card>
         </div>

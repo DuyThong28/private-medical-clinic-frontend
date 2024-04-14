@@ -4,7 +4,7 @@ export async function fetchAllPatients({ name, phoneNumber }) {
   const response = await fetch(`http://localhost:8080/api/v1/patients`, {
     credentials: "include", // Include cookies for cross-origin requests
     headers: {
-      authorization: "Bearer ",
+      authorization: "Bearer",
     },
   });
 

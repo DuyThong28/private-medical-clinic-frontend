@@ -2,13 +2,18 @@ import { useMutation } from "@tanstack/react-query";
 import { NavLink, Link } from "react-router-dom";
 import "./SideBar.scss";
 import { logout } from "../util/auth";
-import { redirect } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { userAction } from "../store/user";
+import { useNavigate } from "react-router-dom";
 
 function SideBar() {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const logoutMutate = useMutation({
     mutationFn: logout,
     onSuccess: () => {
-      redirect("/");
+      dispatch(userAction.removeUser());
+      navigate("/");
     },
   });
 
@@ -239,7 +244,7 @@ function SideBar() {
                       >
                         <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2m3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2" />
                       </svg>
-                      Mật khẩu
+                      Bảo mật
                     </NavLink>
                   </li>
                 </ul>
