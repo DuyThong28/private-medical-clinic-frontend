@@ -62,31 +62,20 @@ const CustomPickersDay = styled(PickersDay, {
       />
     );
   }
+  
 
-function SelectTime() {
+function SelectTime({setNewTime, value }) {
     const SelectMonth = (month) => {
-        console.log('Year ' + month);
+        // console.log('Year ' + month);
     }
     const [hoveredDay, setHoveredDay] = React.useState(null);
-    const [value, setValue] = React.useState(dayjs('2022-04-17'));
-    const setNewTime = (value) => {
-        setValue(value);
-        console.log(value.month());
-    }
+    
+    
     return ( 
     <LocalizationProvider className='container' dateAdapter={AdapterDayjs}>
       <DemoContainer components={['YearCalendar', 'MonthCalendar']}>
         <div className='container'>
-            <DemoItem label="YearCalendar">
-              <div className='year-calendar'>
-                <YearCalendar style={{ width: 300, height: 210 }} onYearFocus={(year) => SelectMonth(year)}/>
-                </div>
-            </DemoItem>
-            <DemoItem label="MonthCalendar">
-                <div className='year-calendar'>
-                <MonthCalendar style={{ width: 300, height: 210 }} />
-                </div>
-            </DemoItem>
+            
             <DemoItem>
             <div className='year-calendar'>
                 <DateCalendar
@@ -100,7 +89,7 @@ function SelectTime() {
                         ({
                             selectedDay: value,
                             hoveredDay,
-                            onPointerEnter: () => {console.log(ownerState.day); setHoveredDay(ownerState.day)},
+                            onPointerEnter: () => {setHoveredDay(ownerState.day)},
                             onPointerLeave: () => setHoveredDay(null),
                         }),
                     }}
