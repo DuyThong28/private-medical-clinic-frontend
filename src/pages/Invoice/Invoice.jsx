@@ -3,11 +3,14 @@ import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import {
+  fetchAllBills,
+  fetchBillById,
+  deleteBillById,
+} from "../../services/bill"
+
+import {
   fetchAllPatients,
-  addPatient,
-  fetchPatientById,
-  deletePatientById,
-} from "../../services/patients";
+} from "../../services/patients"
 
 import Card from "../../components/Card";
 import TableHeader from "../../components/TableHeader";
@@ -23,21 +26,24 @@ function PatientsPage() {
     isEditable: true,
   });
 
-  const patientsQuery = useQuery({
-    queryKey: ["patientlist"],
+  const billsQuery = useQuery({
+    queryKey: ["billlist"],
     queryFn: () => {
-      const formData = new FormData(searchRef.current);
-      const searchData = Object.fromEntries(formData);
-      const name = searchData.name;
-      const phoneNumber = searchData.phonenumber;
-      return fetchAllPatients({ name: name, phoneNumber: phoneNumber });
+      return fetchAllBills();
     },
   });
 
-  const patients = patientsQuery.data;
+  const patinent = patinentQuery.data;
+  const patinentQuery = useQuery({
+    queryKey: ["billlist"],
+    queryFn: () => {
+      return fetchAllPatinent();
+    },
+  });
 
+  const bills = billsQuery.data;
   function searchHandler() {
-    patientsQuery.refetch();
+    billsQuery.refetch();
   }
 
   function setData({ data, isEditable }) {
@@ -54,15 +60,15 @@ function PatientsPage() {
     navigate(`${id}`);
   }
 
-  async function editPatientHandler({ id, action }) {
+  async function editBillHandler({ id, action }) {
     await dialogRef.current.edit({ id, action });
   }
 
-  async function deletePatientHandler(id) {
-    await deletePatientById({ id });
+  async function deleteBillHandler(id) {
+    await deleteBillById({ id });
     patientsQuery.refetch();
   }
-
+  
   return (
     <div className="h-100 w-100">
       <Card>
@@ -165,41 +171,40 @@ function PatientsPage() {
               <div className="text-end" style={{ width: "1%" }}></div>
             </TableHeader>
             <TableBody>
-              {patients &&
-                patients.map((patient) => {
+              {bills &&
+                bills.map((bill, index) => {
                   return (
                     <li
                       className="list-group-item list-group-item-primary list-group-item-action w-100 d-flex flex-row"
-                      key={patient.id}
+                      key={index}
                     >
                       <div className="text-start" style={{ width: "5%" }}>
-                        {patients.indexOf(patient) + 1}
+                        {index + 1}
                       </div>
                       <div className="text-start" style={{ width: "15%" }}>
-                        {patient.id}
+                        {bill.id}
                       </div>
                       <div className="text-start" style={{ width: "15%" }}>
-                        {patient.fullName}
+                        {bill.patientId}
                       </div>
                       <div className="text-start" style={{ width: "15%" }}>
-                        {" "}
-                        {patient.phoneNumber}
+                        {index}
                       </div>
                       <div className="text-start" style={{ width: "10%" }}>
-                        {patient.gender}
+                        {bill.appointmentListId}
                       </div>
                       <div className="text-start" style={{ width: "15%" }}>
-                        {patient.birthYear}
+                        {bill.appointmentListId}
                       </div>
                       <div className="text-start" style={{ width: "15%" }}>
-                        {patient.address}
+                        {bill.drugExpense}
                       </div>
                       <div className="text-end" style={{ width: "10%" }}>
                         <span
                           className="p-2"
                           onClick={() =>
                             viewHandler({
-                              id: patient.id,
+                              id: bill.id,
                             })
                           }
                         >
@@ -218,8 +223,8 @@ function PatientsPage() {
                         <span
                           className="p-2"
                           onClick={() =>
-                            editPatientHandler({
-                              id: patient.id,
+                            editBillHandler({
+                              id: bill.id,
                               action: "edit",
                             })
                           }

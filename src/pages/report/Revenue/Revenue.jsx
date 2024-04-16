@@ -50,10 +50,10 @@ function Revenue() {
             },
         },
     };
-    const [value, setValue] = React.useState(dayjs('2022-04-17'));
+    const [value, setValue] = React.useState(dayjs());
     const setNewTime = (value) => {
         setValue(value);
-        console.log(getWeekStartAndEnd(value).start.date() + " " + getWeekStartAndEnd(value).end.date());
+        console.log(formatDate(value));
     }
     const getWeekStartAndEnd = (selectedDay) => {
         const startOfWeek = selectedDay.startOf('week');
@@ -63,15 +63,50 @@ function Revenue() {
     const [isOpenCalendar, setIsOpenCalendar] = React.useState(false);
     const handleOpenCalendar = (value) => {
         setIsOpenCalendar(value);
+        setIsOpenTimeOption(false);
         console.log(isOpenCalendar);
+    }
+    const [isOpenTimeOption, setIsOpenTimeOption] = React.useState(false);
+    const handleOpenTimeOption = (value) => {
+        setIsOpenCalendar(false);
+        setIsOpenTimeOption(value);
+    }
+    const [timeOption, setTimeOption] = React.useState('Tuần');
+    const handleSetTimeOption = (value) => {
+        setTimeOption(value);
+    }
+    const formatDate = (date) => {
+        const day = getWeekStartAndEnd(date);
+        return {
+            start: day.start.date(),
+            ms: day.start.month() + 1,
+            ys: day.start.year(),
+            end: day.end.date(),
+            me: day.end.month() + 1,
+            ye: day.end.year(),
+            month: date.month() + 1,
+            year: date.year()
+        }
+    }
+    const displayTime = (date) => {
+        const time = formatDate(date);
+        if(timeOption == 'Tuần') {
+            return time.start + '/' + time.ms + '/' + time.ys + ' - ' + time.end + '/' + time.me + '/' + time.ye;
+        }
+        if(timeOption == 'Tháng') {
+            return 'Tháng ' + time.month + ' ' + time.year; 
+        }
+        if(timeOption == 'Năm') {
+            return time.year; 
+        }
     }
     return ( <Card>
         <div className="position-relative">
             <div className="d-flex">
                 <div className="d-flex justify-content-start">
-                    <div className='select-box' >
+                    <div className='select-box-1' >
                         <div className='combobox' onClick={() => handleOpenCalendar(!isOpenCalendar)}>
-                            <p>Chon ngay</p>
+                            <p>{displayTime(value)}</p>
                             <div className='icon'>
                                 <FontAwesomeIcon className='icon' icon={faCaretDown} />
                             </div>
@@ -82,16 +117,24 @@ function Revenue() {
                             </div>
                         }
                     </div>
-                    <div className='select-box' style={{marginLeft: '10px'}}>
-                        <div className='combobox' onClick={() => handleOpenCalendar(!isOpenCalendar)}>
-                            <p>Tháng</p>
+                    <div className='select-box-2' style={{marginLeft: '10px'}}>
+                        <div className='combobox' onClick={() => handleOpenTimeOption(!isOpenTimeOption)}>
+                            <p>{timeOption}</p>
                             <div className='icon'>
                                 <FontAwesomeIcon className='icon' icon={faCaretDown} />
                             </div>
                         </div>
-                        {isOpenCalendar &&
-                            <div className='calendar'>
-                                <SelectTime setNewTime={setNewTime} value={value}></SelectTime>
+                        {isOpenTimeOption &&
+                            <div className='select-time' >
+                                <div className='item' onClick={() => {handleSetTimeOption('Tuần');  handleOpenTimeOption(false)}}>
+                                    <p>Tuần</p>
+                                </div>
+                                <div className='item' onClick={() => {handleSetTimeOption('Tháng');  handleOpenTimeOption(false)}}>
+                                    <p>Tháng</p>
+                                </div>
+                                <div className='item' onClick={() => {handleSetTimeOption('Năm');  handleOpenTimeOption(false)}}>
+                                    <p>Năm</p>
+                                </div>
                             </div>
                         }
                     </div>

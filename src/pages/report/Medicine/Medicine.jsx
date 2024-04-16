@@ -22,64 +22,6 @@ function Medicine() {
   });
 
   const drugs = drugsQuery.data;
-    const tmpdata = [
-        {
-            name: "ABC",
-            unit: "Pack",
-            amount: 5,
-            price: 9000,
-            sld: 9
-        },
-        {
-            name: "DEF",
-            unit: "Vui",
-            amount: 8,
-            price: 6000000,
-            sld: 8
-        },
-        {
-            name: "ABC",
-            unit: "Pack",
-            amount: 5,
-            price: 9000,
-            sld: 9
-        },
-        {
-            name: "ABC",
-            unit: "Pack",
-            amount: 5,
-            price: 9000,
-            sld: 9
-        },
-        {
-            name: "ABC",
-            unit: "Pack",
-            amount: 5,
-            price: 9000,
-            sld: 9
-        },
-        {
-            name: "ABC",
-            unit: "Pack",
-            amount: 5,
-            price: 9000,
-            sld: 9
-        },
-        {
-            name: "ABC",
-            unit: "Pack",
-            amount: 5,
-            price: 9000,
-            sld: 9
-        },
-        {
-            name: "ABC",
-            unit: "Pack",
-            amount: 5,
-            price: 9000,
-            sld: 9
-        },
-    ]
 
     const dataline = {
         labels: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'], // Replace with your category labels
