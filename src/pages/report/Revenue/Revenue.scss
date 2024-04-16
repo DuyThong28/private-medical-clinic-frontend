@@ -69,6 +69,7 @@
     left: 0px;
     width: 100%;
     border-radius: 5px;
+    background-color: white;
     border: 1px solid blue;
     .item {
         padding: 8px;
@@ -79,4 +80,8 @@
     .item:hover {
         background-color: #999;
     }
+}
+
+.chart {
+    margin-top: 10px;
 }
