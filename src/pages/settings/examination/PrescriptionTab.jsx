@@ -10,9 +10,14 @@ import SearchDrugInput from "./SearchDrugInput";
 import { fetchAllUsage } from "../../../services/usage";
 import { fetchAllDrugs } from "../../../services/drugs";
 import { fetchAllUnit } from "../../../services/units";
-import {formatNumber} from '../../../util/money';
+import { formatNumber } from "../../../util/money";
 
-export default function PreScriptionTab({ recordId, isEditable, setExpense }) {
+export default function PreScriptionTab({
+  recordId,
+  isEditable,
+  setExpense,
+  isBill,
+}) {
   const dispatch = useDispatch();
   const [currentPresciptionData, setCurrentPrescriptionData] = useState([]);
 
@@ -68,13 +73,14 @@ export default function PreScriptionTab({ recordId, isEditable, setExpense }) {
             price: drugData[0]?.price,
             totalPrice: record.count * drugData[0]?.price,
           };
-
-          setExpense({ totalPrice: recordDetail.totalPrice });
+          if (setExpense) {
+            setExpense({ totalPrice: recordDetail?.totalPrice });
+          }
           return recordDetail;
         });
 
       setCurrentPrescriptionData(() => {
-        return recordDetailData || [];
+        return recordDetailData;
       });
     },
   });
@@ -107,24 +113,28 @@ export default function PreScriptionTab({ recordId, isEditable, setExpense }) {
       {!recordId && <SearchDrugInput />}
       <TableHeader>
         <div className="text-start" style={{ width: "5%" }}></div>
-        <div className="text-start" style={{ width: "19%" }}>
+        <div className="text-start" style={{ width: isBill ? "19%" : "22%" }}>
           Tên thuốc
         </div>
-        <div className="text-start" style={{ width: "10%" }}>
+        <div className="text-start" style={{ width: isBill ? "10%" : "15%" }}>
           Số lượng
         </div>
-        <div className="text-start" style={{ width: "10%" }}>
+        <div className="text-start" style={{ width: isBill ? "10%" : "15%" }}>
           Đơn vị
         </div>
-        <div className="text-start" style={{ width: "35%" }}>
+        <div className="text-start" style={{ width: isBill ? "35%" : "30%" }}>
           Cách dùng
         </div>
-        <div className="text-start" style={{ width: "10%" }}>
-          Đơn giá
-        </div>
-        <div className="text-start" style={{ width: "10%" }}>
-          Thành tiền
-        </div>
+        {isBill && (
+          <>
+            <div className="text-start" style={{ width: "10%" }}>
+              Đơn giá
+            </div>
+            <div className="text-start" style={{ width: "10%" }}>
+              Thành tiền
+            </div>
+          </>
+        )}
         {isEditable && (
           <div className="text-end" style={{ width: "10%" }}>
             Thao tác
@@ -132,7 +142,7 @@ export default function PreScriptionTab({ recordId, isEditable, setExpense }) {
         )}
         <div style={{ width: "1%" }}></div>
       </TableHeader>
-      <TableBody>
+      <TableBody isEditable={!isEditable}>
         {currentPresciptionData.map((drug) => {
           return (
             <li
@@ -151,10 +161,16 @@ export default function PreScriptionTab({ recordId, isEditable, setExpense }) {
                   currentPresciptionData.indexOf(drug) + 1
                 )}
               </div>
-              <div className="text-start" style={{ width: "20%" }}>
+              <div
+                className="text-start"
+                style={{ width: isBill ? "20%" : "23%" }}
+              >
                 {drug.drugName}
               </div>
-              <div className="text-start" style={{ width: "10%" }}>
+              <div
+                className="text-start"
+                style={{ width: isBill ? "10%" : "15%" }}
+              >
                 {isEditable ? (
                   <input
                     style={{ width: "50px" }}
@@ -172,10 +188,16 @@ export default function PreScriptionTab({ recordId, isEditable, setExpense }) {
                   drug.amount
                 )}
               </div>
-              <div className="text-start" style={{ width: "10%" }}>
+              <div
+                className="text-start"
+                style={{ width: isBill ? "10%" : "15%" }}
+              >
                 {getUnitName({ id: drug.unitId })}
               </div>
-              <div className="text-start" style={{ width: "35%" }}>
+              <div
+                className="text-start"
+                style={{ width: isBill ? "35%" : "30%" }}
+              >
                 {isEditable ? (
                   <select
                     className="w-100"
@@ -198,12 +220,17 @@ export default function PreScriptionTab({ recordId, isEditable, setExpense }) {
                   getUsageDes({ id: drug.usageId })
                 )}
               </div>
-              <div className="text-start" style={{ width: "10%" }}>
-                {formatNumber(drug.price)}
-              </div>
-              <div className="text-start" style={{ width: "10%" }}>
-                {formatNumber(drug.totalPrice)}
-              </div>
+              {isBill && (
+                <>
+                  <div className="text-start" style={{ width: "10%" }}>
+                    {formatNumber(drug.price)}
+                  </div>
+                  <div className="text-start" style={{ width: "10%" }}>
+                    {formatNumber(drug.totalPrice)}
+                  </div>
+                </>
+              )}
+
               {isEditable && (
                 <div className="text-end" style={{ width: "10%" }}>
                   <span

@@ -5,7 +5,7 @@ import { queryClient } from "../App";
 import Form from "react-bootstrap/Form";
 
 const MainModal = forwardRef(function MainModal(
-  { children, addFn, keyQuery, onSubmit, searchElement },
+  { children, addFn, keyQuery, onSubmit, searchElement, onChange },
   ref
 ) {
   const [show, setShow] = useState(false);
@@ -108,6 +108,7 @@ const MainModal = forwardRef(function MainModal(
         >
           {!modalState.current.id && searchElement}
           <Form
+            onChange={onChange}
             onSubmit={submitHandler}
             noValidate
             validated={validated}

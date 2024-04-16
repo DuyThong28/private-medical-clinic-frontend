@@ -28,17 +28,21 @@ function DrugTab() {
     queryFn: fetchAllUnit,
   });
 
-  const unitState = unitsQuery.data;
-
-  function getUnitName({ id }) {
-    const res = unitState.filter((unit) => unit.id === id)[0];
-    return res?.unitName || "";
-  }
-
   const drugsQuery = useQuery({
     queryKey: ["drugs"],
     queryFn: fetchAllDrugs,
   });
+
+  const unitState = unitsQuery.data;
+
+  function getUnitName({ id }) {
+    if (unitState) {
+      const res = unitState.filter((unit) => unit.id === id)[0];
+      return res?.unitName || "";
+    }
+    return "";
+  }
+
   const drugs = drugsQuery.data;
 
   function setData({ data, isEditable }) {

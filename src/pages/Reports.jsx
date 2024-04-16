@@ -1,6 +1,6 @@
 import styles from './Reports.module.scss';
 import classNames from 'classnames/bind';
-import { useRef, useEffect, useState } from 'react';
+import { useState } from 'react';
 import Revenue from './report/Revenue/Revenue';
 import Report from './report/Medicine/Medicine';
 const cx = classNames.bind(styles);

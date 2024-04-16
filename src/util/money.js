@@ -8,10 +8,10 @@ export function formatToVND(number) {
 }
 
 export function formatNumber(number) {
-  const formatter = new Intl.NumberFormat('en-US', {
-    style: 'decimal', // Format as a number
-    minimumFractionDigits: 2, // Enforce 2 decimal places
-    maximumFractionDigits: 2, // Enforce 2 decimal places
+  const formatter = new Intl.NumberFormat("vi-VN", {
+    style: 'decimal', 
+    minimumFractionDigits: 0, 
+    maximumFractionDigits: 0, 
   });
 
   return formatter.format(number);
