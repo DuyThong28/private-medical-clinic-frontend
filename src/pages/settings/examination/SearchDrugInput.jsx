@@ -1,19 +1,38 @@
 import { useRef, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 import { prescriptionAction } from "../../../store/prescription";
+import { fetchAllUnit } from "../../../services/units";
+import { fetchAllUsage } from "../../../services/usage";
+import { fetchAllDrugs } from "../../../services/drugs";
+import { useQuery } from "@tanstack/react-query";
 
 export default function SearchDrugInput() {
   const dispatch = useDispatch();
   const searchRef = useRef("");
   const [drugs, setDrugs] = useState([]);
 
-  const unitState = useSelector((state) => state.unit);
-  const drugState = useSelector((state) => state.drug);
-  const usagaState = useSelector((state) => state.usage);
+  const unitsQuery = useQuery({
+    queryKey: ["units"],
+    queryFn: fetchAllUnit,
+  });
+
+  const usageQuery = useQuery({
+    queryKey: ["usages"],
+    queryFn: fetchAllUsage,
+  });
+
+  const drugsQuery = useQuery({
+    queryKey: ["drugs"],
+    queryFn: fetchAllDrugs,
+  });
+
+  const drugState = drugsQuery.data;
+  const unitState = unitsQuery.data;
+  const usagaState = usageQuery.data;
 
   function getUnitName({ id }) {
     const res = unitState.filter((unit) => unit.id === id)[0];
-    return res.unitName;
+    return res?.unitName;
   }
 
   function searchDrugHandler(event) {
@@ -64,7 +83,10 @@ export default function SearchDrugInput() {
       </div>
       <div className="position-relative">
         <div className="position-absolute top-0 start-0 z-3 bg-white w-100 mt-3">
-          <div className="overflow-y-scroll w-100 shadow" style={{ maxHeight: "20rem" }}>
+          <div
+            className="overflow-y-scroll w-100 shadow"
+            style={{ maxHeight: "20rem" }}
+          >
             <ul className=" list-group list-group-flush gap-1">
               {drugs &&
                 drugs.map((drug) => {

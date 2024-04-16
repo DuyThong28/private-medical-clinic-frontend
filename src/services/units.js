@@ -77,3 +77,21 @@ export async function deleteUnit({ id }) {
 
   return response.json();
 }
+
+export async function fetchUnitById({ id }) {
+  const response = await fetch(`http://localhost:8080/api/v1/units/${id}`, {
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+      authorization: "Bearer",
+    },
+  });
+  if (!response.ok) {
+    if (!response.ok) {
+      throw new Error("can not fetch all patients");
+    }
+  }
+  const resData = await response.json();
+  const patientData = resData.data;
+  return patientData;
+}

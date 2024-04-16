@@ -3,7 +3,7 @@ import Card from "../../components/Card";
 import { Form } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import { useMutation } from "@tanstack/react-query";
-import { changePassword, login } from "../../util/auth";
+import { changePassword } from "../../util/auth";
 import PasswordInput from "../../components/PasswordInput";
 
 function PasswordView() {
@@ -65,7 +65,6 @@ function PasswordView() {
   }
 
   function onChangeHandler({ event, name }) {
-    console.log("this is user", user);
     setDataState((prevState) => {
       return {
         ...prevState,

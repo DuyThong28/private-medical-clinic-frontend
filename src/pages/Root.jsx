@@ -2,10 +2,11 @@ import SideBar from "../components/SideBar";
 import { Navigate, Outlet } from "react-router";
 
 function RootLayout() {
-  // const isAuth = localStorage.getItem("refreshToken");
-  // if (!isAuth) {
-  //   return <Navigate to="/" />;
-  // }
+  const isAuth = localStorage.getItem("refreshToken");
+
+  if (!isAuth) {
+    return <Navigate to="/" />;
+  }
 
   return (
     <>

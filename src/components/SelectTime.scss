@@ -1,0 +1,11 @@
+.year-calendar {
+    height: 300px;
+    width: 300px;
+    border: 1px solid blue;
+    border-radius: 5px;
+}
+.container {
+    display: flex;
+    height: 500px;
+    flex-direction: row;
+}

@@ -24,7 +24,6 @@ export async function fetchAllPatients({ name, phoneNumber }) {
   } else {
     patients = resData.data;
   }
-  console.log("this is patient",patients );
 
   return patients;
 }

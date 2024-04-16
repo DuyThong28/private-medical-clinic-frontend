@@ -24,6 +24,32 @@ export async function fetchAllAppointmentList() {
   return appointmentLists;
 }
 
+export async function fetchAllAppointmentListById({id}) {
+  const response = await fetch(
+    `http://localhost:8080/api/v1/appointmentlists/${id}`,
+    {
+      credentials: "include",
+      headers: {
+        authorization: "Bearer",
+        "Content-Type": "application/json",
+      },
+    }
+  );
+
+  if (!response.ok) {
+    const error = new Error(
+      "An error occurred while fetching  all appointment lists"
+    );
+    error.code = response.status;
+    error.info = await response.json();
+    throw error;
+  }
+
+  const resData = await response.json();
+  const appointmentList = resData.data;
+  return appointmentList;
+}
+
 export async function createAppointmentList({ scheduledate }) {
   const scheduleDate = scheduledate;
   const response = await fetch(

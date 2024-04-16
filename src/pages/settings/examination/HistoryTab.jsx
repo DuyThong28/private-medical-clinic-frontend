@@ -1,6 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
-import { useSelector } from "react-redux";
 import { useRef } from "react";
 
 import TableBody from "../../../components/TableBody";
@@ -14,12 +13,20 @@ import {
 import { convertDate } from "../../../util/date";
 import { fetchAppointentListPatientById } from "../../../services/appointmentListPatients";
 import { queryClient } from "../../../App";
+import { fetchAllDisease } from "../../../services/diseases";
 
 export default function HistoryTab() {
   const modalRef = useRef();
-  const diseaseState = useSelector((state) => state.disease);
   const { appopintmentListPatientId } = useParams();
   let { patientId } = useParams();
+
+  const diseasesQuery = useQuery({
+    queryKey: ["diseases"],
+    queryFn: fetchAllDisease,
+  });
+
+  const diseaseState = diseasesQuery.data;
+
   const patientData = useQuery({
     queryKey: ["appointmentlistpatient", appopintmentListPatientId],
     queryFn: () =>
@@ -39,7 +46,7 @@ export default function HistoryTab() {
 
   function getDiseaseName({ id }) {
     const res = diseaseState.filter((disease) => disease.id == id);
-    return res[0]?.diseaseName ?? "";
+    return res[0]?.diseaseName || "";
   }
 
   async function showRecordHandler({ id }) {

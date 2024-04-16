@@ -1,6 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
-import { useSelector } from "react-redux";
 
 import {
   fetchAllDrugs,
@@ -14,6 +13,7 @@ import TableHeader from "../../../components/TableHeader";
 import TableBody from "../../../components/TableBody";
 import Card from "../../../components/Card";
 import MainDialog from "../../../components/MainDialog";
+import { fetchAllUnit } from "../../../services/units";
 
 function DrugTab() {
   const dialogRef = useRef();
@@ -23,11 +23,16 @@ function DrugTab() {
   });
   const [listState, setListState] = useState([]);
 
-  const unitState = useSelector((state) => state.unit);
+  const unitsQuery = useQuery({
+    queryKey: ["units"],
+    queryFn: fetchAllUnit,
+  });
+
+  const unitState = unitsQuery.data;
 
   function getUnitName({ id }) {
     const res = unitState.filter((unit) => unit.id === id)[0];
-    return res?.unitName;
+    return res?.unitName || "";
   }
 
   const drugsQuery = useQuery({

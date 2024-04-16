@@ -1,14 +1,19 @@
 import PreScriptionTab from "./PrescriptionTab";
 import { useRef, useState, forwardRef, useImperativeHandle } from "react";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { convertDate } from "../../../util/date";
-import { useSelector } from "react-redux";
 import { fetchAppointmentRecordById } from "../../../services/appointmentRecords";
+import { formatToVND } from "../../../util/money";
 
 import MainInput from "../../../components/MainInput";
 import MainTextarea from "../../../components/MainTextarea";
 import MainSelect from "../../../components/MainSelect";
 import MainModal from "../../../components/MainModal";
 import Form from "react-bootstrap/Form";
+import { fetchAllDisease } from "../../../services/diseases";
+import { fetchFeeConsult } from "../../../services/argument";
+import { createBill } from "../../../services/bill";
+import { queryClient } from "../../../App";
 
 const RescordHistoryModal = forwardRef(function RescordHistoryModal(
   { children },
@@ -17,31 +22,87 @@ const RescordHistoryModal = forwardRef(function RescordHistoryModal(
   const modalRef = useRef();
   modalRef.current?.isLarge();
   const [dialogState, setDialogState] = useState({
-    data: null,
+    feeconsult: 0,
+    drugExpense: 0,
     isEditable: false,
   });
-
   const [appointmentRecordData, setAppointmentRecordData] = useState(null);
-  const diseaseState = useSelector((state) => state.disease);
+
+  const diseasesQuery = useQuery({
+    queryKey: ["diseases"],
+    queryFn: fetchAllDisease,
+  });
+
+  const feeConsultQuery = useQuery({
+    queryKey: ["feeconsult"],
+    queryFn: async () => {
+      const res = (await fetchFeeConsult()) ?? 0;
+      setDialogState((prevState) => {
+        return {
+          ...prevState,
+          feeconsult: res,
+        };
+      });
+      return res;
+    },
+  });
+
+  const billMutate = useMutation({
+    mutationFn: createBill,
+    onSuccess: () => {
+      modalRef.current.close();
+      queryClient.invalidateQueries({ queryKey: ["appointmentList"] });
+      setDialogState((prevState) => {
+        return {
+          ...prevState,
+          drugExpense: 0,
+        };
+      });
+    },
+  });
+
+  function calculateDrugExpense({ totalPrice }) {
+    setDialogState((prevState) => {
+      const newDrugExpense = prevState.drugExpense + totalPrice;
+      return { ...prevState, drugExpense: newDrugExpense };
+    });
+  }
+
+  const diseaseState = diseasesQuery.data;
 
   function getDiseaseName({ id }) {
     const res = diseaseState.filter((disease) => {
       return disease.id == id;
     })[0];
-    return res?.diseaseName ?? "";
+    return res?.diseaseName || "";
   }
 
   useImperativeHandle(ref, () => {
     return {
       async show({ id }) {
+        setDialogState((prevState) => {
+          return {
+            ...prevState,
+            drugExpense: 0,
+          };
+        });
         const resData = await fetchAppointmentRecordById({ id });
+        console.log("this is resDAta", resData);
         setAppointmentRecordData(() => {
           return { ...resData };
         });
-        modalRef.current.show({ isEditable: true, header: "Lịch sử khám" });
+        modalRef.current.show({ isEditable: true, header: "Thanh toán" });
       },
     };
   });
+
+  function submitHandler() {
+    billMutate.mutate({
+      patientId: appointmentRecordData?.patientId,
+      appointmentListId: appointmentRecordData?.appointmentListId,
+      drugExpense: dialogState?.drugExpense,
+    });
+  }
 
   return (
     <MainModal ref={modalRef}>
@@ -55,7 +116,7 @@ const RescordHistoryModal = forwardRef(function RescordHistoryModal(
                     name={"patientid"}
                     isEditable={dialogState.isEditable}
                     defaultValue={
-                      appointmentRecordData && appointmentRecordData.id
+                      appointmentRecordData && appointmentRecordData.patientId
                     }
                     label={"Mã bệnh nhân"}
                   />
@@ -173,7 +234,42 @@ const RescordHistoryModal = forwardRef(function RescordHistoryModal(
               <PreScriptionTab
                 recordId={appointmentRecordData?.id}
                 isEditable={dialogState.isEditable}
+                setExpense={calculateDrugExpense}
               />
+            </div>
+            <div className="d-flex mt-3 justify-content-end">
+              <div style={{ width: "20rem" }}>
+                <div className="row justify-content-around">
+                  <span className="col">Tổng tiền thuốc:</span>
+                  <span className="col text-end">
+                    {formatToVND(dialogState.drugExpense)}
+                  </span>
+                </div>
+                <div className="row justify-content-around">
+                  <span className="col">Tiền khám:</span>
+                  <span className="col text-end">
+                    {formatToVND(dialogState.feeconsult)}
+                  </span>
+                </div>
+                <div className="row justify-content-around">
+                  <span className="col">Bệnh nhân phải trả: </span>
+                  <span className="col text-end">
+                    {formatToVND(dialogState.drugExpense + dialogState.feeconsult)}
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div className="d-flex gap-3 mt-3 justify-content-end">
+              <button type="button" className="btn btn-secondary fw-bold">
+                In biên lai
+              </button>
+              <button
+                type="button"
+                className="btn btn-primary fw-bold"
+                onClick={submitHandler}
+              >
+                Thanh toán
+              </button>
             </div>
           </Form>
         </div>

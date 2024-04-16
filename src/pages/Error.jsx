@@ -2,10 +2,10 @@ import { Navigate, useRouteError } from "react-router-dom";
 
 export default function ErrorPage() {
   const error = useRouteError();
-  // const isAuth = localStorage.getItem("refreshToken");
-  // if (!isAuth) {
-  //   return <Navigate to="/" />;
-  // }
+  const isAuth = localStorage.getItem("refreshToken");
+  if (!isAuth) {
+    return <Navigate to="/" />;
+  }
 
   let title = "An error occurred!";
   let message = "Something went wrong!";
