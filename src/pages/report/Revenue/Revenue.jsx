@@ -1,7 +1,21 @@
 import * as React from 'react';
+import { useQuery } from "@tanstack/react-query";
+
+import {useState, useLayoutEffect} from 'react'
 import dayjs from 'dayjs';
 import Card from '../../../components/Card'
 import './Revenue.scss'
+
+import {
+    fetchAllPatients
+} from '../../../services/patients'
+import {
+    fetchAllAppointmentList
+} from '../../../services/appointmentList'
+import {
+    fetchAllBills
+} from '../../../services/bill'
+
 import { Bar, Line } from 'react-chartjs-2';
 import SelectTime from '../../../components/SelectTime';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -11,49 +25,61 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 
 
 function Revenue() {
-    const data = {
-        labels: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'], // Replace with your category labels
-        datasets: [
-            {
-                data: [0, 0, 0, 0, 0, 0, 20], // Replace with your variable 1 data
-                backgroundColor: 'blue',
-                borderWidth: 1,
-                barThickness: 30,
-                borderRadius: 2,
-            },
-            {
-                data: [0, 0, 0, 0, 0, 0, 8], // Replace with your variable 2 data
-                backgroundColor: 'red',
-                borderWidth: 1,
-                barThickness: 30,
-                borderRadius: 2,
-            },
-        ],
-    };
+    
+   const patientsQuery = useQuery({
+        queryKey: ["patientlist"],
+        queryFn: () => {
+          return fetchAllPatients({name: "", phoneNumber: ""});
+        }, 
+      });
+    const patients = patientsQuery.data;
+    
+    const appointmentListsQuery = useQuery({
+        queryKey: ["appointmentlist"],
+        queryFn: () => {
+          return fetchAllAppointmentList();
+        }, 
+      });
+    const appointmentLists = appointmentListsQuery.data;
+    
+    const billsQuery = useQuery({
+        queryKey: ["billlist"],
+        queryFn: () => {
+          return fetchAllBills();
+        }, 
+      });
+    const bills = billsQuery.data;
+    const ConvernToArray = (obj) => {
+        let arr = []
+        if(obj != null) 
+            obj.map((apt) => {
+                arr.push(apt);
+        })
+        return arr;
+    }
+    
+    const aptList = ConvernToArray(appointmentLists);
+    const billList = ConvernToArray(bills);
+    const patientList = ConvernToArray(patients);
+    console.log('bill ' +billList);
 
-    const optionschart = {
-        scales: {
-            y: {
-                ticks: {
-                    maxTicksLimit: 3,
-                },
-            },
-        },
-        plugins: {
-            legend: {
-                display: false, // Ẩn chú thích màu
-            },
-        },
-        elements: {
-            bar: {
-                barThickness: 50, // Độ dày của cột màu
-            },
-        },
-    };
-    const [value, setValue] = React.useState(dayjs());
+    const StringToDate = (str) => {
+        if(str != null)
+        {
+            const date = new Date(str);
+            return {
+                day: date.getDate(),
+                month: date.getMonth() + 1,
+                year: date.getFullYear(),
+            }; 
+        }
+        return null;
+    }
+    const [valueTime, setValueTime] = React.useState(dayjs());
     const setNewTime = (value) => {
-        setValue(value);
-        console.log(formatDate(value));
+        setValueTime(value);
+        if(timeOption === 'Tuần') getDataForChartWeek(value);
+        else if(timeOption === 'Tháng') getDataForChartMonth(value);
     }
     const getWeekStartAndEnd = (selectedDay) => {
         const startOfWeek = selectedDay.startOf('week');
@@ -64,7 +90,6 @@ function Revenue() {
     const handleOpenCalendar = (value) => {
         setIsOpenCalendar(value);
         setIsOpenTimeOption(false);
-        console.log(isOpenCalendar);
     }
     const [isOpenTimeOption, setIsOpenTimeOption] = React.useState(false);
     const handleOpenTimeOption = (value) => {
@@ -74,6 +99,8 @@ function Revenue() {
     const [timeOption, setTimeOption] = React.useState('Tuần');
     const handleSetTimeOption = (value) => {
         setTimeOption(value);
+        if(value === 'Tuần') getDataForChartWeek(valueTime);
+        else if(value === 'Tháng') getDataForChartMonth(valueTime);
     }
     const formatDate = (date) => {
         const day = getWeekStartAndEnd(date);
@@ -94,26 +121,255 @@ function Revenue() {
             return time.start + '/' + time.ms + '/' + time.ys + ' - ' + time.end + '/' + time.me + '/' + time.ye;
         }
         if(timeOption == 'Tháng') {
-            return 'Tháng ' + time.month + ' ' + time.year; 
+            return  time.year; 
         }
         if(timeOption == 'Năm') {
             return time.year; 
         }
     }
+    const isLeapYear = (year) => {
+        if (year % 4 !== 0) {
+          return false;
+        } else if (year % 100 === 0 && year % 400 !== 0) {
+          return false;
+        } else {
+          return true;
+        }
+    }
+    const getDayofMonth = (month, year) => {
+        if(month === 1 || month === 3 || month === 5 || month === 7 || month === 8 || month === 10 || month === 12) return 31;
+        if(month === 2) {
+            if(isLeapYear(year)) return 29;
+            return 28;
+        }
+        return 30;
+    }
+    const getLabelForChartWeek = (time) => {
+        let arr = [];
+        const date = formatDate(time);
+        if(date.start < date.end) {
+            for(let i = date.start; i <= date.end; i++)
+                arr.push(i + '/' + date.month);
+        }
+        else {
+            for(let i = date.start; i <= getDayofMonth(date.ms, date.ys); i++)
+                arr.push(i + '/' + date.ms);
+            for(let i = 1; i <= date.end; i++)
+                arr.push(i + '/' + date.me);
+        }
+        return arr;
+    }
+    
+    const getDataNewForChartWeek = (time) => {
+        let newData1 = [];
+        let newData2 = [];
+        const date = formatDate(time);
+        if(date.start < date.end) {
+            for(let i = date.start; i <= date.end; i++)
+            {
+                let arr = [];
+                let sum = 0;
+                let cnt = 0;
+                for(let j = 0 ; j < aptList.length; j++) {
+                    const tmp = StringToDate(aptList[j].scheduleDate);
+                    if(tmp.day === i && tmp.month === date.month && tmp.year === date.year)
+                    {
+                        arr.push(aptList[j].id);
+                    }
+                }
+                for(let j = 0; j < billList.length; j++) {
+                    if(arr.includes(billList[j].appointmentListId)) {
+                        sum = sum + billList[j].drugExpense;
+                        cnt++;
+                    }
+                }
+                newData1.push(sum);
+                newData2.push(cnt);
+            }
+        }
+        else {
+            for(let i = date.start; i <= getDayofMonth(date.ms, date.ys); i++) {
+                let arr = [];
+                let sum = 0;
+                let cnt = 0;
+                for(let j = 0 ; j < aptList.length; j++) {
+                    const tmp = StringToDate(aptList[j].scheduleDate);
+                    if(tmp.day === i && tmp.month === date.ms && tmp.year === date.ys)
+                        arr.push(aptList[j].id);
+                }
+                for(let j = 0; j < billList.length; j++) {
+                    if(arr.includes(billList[j].appointmentListId)) {
+                        sum = sum + billList[j].drugExpense;
+                        cnt++;
+                    }
+                }
+                newData1.push(sum);
+                newData2.push(cnt);
+            }
+                
+            for(let i = 1; i <= date.end; i++) {
+                let arr = [];
+                let sum = 0;
+                let cnt = 0;
+                for(let j = 0 ; j < aptList.length; j++) {
+                    const tmp = StringToDate(aptList[j].scheduleDate);
+                    if(tmp.day === i && tmp.month === date.me && tmp.year === date.ye)
+                        arr.push(aptList[j].id);
+                }
+                for(let j = 0; j < billList.length; j++) {
+                    if(arr.includes(billList[j].appointmentListId)) {
+                        sum = sum + billList[j].drugExpense;
+                        cnt++;
+                    }
+                }
+                newData1.push(sum);
+                newData2.push(cnt);
+            }
+        }
+        console.log(billList);
+        console.log(newData1);
+        return {
+            sum: newData2,
+            count: newData1,
+        }
+    }
+    const getDataNewForChartMonth = (time) => {
+        let newData1 = [];
+        let newData2 = [];
+        const date = formatDate(time);
+        for (let i = 1; i <= 12; i++) {
+            let arr = [];
+                let sum = 0;
+                let cnt = 0;
+            for(let j = 0 ; j < aptList.length; j++) {
+                const tmp = StringToDate(aptList[j].scheduleDate);
+                if(tmp.month === i && tmp.year === date.year) {
+                    arr.push(aptList[j].id);
+                }
+            }
+            for(let j = 0; j < billList.length; j++) {
+                if(arr.includes(billList[j].appointmentListId)) {
+                    sum = sum + billList[j].drugExpense;
+                    cnt++;
+                }
+            }
+            newData1.push(sum);
+            newData2.push(cnt);
+        }
+        
+        return {
+            sum: newData2,
+            count: newData1,
+        }
+    }
+    const getDataForChartWeek = (date) => {
+        let tmp = chartData;
+        tmp.labels = getLabelForChartWeek(date);
+        const tmp2 = getDataNewForChartWeek(date);
+        tmp.datasets = [
+            // {
+            //     label: 'Số lượng bênh nhân',
+            //     data: tmp2.sum, // Replace with your variable 1 data
+            //     backgroundColor: 'blue',
+            //     borderWidth: 1,
+            //     barThickness: 30,
+            //     borderRadius: 2,
+            // },
+            {label: 'Doanh thu',
+                data: tmp2.count, // Replace with your variable 2 data
+                backgroundColor: 'red',
+                borderWidth: 1,
+                barThickness: 30,
+                borderRadius: 2,
+            },
+        ]
+        setChartData(tmp);
+    }
+    const getDataForChartMonth = (date) => {
+        let tmp = chartData;
+        tmp.labels = ['Thg 1', 'Thg 2', 'Thg 3', 'Thg 4', 'Thg 5', 'Thg 6', 'Thg 7', 'Thg 8', 'Thg 9', 'Thg 10', 'Thg 11', 'Thg 12'];
+        const tmp2 = getDataNewForChartMonth(date);
+        tmp.datasets = [
+            // {
+            //     label: 'Số lượng bênh nhân',
+            //     data: tmp2.sum, // Replace with your variable 1 data
+            //     backgroundColor: 'blue',
+            //     borderWidth: 1,
+            //     barThickness: 30,
+            //     borderRadius: 2,
+            // },
+            {label: 'Doanh thu',
+                data: tmp2.count, // Replace with your variable 2 data
+                backgroundColor: 'red',
+                borderWidth: 1,
+                barThickness: 30,
+                borderRadius: 2,
+            },
+        ]
+        setChartData(tmp);
+    }
+    console.log('in1');
+    const [chartData, setChartData] = useState(
+        {
+            labels: getLabelForChartWeek(valueTime), // Replace with your category labels
+            datasets: [
+                // {
+                //     label: 'Số lượng bênh nhân',
+                //     data: [0, 0, 0, 0, 0, 0, 20], // Replace with your variable 1 data
+                //     backgroundColor: 'blue',
+                //     borderWidth: 1,
+                //     barThickness: 30,
+                //     borderRadius: 2,
+                // },
+                {label: 'Doanh thu',
+                    data: getDataNewForChartWeek(valueTime).count, // Replace with your variable 2 data
+                    backgroundColor: 'red',
+                    borderWidth: 1,
+                    barThickness: 30,
+                    borderRadius: 2,
+                },
+            ],
+        }
+    );
+    console.log('out1');
+
+    const optionschart = {
+        title: {
+            display: true,
+            text: 'Biểu đồ doanh thu 2 cột'
+          },
+        scales: {
+            y: {
+                ticks: {
+                    maxTicksLimit: 5,
+                },
+            },
+        },
+        plugins: {
+            legend: {
+                display: true, // Ẩn chú thích màu
+            },
+        },
+        elements: {
+            bar: {
+                barThickness: 50, // Độ dày của cột màu
+            },
+        },
+    };
     return ( <Card>
         <div className="position-relative">
             <div className="d-flex">
                 <div className="d-flex justify-content-start">
                     <div className='select-box-1' >
                         <div className='combobox' onClick={() => handleOpenCalendar(!isOpenCalendar)}>
-                            <p>{displayTime(value)}</p>
+                            <p>{displayTime(valueTime)}</p>
                             <div className='icon'>
                                 <FontAwesomeIcon className='icon' icon={faCaretDown} />
                             </div>
                         </div>
                         {isOpenCalendar &&
                             <div className='calendar'>
-                                <SelectTime setNewTime={setNewTime} value={value}></SelectTime>
+                                <SelectTime setNewTime={setNewTime} value={valueTime}></SelectTime>
                             </div>
                         }
                     </div>
@@ -132,9 +388,9 @@ function Revenue() {
                                 <div className='item' onClick={() => {handleSetTimeOption('Tháng');  handleOpenTimeOption(false)}}>
                                     <p>Tháng</p>
                                 </div>
-                                <div className='item' onClick={() => {handleSetTimeOption('Năm');  handleOpenTimeOption(false)}}>
+                                {/* <div className='item' onClick={() => {handleSetTimeOption('Năm');  handleOpenTimeOption(false)}}>
                                     <p>Năm</p>
-                                </div>
+                                </div> */}
                             </div>
                         }
                     </div>
@@ -144,7 +400,10 @@ function Revenue() {
                 </div>
             </div>
         </div>
-        {/* <Bar data={data} options={optionschart} /> */}
+
+        <div className='chart'>
+            <Bar data={chartData} options={optionschart} />
+        </div>
         
     </Card> );
 }

@@ -82,6 +82,7 @@ function SelectTime({setNewTime, value }) {
                 style={{ width: 300, height: 300 }}
                     value={value}
                     onChange={(newValue) => setNewTime(newValue)}
+                    onYearChange={(newValue) => setNewTime(newValue)}
                     showDaysOutsideCurrentMonth
                     slots={{ day: Day }}
                     slotProps={{
