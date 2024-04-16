@@ -1,5 +1,3 @@
-import Password from "antd/es/input/Password";
-
 export async function login(userData) {
   let response;
 
@@ -32,8 +30,8 @@ export async function login(userData) {
   });
   console.log(headers.get("Content-Type"));
   const resData = await response.json();
-  const refreshToken = resData.user.refreshToken;
-  localStorage.setItem("refreshToken", refreshToken);
+  // const refreshToken = resData.user.refreshToken;
+  // localStorage.setItem("refreshToken", refreshToken);
   return resData;
 }
 
@@ -55,7 +53,7 @@ export async function logout() {
   }
 
   const resData = await response.json();
-  localStorage.removeItem("refreshToken");
+  // localStorage.removeItem("refreshToken");
   return resData;
 }
 

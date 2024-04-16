@@ -2,6 +2,7 @@ export async function fetchAllUsage() {
   const response = await fetch("http://localhost:8080/api/v1/usage", {
     credentials: "include",
     headers: {
+      "Content-Type": "application/json",
       authorization: "Bearer",
     },
   });
@@ -64,6 +65,7 @@ export async function deleteUsage({ id }) {
     method: "DELETE",
     credentials: "include",
     headers: {
+      "Content-Type": "application/json",
       authorization: "Bearer",
     },
   });

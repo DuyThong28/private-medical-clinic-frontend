@@ -1,14 +1,22 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { fetchAllDisease } from "../services/diseases";
 
-const initialState = localStorage.getItem("refreshToken")
-  ? await fetchAllDisease()
-  : [];
+// const initialState = localStorage.getItem("refreshToken")
+//   ? await fetchAllDisease()
+//   : [];
 
 const diseaseSlice = createSlice({
   name: "disease",
-  initialState: initialState,
-  reducers: {},
+  initialState: [],
+  reducers: {
+    async loadData(){
+      const data = await fetchAllDisease() ?? [];
+      return data;
+    },
+    remove(){
+      return [];
+    }
+  },
 });
 
 export default diseaseSlice.reducer;

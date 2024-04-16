@@ -67,7 +67,8 @@ export async function deleteDisease({ id }) {
     credentials: "include",
     method: "DELETE",
     headers: {
-      authorization: "Bearer ",
+      "Content-Type": "application/json",
+      authorization: "Bearer",
     },
   });
 

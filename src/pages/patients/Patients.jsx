@@ -26,6 +26,7 @@ function PatientsPage() {
   const patientsQuery = useQuery({
     queryKey: ["patientlist"],
     queryFn: () => {
+      console.log("this is patient");
       const formData = new FormData(searchRef.current);
       const searchData = Object.fromEntries(formData);
       const name = searchData.name;

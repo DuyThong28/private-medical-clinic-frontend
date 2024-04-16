@@ -2,6 +2,7 @@ export async function fetchAllUnit() {
   const response = await fetch("http://localhost:8080/api/v1/units", {
     credentials: "include",
     headers: {
+      "Content-Type": "application/json",
       authorization: "Bearer",
     },
   });
@@ -62,6 +63,7 @@ export async function deleteUnit({ id }) {
     credentials: "include",
     method: "DELETE",
     headers: {
+      "Content-Type": "application/json",
       authorization: "Bearer",
     },
   });

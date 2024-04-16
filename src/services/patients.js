@@ -4,6 +4,7 @@ export async function fetchAllPatients({ name, phoneNumber }) {
   const response = await fetch(`http://localhost:8080/api/v1/patients`, {
     credentials: "include", // Include cookies for cross-origin requests
     headers: {
+      "Content-Type": "application/json",
       authorization: "Bearer",
     },
   });
@@ -23,6 +24,8 @@ export async function fetchAllPatients({ name, phoneNumber }) {
   } else {
     patients = resData.data;
   }
+  console.log("this is patient",patients );
+
   return patients;
 }
 
@@ -32,6 +35,7 @@ export async function fetchOnePatient({ name, phoneNumber }) {
   const response = await fetch(`http://localhost:8080/api/v1/patients`, {
     credentials: "include", // Include cookies for cross-origin requests
     headers: {
+      "Content-Type": "application/json",
       authorization: "Bearer",
     },
   });
