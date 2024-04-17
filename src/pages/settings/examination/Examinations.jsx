@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 
@@ -12,26 +12,78 @@ import {
   deleteAppointmentListPatientById,
   fetchAllAppointmentListPatients,
 } from "../../../services/appointmentListPatients";
-
 import { convertDate } from "../../../util/date";
 import { queryClient } from "../../../App";
 import { prescriptionAction } from "../../../store/prescription";
+import { fetchPatientById } from "../../../services/patients";
+import { fetchAllAppointmentListById } from "../../../services/appointmentList";
+import { compareDates } from "../../../util/date";
+import RescordHistoryModal from "./RecordHistoryModal";
+import InvoiceDetail from "../../Invoice/InvoiceDetail";
 
 function ExaminationsPage() {
   const navigate = useNavigate();
   const modalRef = useRef();
+  const payModalRef = useRef();
+  const invoiceRef = useRef();
   const dispatch = useDispatch();
-
-  const appointmentListPatientsQuery = useQuery({
-    queryKey: ["appointmentList"],
-    queryFn: fetchAllAppointmentListPatients,
+  const [examState, setExamState] = useState({
+    name: "",
+    date: null,
+    state: 1,
   });
 
-  const appointmentListPatients = appointmentListPatientsQuery.data;
+  const appointmentListPatientQuery = useQuery({
+    queryKey: ["appointmentList"],
+    queryFn: async () => {
+      const data = await fetchAllAppointmentListPatients();
+      const finalData = await Promise.all(
+        data.map(async (item) => {
+          const patient = await fetchPatientById({ id: item.patientId });
+          const appointmentList = await fetchAllAppointmentListById({
+            id: item.appointmentListId,
+          });
+
+          return {
+            ...item,
+            patient,
+            appointmentList,
+          };
+        })
+      );
+      const searchData = finalData.filter(
+        (item) =>
+          item?.patient.fullName.toLowerCase().includes(examState.name) &&
+          compareDates(item?.appointmentList.scheduleDate, examState.date) &&
+          checkExamState(examState.state, item?.billId)
+      );
+      return searchData;
+    },
+  });
+
+  useEffect(() => {
+    queryClient.invalidateQueries({ queryKey: ["appointmentList"] });
+  }, [examState]);
+
+  function checkExamState(state, billId) {
+    if (state == 1) {
+      return !billId;
+    } else if (state == 2) {
+      return billId;
+    } else if (state == 3) {
+      return true;
+    }
+  }
+
+  const appointmentListPatients = appointmentListPatientQuery.data;
 
   function acceptHandler(data) {
     dispatch(prescriptionAction.removeAll());
     navigate(`${data.id}/prescription`);
+  }
+
+  function payHandler({ id }) {
+    invoiceRef.current.show({ id });
   }
 
   function editAppointmentHandler({ data }) {
@@ -43,156 +95,211 @@ function ExaminationsPage() {
     queryClient.invalidateQueries({ queryKey: ["appointmentList"] });
   }
 
-  return (
-    <div className="h-100 w-100">
-      <Card>
-        <div className="w-100 h-100 d-flex flex-column gap-3">
-          <ExaminationModal ref={modalRef} />
-          <div className=" w-100 h-100 overflow-hidden d-flex flex-column gap-3">
-            <TableHeader>
-              <div className="text-start" style={{ width: "5%" }}>
-                STT
-              </div>
-              <div className="text-start" style={{ width: "14%" }}>
-                Mã ca khám
-              </div>
-              <div className="text-start" style={{ width: "15%" }}>
-                Họ và tên
-              </div>
-              <div className="text-start" style={{ width: "15%" }}>
-                Năm sinh
-              </div>
-              <div className="text-start" style={{ width: "15%" }}>
-                Số điện thoại
-              </div>
-              <div className="text-start" style={{ width: "15%" }}>
-                Ngày khám
-              </div>
-              <div className="text-start" style={{ width: "10%" }}>
-                Trạng thái
-              </div>
-              <div className="text-end" style={{ width: "10%" }}>
-                Thanh toán
-              </div>
-              <div className="text-start" style={{ width: "1%" }}></div>
-            </TableHeader>
-            <TableBody>
-              {appointmentListPatients &&
-                appointmentListPatients.map((appointmentListPatient) => {
-                  return (
-                    <li
-                      className=" dropdown-center list-group-item list-group-item-primary list-group-item-action w-100 d-flex flex-row"
-                      key={appointmentListPatient.id}
-                    >
-                      <div
-                        className="text-start"
-                        data-bs-toggle="dropdown"
-                        aria-expanded="false"
-                        style={{ width: "5%" }}
-                      >
-                        {appointmentListPatients.indexOf(
-                          appointmentListPatient
-                        ) + 1}
-                      </div>
-                      <div
-                        className="text-start"
-                        style={{ width: "15%" }}
-                        data-bs-toggle="dropdown"
-                        aria-expanded="false"
-                      >
-                        {appointmentListPatient.id}
-                      </div>
-                      <div
-                        className="text-start"
-                        style={{ width: "15%" }}
-                        data-bs-toggle="dropdown"
-                        aria-expanded="false"
-                      >
-                        {appointmentListPatient.patient?.fullName}
-                      </div>
-                      <div
-                        className="text-start"
-                        style={{ width: "15%" }}
-                        data-bs-toggle="dropdown"
-                        aria-expanded="false"
-                      >
-                        {appointmentListPatient.patient?.birthYear}
-                      </div>
-                      <div
-                        className="text-start"
-                        style={{ width: "15%" }}
-                        data-bs-toggle="dropdown"
-                        aria-expanded="false"
-                      >
-                        {appointmentListPatient.patient?.phoneNumber}
-                      </div>
-                      <div
-                        className="text-start"
-                        style={{ width: "15%" }}
-                        data-bs-toggle="dropdown"
-                        aria-expanded="false"
-                      >
-                        {convertDate(
-                          appointmentListPatient.appointmentList?.scheduleDate
-                        )}
-                      </div>
-                      <div
-                        className="text-start"
-                        style={{ width: "10%" }}
-                        data-bs-toggle="dropdown"
-                        aria-expanded="false"
-                      ></div>
-                      <div
-                        className="text-start"
-                        style={{ width: "10%" }}
-                        data-bs-toggle="dropdown"
-                        aria-expanded="false"
-                      ></div>
+  function setSearchData({ name, date, state }) {
+    setExamState(() => {
+      return {
+        name,
+        date,
+        state,
+      };
+    });
+  }
 
-                      <ul className="dropdown-menu">
-                        <li className="dropdown-item">
+  return (
+    <>
+      <RescordHistoryModal ref={payModalRef} />
+      <InvoiceDetail ref={invoiceRef} />
+      <div className="h-100 w-100">
+        <Card>
+          <div className="w-100 h-100 d-flex flex-column gap-3">
+            <ExaminationModal ref={modalRef} setSearchData={setSearchData} />
+            <div className=" w-100 h-100 overflow-hidden d-flex flex-column gap-3">
+              <TableHeader>
+                <div className="text-start" style={{ width: "5%" }}>
+                  STT
+                </div>
+                <div className="text-start" style={{ width: "14%" }}>
+                  Mã ca khám
+                </div>
+                <div className="text-start" style={{ width: "15%" }}>
+                  Họ và tên
+                </div>
+                <div className="text-start" style={{ width: "15%" }}>
+                  Năm sinh
+                </div>
+                <div className="text-start" style={{ width: "15%" }}>
+                  Số điện thoại
+                </div>
+                <div className="text-start" style={{ width: "15%" }}>
+                  Ngày khám
+                </div>
+                <div className="text-start" style={{ width: "10%" }}>
+                  Trạng thái
+                </div>
+                <div className="text-start" style={{ width: "10%" }}>
+                  Thanh toán
+                </div>
+                <div className="text-start" style={{ width: "1%" }}></div>
+              </TableHeader>
+              <TableBody>
+                {appointmentListPatients &&
+                  appointmentListPatients.map((appointmentListPatient) => {
+                    return (
+                      <li
+                        className=" dropdown-center list-group-item list-group-item-primary list-group-item-action w-100 d-flex flex-row"
+                        key={appointmentListPatient.id}
+                      >
+                        <div
+                          className="text-start"
+                          data-bs-toggle="dropdown"
+                          aria-expanded="false"
+                          style={{ width: "5%" }}
+                        >
+                          {appointmentListPatients.indexOf(
+                            appointmentListPatient
+                          ) + 1}
+                        </div>
+                        <div
+                          className="text-start"
+                          style={{ width: "15%" }}
+                          data-bs-toggle="dropdown"
+                          aria-expanded="false"
+                        >
+                          {appointmentListPatient.id}
+                        </div>
+                        <div
+                          className="text-start"
+                          style={{ width: "15%" }}
+                          data-bs-toggle="dropdown"
+                          aria-expanded="false"
+                        >
+                          {appointmentListPatient.patient?.fullName}
+                        </div>
+                        <div
+                          className="text-start"
+                          style={{ width: "15%" }}
+                          data-bs-toggle="dropdown"
+                          aria-expanded="false"
+                        >
+                          {appointmentListPatient.patient?.birthYear}
+                        </div>
+                        <div
+                          className="text-start"
+                          style={{ width: "15%" }}
+                          data-bs-toggle="dropdown"
+                          aria-expanded="false"
+                        >
+                          {appointmentListPatient.patient?.phoneNumber}
+                        </div>
+                        <div
+                          className="text-start"
+                          style={{ width: "15%" }}
+                          data-bs-toggle="dropdown"
+                          aria-expanded="false"
+                        >
+                          {convertDate(
+                            appointmentListPatient.appointmentList?.scheduleDate
+                          )}
+                        </div>
+                        <div
+                          className="text-start"
+                          style={{ width: "10%" }}
+                          data-bs-toggle="dropdown"
+                          aria-expanded="false"
+                        >
                           <span
-                            onClick={() =>
-                              acceptHandler(appointmentListPatient)
+                            className={
+                              appointmentListPatient.appointmentRecordId
+                                ? "badge bg-success"
+                                : "badge bg-danger"
                             }
                           >
-                            Tiếp nhận
+                            {appointmentListPatient.appointmentRecordId
+                              ? "Hoàn thành"
+                              : "Chưa khám"}
                           </span>
-                        </li>
-                        <li className="dropdown-item">
-                          <span>Thanh toán</span>
-                        </li>
-                        <li className="dropdown-item">
+                        </div>
+                        <div
+                          className="text-start"
+                          style={{ width: "10%" }}
+                          data-bs-toggle="dropdown"
+                          aria-expanded="false"
+                        >
                           <span
-                            onClick={() =>
-                              editAppointmentHandler({
-                                data: appointmentListPatient,
-                              })
+                            className={
+                              appointmentListPatient.billId
+                                ? "badge bg-success"
+                                : "badge bg-danger"
                             }
                           >
-                            Cập nhật
+                            {appointmentListPatient.billId
+                              ? "Đã thanh toán"
+                              : "Chưa thanh toán"}
                           </span>
-                        </li>
-                        <li className="dropdown-item">
-                          <span
-                            onClick={() =>
-                              deleteAppointmentHandler({
-                                id: appointmentListPatient.id,
-                              })
-                            }
-                          >
-                            Hủy
-                          </span>
-                        </li>
-                      </ul>
-                    </li>
-                  );
-                })}
-            </TableBody>
+                        </div>
+                        {!appointmentListPatient.billId && (
+                          <ul className="dropdown-menu">
+                            <li className="dropdown-item">
+                              {!appointmentListPatient.appointmentRecordId && (
+                                <span
+                                  onClick={() =>
+                                    acceptHandler(appointmentListPatient)
+                                  }
+                                >
+                                  Tiếp nhận
+                                </span>
+                              )}
+                            </li>
+                            {appointmentListPatient.appointmentRecordId && (
+                              <li className="dropdown-item">
+                                <span
+                                  onClick={() =>
+                                    payHandler({
+                                      id: appointmentListPatient.appointmentRecordId,
+                                    })
+                                  }
+                                >
+                                  Thanh toán
+                                </span>
+                              </li>
+                            )}
+                            {!appointmentListPatient.appointmentRecordId && (
+                              <>
+                                <li className="dropdown-item">
+                                  <span
+                                    onClick={() =>
+                                      editAppointmentHandler({
+                                        data: appointmentListPatient,
+                                      })
+                                    }
+                                  >
+                                    Cập nhật
+                                  </span>
+                                </li>
+                                <li className="dropdown-item">
+                                  <span
+                                    onClick={() =>
+                                      deleteAppointmentHandler({
+                                        id: appointmentListPatient.id,
+                                      })
+                                    }
+                                  >
+                                    Hủy
+                                  </span>
+                                </li>
+                              </>
+                            )}
+                          </ul>
+                        )}
+                      </li>
+                    );
+                  })}
+              </TableBody>
+            </div>
           </div>
-        </div>
-      </Card>
-    </div>
+        </Card>
+      </div>
+    </>
   );
 }
 

@@ -20,6 +20,8 @@ import PatientDetail from "./pages/patients/PatientDetail";
 import ExaminationDetail from "./pages/settings/examination/ExaminationDetail";
 import PreScriptionTab from "./pages/settings/examination/PrescriptionTab";
 import HistoryTab from "./pages/settings/examination/HistoryTab";
+import Invoice from "./pages/Invoice/Invoice";
+import ErrorPage from "./pages/Error";
 
 const router = createBrowserRouter([
   {
@@ -28,53 +30,55 @@ const router = createBrowserRouter([
       { index: true, element: <LoginPage /> },
       { path: "/login/success", element: <LoginSuccess /> },
       { path: "/login/fail", element: <LoginFail /> },
-    ],
-  },
-  {
-    path: "/systems",
-    element: <RootLayout />,
-    children: [
       {
-        path: "home",
-        element: <HomePage />,
-      },
-      { path: "reports", element: <ReportsPage /> },
-      { path: "patients", element: <PatientsPage /> },
-      {
-        path: "patients/:patientId",
-        element: <PatientDetail />,
-      },
-      { path: "examinations", element: <ExaminationsPage /> },
-      {
-        path: "examinations/:appopintmentListPatientId",
-        element: <ExaminationDetail />,
+        path: "/systems",
+        element: <RootLayout />,
         children: [
           {
-            path: "prescription",
-            element: <PreScriptionTab isEditable={true} />,
+            path: "home",
+            element: <HomePage />,
           },
-          { path: "examhistory", element: <HistoryTab /> },
-        ],
-      },
-      {
-        path: "settings",
-        children: [
-          { path: "users", element: <UsersView /> },
-          { path: "principle", element: <PrincipleView /> },
+          { path: "invoice", element: <Invoice /> },
+          { path: "reports", element: <ReportsPage /> },
+          { path: "patients", element: <PatientsPage /> },
           {
-            path: "medicine",
-            element: <MedicineView />,
+            path: "patients/:patientId",
+            element: <PatientDetail />,
+          },
+          { path: "examinations", element: <ExaminationsPage /> },
+          {
+            path: "examinations/:appopintmentListPatientId",
+            element: <ExaminationDetail />,
             children: [
-              { path: "drugs", element: <DrugTab /> },
-              { path: "units", element: <UnitsTab /> },
-              { path: "usages", element: <UsagesTab /> },
-              { path: "diseases", element: <DiseasesTab /> },
+              {
+                path: "prescription",
+                element: <PreScriptionTab isEditable={true} />,
+              },
+              { path: "examhistory", element: <HistoryTab /> },
             ],
           },
-          { path: "password", element: <PasswordView /> },
+          {
+            path: "settings",
+            children: [
+              { path: "users", element: <UsersView /> },
+              { path: "principle", element: <PrincipleView /> },
+              {
+                path: "medicine",
+                element: <MedicineView />,
+                children: [
+                  { path: "drugs", element: <DrugTab /> },
+                  { path: "units", element: <UnitsTab /> },
+                  { path: "usages", element: <UsagesTab /> },
+                  { path: "diseases", element: <DiseasesTab /> },
+                ],
+              },
+              { path: "password", element: <PasswordView /> },
+            ],
+          },
         ],
       },
     ],
+    errorElement: <ErrorPage />,
   },
 ]);
 

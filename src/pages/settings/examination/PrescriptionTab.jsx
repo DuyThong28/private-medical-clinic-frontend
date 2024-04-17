@@ -1,32 +1,57 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useSelector, useDispatch } from "react-redux";
+import { useEffect, useState } from "react";
 
 import TableBody from "../../../components/TableBody";
 import TableHeader from "../../../components/TableHeader";
 import { prescriptionAction } from "../../../store/prescription";
 import { fetchRecordDetailByRecordId } from "../../../services/appointmentRecordDetails";
 import SearchDrugInput from "./SearchDrugInput";
-import { useEffect, useState } from "react";
+import { fetchAllUsage } from "../../../services/usage";
+import { fetchAllDrugs } from "../../../services/drugs";
+import { fetchAllUnit } from "../../../services/units";
+import { formatNumber } from "../../../util/money";
 
-export default function PreScriptionTab({ recordId, isEditable }) {
+export default function PreScriptionTab({
+  recordId,
+  isEditable,
+  setExpense,
+  isBill,
+}) {
   const dispatch = useDispatch();
   const [currentPresciptionData, setCurrentPrescriptionData] = useState([]);
 
-  const drugState = useSelector((state) => state.drug);
-  const unitState = useSelector((state) => state.unit);
-  const usagaState = useSelector((state) => state.usage);
+  const unitsQuery = useQuery({
+    queryKey: ["units"],
+    queryFn: fetchAllUnit,
+  });
+
+  const usageQuery = useQuery({
+    queryKey: ["usages"],
+    queryFn: fetchAllUsage,
+  });
+
+  const drugsQuery = useQuery({
+    queryKey: ["drugs"],
+    queryFn: fetchAllDrugs,
+  });
+
+  const drugState = drugsQuery.data;
+  const unitState = unitsQuery.data;
+  const usagaState = usageQuery.data;
+
   const prescriptionState = useSelector((state) => state.prescription);
 
   function getUnitName({ id }) {
     const res = unitState.filter((unit) => unit.id === id)[0];
-    return res.unitName;
+    return res?.unitName || "";
   }
 
   function getUsageDes({ id }) {
     const res = usagaState.filter((usage) => {
       return usage.id == id;
     })[0];
-    return res?.usageDes ?? "";
+    return res?.usageDes || "";
   }
 
   const recordDetailMutate = useMutation({
@@ -45,12 +70,17 @@ export default function PreScriptionTab({ recordId, isEditable }) {
             unitId: drugData[0]?.unitId,
             usageId: record.usageId,
             count: drugData[0]?.count,
+            price: drugData[0]?.price,
+            totalPrice: record.count * drugData[0]?.price,
           };
+          if (setExpense) {
+            setExpense({ totalPrice: recordDetail?.totalPrice });
+          }
           return recordDetail;
         });
 
       setCurrentPrescriptionData(() => {
-        return recordDetailData ?? [];
+        return recordDetailData;
       });
     },
   });
@@ -83,19 +113,28 @@ export default function PreScriptionTab({ recordId, isEditable }) {
       {!recordId && <SearchDrugInput />}
       <TableHeader>
         <div className="text-start" style={{ width: "5%" }}></div>
-        <div className="text-start" style={{ width: "20%" }}>
+        <div className="text-start" style={{ width: isBill ? "19%" : "22%" }}>
           Tên thuốc
         </div>
-        <div className="text-start" style={{ width: "14%" }}>
+        <div className="text-start" style={{ width: isBill ? "10%" : "15%" }}>
           Số lượng
         </div>
-        <div className="text-start" style={{ width: "15%" }}>
+        <div className="text-start" style={{ width: isBill ? "10%" : "15%" }}>
           Đơn vị
         </div>
-
-        <div className="text-start" style={{ width: "35%" }}>
+        <div className="text-start" style={{ width: isBill ? "35%" : "30%" }}>
           Cách dùng
         </div>
+        {isBill && (
+          <>
+            <div className="text-start" style={{ width: "10%" }}>
+              Đơn giá
+            </div>
+            <div className="text-start" style={{ width: "10%" }}>
+              Thành tiền
+            </div>
+          </>
+        )}
         {isEditable && (
           <div className="text-end" style={{ width: "10%" }}>
             Thao tác
@@ -103,7 +142,7 @@ export default function PreScriptionTab({ recordId, isEditable }) {
         )}
         <div style={{ width: "1%" }}></div>
       </TableHeader>
-      <TableBody>
+      <TableBody isEditable={!isEditable}>
         {currentPresciptionData.map((drug) => {
           return (
             <li
@@ -122,10 +161,16 @@ export default function PreScriptionTab({ recordId, isEditable }) {
                   currentPresciptionData.indexOf(drug) + 1
                 )}
               </div>
-              <div className="text-start" style={{ width: "20%" }}>
+              <div
+                className="text-start"
+                style={{ width: isBill ? "20%" : "23%" }}
+              >
                 {drug.drugName}
               </div>
-              <div className="text-start" style={{ width: "15%" }}>
+              <div
+                className="text-start"
+                style={{ width: isBill ? "10%" : "15%" }}
+              >
                 {isEditable ? (
                   <input
                     style={{ width: "50px" }}
@@ -143,10 +188,16 @@ export default function PreScriptionTab({ recordId, isEditable }) {
                   drug.amount
                 )}
               </div>
-              <div className="text-start" style={{ width: "15%" }}>
+              <div
+                className="text-start"
+                style={{ width: isBill ? "10%" : "15%" }}
+              >
                 {getUnitName({ id: drug.unitId })}
               </div>
-              <div className="text-start" style={{ width: "35%" }}>
+              <div
+                className="text-start"
+                style={{ width: isBill ? "35%" : "30%" }}
+              >
                 {isEditable ? (
                   <select
                     className="w-100"
@@ -169,6 +220,17 @@ export default function PreScriptionTab({ recordId, isEditable }) {
                   getUsageDes({ id: drug.usageId })
                 )}
               </div>
+              {isBill && (
+                <>
+                  <div className="text-start" style={{ width: "10%" }}>
+                    {formatNumber(drug.price)}
+                  </div>
+                  <div className="text-start" style={{ width: "10%" }}>
+                    {formatNumber(drug.totalPrice)}
+                  </div>
+                </>
+              )}
+
               {isEditable && (
                 <div className="text-end" style={{ width: "10%" }}>
                   <span

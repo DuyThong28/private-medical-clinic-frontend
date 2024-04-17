@@ -5,11 +5,12 @@ import { useRef, useState, forwardRef, useImperativeHandle } from "react";
 import { inputDateFormat } from "../../../util/date";
 
 const ExaminationModal = forwardRef(function ExaminationModal(
-  { children },
+  { children, setSearchData },
   ref
 ) {
   const searchRef = useRef();
   const dialogRef = useRef();
+  const searchRecordRef = useRef();
   const [dialogState, setDialogState] = useState({
     data: null,
     isEditable: true,
@@ -71,11 +72,32 @@ const ExaminationModal = forwardRef(function ExaminationModal(
       name: name,
       phoneNumber: phoneNumber,
     });
+    console.log("This is data", resData);
+    if (resData && resData[0]) {
+      setDialogState((prevState) => {
+        return {
+          ...prevState,
+          data: null,
+          isEditable: false,
+        };
+      });
+
+      setDialogState((prevState) => {
+        resData[0].patientId = resData[0].id;
+        return {
+          ...prevState,
+          data: resData[0],
+          isEditable: false,
+        };
+      });
+      return;
+    }
 
     setDialogState((prevState) => {
       return {
         ...prevState,
-        data: (resData && resData[0]) || null,
+        data: null,
+        isEditable: true,
       };
     });
   }
@@ -152,143 +174,236 @@ const ExaminationModal = forwardRef(function ExaminationModal(
     </>
   );
 
+  async function searchRecordHandler() {
+    const formData = new FormData(searchRecordRef.current);
+    const searchData = Object.fromEntries(formData);
+    const name = searchData.name.trim();
+    const date = searchData.date;
+    const state = searchData.state;
+    setSearchData({ name: name, date: date, state: state });
+  }
+
+  function changeFormHandler(event) {
+    const formData = new FormData(event.currentTarget);
+    const data = Object.fromEntries(formData);
+    const resData = {
+      address: data.address,
+      birthYear: data.birthyear,
+      fullName: data.fullname,
+      gender: data.gender,
+      phoneNumber: data.phonenumber,
+    };
+    setDialogState((prevState) => {
+      return {
+        ...prevState,
+        data: resData,
+        isEditable: true,
+      };
+    });
+  }
 
   return (
     <div className=" w-100  d-flex flex-row justify-content-around">
       <div className="col fw-bold fs-4">
         <label>Danh sách ca khám</label>
       </div>
-      <div className="col">
-        <MainDialog
-          ref={dialogRef}
-          addFn={createAppointmentPatientList}
-          onEdit={setData}
-          onSubmit={submitHandler}
-          keyQuery={["appointmentList"]}
-          searchElement={searchElement}
-        >
-          <div className="row">
-            <label className="col-form-label fw-bold">
-              THÔNG TIN BỆNH NHÂN
-            </label>
-          </div>
-          <div className="row gap-3">
-            <div className="col">
-              <label htmlFor="patientid" className="col-form-label fw-bold">
-                Mã bệnh nhân
-              </label>
-              <input
-                type="text"
-                className="form-control"
-                id="patientid"
-                name="patientid"
-                readOnly={true}
-                defaultValue={dialogState.data?.patientId ?? ""}
-              />
-            </div>
-            <div className="col">
-              <label htmlFor="fullname" className="col-form-label fw-bold">
-                Tên bệnh nhân
-              </label>
-              <input
-                type="text"
-                className="form-control"
-                id="fullname"
-                name="fullname"
-                disabled={!dialogState.isEditable}
-                readOnly={dialogState.data}
-                defaultValue={dialogState.data?.fullName ?? ""}
-                required
-              />
-            </div>
-            <div className="col">
-              <label htmlFor="phonenumber" className="col-form-label fw-bold">
-                Số điện thoại
-              </label>
-              <input
-                className="form-control"
-                id="phonenumber"
-                name="phonenumber"
-                type="tel"
-                defaultValue={dialogState.data?.phoneNumber ?? ""}
-                disabled={!dialogState.isEditable}
-                readOnly={dialogState.data}
-                required
-              ></input>
-            </div>
-          </div>
-          <div className="row gap-3">
-            <div className="col">
-              <label htmlFor="gender" className="col-form-label fw-bold">
-                Giới tính
-              </label>
-              <select
-                className="form-select"
-                id="gender"
-                name="gender"
-                defaultValue={dialogState.data?.gender ?? ""}
-                disabled={!dialogState.isEditable}
-                readOnly={dialogState.data}
-                value={dialogState.data?.gender}
-                required
+      <div className="row gap-3">
+        <div className="col">
+          <form
+            ref={searchRecordRef}
+            className="row gap-3"
+            onChange={searchRecordHandler}
+            style={{ width: "fit-content" }}
+          >
+            <div className="col input-group flex-nowrap">
+              <span
+                className="input-group-text"
+                id="addon-wrapping"
+                style={{ backgroundColor: "white" }}
               >
-                <option value="Nam">Nam</option>
-                <option value="Nữ">Nữ</option>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  fill="currentColor"
+                  className="bi bi-search"
+                  viewBox="0 0 16 16"
+                >
+                  <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
+                </svg>
+              </span>
+              <input
+                name="name"
+                type="search"
+                className="form-control"
+                placeholder="Tên bệnh nhân"
+                aria-describedby="addon-wrapping"
+              />
+            </div>
+            <div className="col input-group flex-nowrap">
+              <input
+                type="date"
+                name="date"
+                className="form-control"
+                aria-describedby="addon-wrapping"
+              />
+            </div>
+            <div className="col input-group flex-nowrap">
+              <select className="form-select" name="state" defaultValue="1">
+                <option value="1">Chưa khám</option>
+                <option value="2">Hoàn thành</option>
+                <option value="3">Tất cả</option>
               </select>
             </div>
-            <div className="col">
-              <label htmlFor="birthyear" className="col-form-label fw-bold">
-                Năm sinh
+          </form>
+        </div>
+
+        <div style={{ width: "fit-content" }}>
+          <MainDialog
+            ref={dialogRef}
+            addFn={createAppointmentPatientList}
+            onEdit={setData}
+            onSubmit={submitHandler}
+            onChange={changeFormHandler}
+            keyQuery={["appointmentList"]}
+            searchElement={searchElement}
+          >
+            <div className="row">
+              <label className="col-form-label fw-bold">
+                THÔNG TIN BỆNH NHÂN
               </label>
-              <input
-                className="form-control"
-                id="birthyear"
-                name="birthyear"
-                type="number"
-                defaultValue={dialogState.data?.birthYear ?? ""}
-                disabled={!dialogState.isEditable}
-                readOnly={dialogState.data}
-                required
-                min="0"
-                max={new Date().getFullYear()}
-              ></input>
             </div>
-            <div className="col">
-              <label htmlFor="address" className="col-form-label fw-bold">
-                Địa chỉ
+            <div className="row gap-3">
+              <div className="col">
+                <label htmlFor="patientid" className="col-form-label fw-bold">
+                  Mã bệnh nhân
+                </label>
+                <input
+                  type="text"
+                  className="form-control"
+                  id="patientid"
+                  name="patientid"
+                  readOnly={true}
+                  value={dialogState.data?.patientId ?? ""}
+                />
+              </div>
+              <div className="col">
+                <label htmlFor="fullname" className="col-form-label fw-bold">
+                  Tên bệnh nhân
+                </label>
+                <input
+                  type="text"
+                  className="form-control"
+                  id="fullname"
+                  name="fullname"
+                  // disabled={!dialogState.isEditable}
+                  readOnly={!dialogState.isEditable}
+                  value={dialogState.data?.fullName ?? ""}
+                  required
+                />
+              </div>
+              <div className="col">
+                <label htmlFor="phonenumber" className="col-form-label fw-bold">
+                  Số điện thoại
+                </label>
+                <input
+                  className="form-control"
+                  id="phonenumber"
+                  name="phonenumber"
+                  type="tel"
+                  value={dialogState.data?.phoneNumber ?? ""}
+                  // disabled={!dialogState.isEditable}
+                  readOnly={!dialogState.isEditable}
+                  required
+                ></input>
+              </div>
+            </div>
+            <div className="row gap-3">
+              <div className="col">
+                <label htmlFor="gender" className="col-form-label fw-bold">
+                  Giới tính
+                </label>
+                {dialogState.isEditable ? (
+                  <select
+                    className="form-select"
+                    id="gender"
+                    name="gender"
+                    value={dialogState.data?.gender ?? ""}
+                    readOnly={!dialogState.isEditable}
+                    required
+                  >
+                    <option value="Nam" readOnly={!dialogState.isEditable}>
+                      Nam
+                    </option>
+                    <option value="Nữ" readOnly={!dialogState.isEditable}>
+                      Nữ
+                    </option>
+                  </select>
+                ) : (
+                  <input
+                    className="form-control"
+                    id="gender"
+                    name="gender"
+                    value={dialogState.data?.gender ?? ""}
+                    readOnly={!dialogState.isEditable}
+                  />
+                )}
+              </div>
+              <div className="col">
+                <label htmlFor="birthyear" className="col-form-label fw-bold">
+                  Năm sinh
+                </label>
+                <input
+                  className="form-control"
+                  id="birthyear"
+                  name="birthyear"
+                  type="number"
+                  value={dialogState.data?.birthYear ?? ""}
+                  readOnly={!dialogState.isEditable}
+                  required
+                  min="0"
+                  max={new Date().getFullYear()}
+                ></input>
+              </div>
+              <div className="col">
+                <label htmlFor="address" className="col-form-label fw-bold">
+                  Địa chỉ
+                </label>
+                <input
+                  className="form-control"
+                  id="address"
+                  name="address"
+                  value={dialogState.data?.address ?? ""}
+                  readOnly={!dialogState.isEditable}
+                  required
+                ></input>
+              </div>
+            </div>
+            <div className="row">
+              <label className="col-form-label fw-bold">
+                THÔNG TIN CA KHÁM
               </label>
-              <input
-                className="form-control"
-                id="address"
-                name="address"
-                defaultValue={dialogState.data?.address ?? ""}
-                disabled={!dialogState.isEditable}
-                readOnly={dialogState.data}
-                required
-              ></input>
             </div>
-          </div>
-          <div className="row">
-            <label className="col-form-label fw-bold">THÔNG TIN CA KHÁM</label>
-          </div>
-          <div className="row">
-            <div>
-              <label htmlFor="scheduledate" className="col-form-label fw-bold">
-                Ngày khám
-              </label>
-              <input
-                className="form-control"
-                type="date"
-                name="scheduledate"
-                id="scheduledate"
-                defaultValue={
-                  inputDateFormat(dialogState.data?.scheduleDate) ?? ""
-                }
-                required
-              ></input>
+            <div className="row">
+              <div>
+                <label
+                  htmlFor="scheduledate"
+                  className="col-form-label fw-bold"
+                >
+                  Ngày khám
+                </label>
+                <input
+                  className="form-control"
+                  type="date"
+                  name="scheduledate"
+                  id="scheduledate"
+                  value={inputDateFormat(dialogState.data?.scheduleDate) ?? ""}
+                  required
+                ></input>
+              </div>
             </div>
-          </div>
-        </MainDialog>
+          </MainDialog>
+        </div>
       </div>
     </div>
   );

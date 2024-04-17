@@ -32,11 +32,11 @@ export async function fetchFeeConsult() {
     {
       credentials: "include",
       headers: {
-        Authorization: "Bearer ",
+        authorization: "Bearer",
+        "Content-Type": "application/json",
       },
     },
     {
-      credentials: "include",
     }
   );
   if (!response.ok) {
@@ -63,9 +63,6 @@ export async function updateMaxNumberOfPatients({ maxNumberOfPatients }) {
       },
       body: JSON.stringify({ maxNumberOfPatients }),
     },
-    {
-      credentials: "include",
-    }
   );
 
   if (!response.ok) {
@@ -93,9 +90,6 @@ export async function updateFeeConsult({ feeConsult }) {
       },
       body: JSON.stringify({ feeConsult }),
     },
-    {
-      credentials: "include",
-    }
   );
 
   if (!response.ok) {

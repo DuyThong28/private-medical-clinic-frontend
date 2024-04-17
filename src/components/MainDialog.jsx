@@ -2,7 +2,7 @@ import { useRef, forwardRef, useImperativeHandle } from "react";
 import MainModal from "./MainModal";
 
 const MainDialog = forwardRef(function MainDialog(
-  { children, addFn, editFn, keyQuery, onEdit, onSubmit, searchElement },
+  { children, addFn, editFn, keyQuery, onEdit, onSubmit, searchElement, onChange },
   ref
 ) {
   const modalRef = useRef();
@@ -61,6 +61,7 @@ const MainDialog = forwardRef(function MainDialog(
         addFn={addFn}
         keyQuery={keyQuery}
         onSubmit={onSubmit}
+        onChange={onChange}
         searchElement={searchElement}
       >
         {children}

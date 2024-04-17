@@ -16,6 +16,7 @@ import { prescriptionAction } from "../../../store/prescription";
 import { fetchAppointentListPatientById } from "../../../services/appointmentListPatients";
 import { createAppointmentRecordDetail } from "../../../services/appointmentRecordDetails";
 import { createAppointmentRecord } from "../../../services/appointmentRecords";
+import { fetchAllDisease } from "../../../services/diseases";
 
 export default function ExaminationDetail() {
   const navigate = useNavigate();
@@ -27,15 +28,20 @@ export default function ExaminationDetail() {
     isEditable: true,
   });
 
+  const diseasesQuery = useQuery({
+    queryKey: ["diseases"],
+    queryFn: fetchAllDisease,
+  });
+
+  const prescriptionState = useSelector((state) => state.prescription);
+  const diseaseState = diseasesQuery.data;
+
   function getDiseaseName({ id }) {
     const res = diseaseState.filter((disease) => {
       return disease.id == id;
     })[0];
-    return res?.diseaseName ?? "";
+    return res?.diseaseName || "";
   }
-
-  const prescriptionState = useSelector((state) => state.prescription);
-  const diseaseState = useSelector((state) => state.disease);
 
   const appointmentListPatientQuery = useQuery({
     queryKey: ["appointmentlistpatient", appopintmentListPatientId],
@@ -109,7 +115,8 @@ export default function ExaminationDetail() {
               name={"patientid"}
               isEditable={false}
               defaultValue={
-                appointmentListPatientData && appointmentListPatientData.patientId
+                appointmentListPatientData &&
+                appointmentListPatientData.patientId
               }
               label={"Mã bệnh nhân"}
             />
