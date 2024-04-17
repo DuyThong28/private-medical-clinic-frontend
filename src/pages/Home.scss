@@ -22,7 +22,7 @@
 
 .overview-greeting h1 {
     font-weight: 500;
-    font-size: 32px;
+    font-size: 2rem;
     max-height: 48px;
     // width: 100%;
     text-align: center;
@@ -84,7 +84,7 @@
 
 .overview-typepatient-percent {
     float: right;
-    font-size: 12px;
+    font-size: 0.75rem;
     width: 40px;
     height: 20px;
     border-radius: 12px;
@@ -107,7 +107,7 @@
 
 .overview-number-typepatient {
     margin-bottom: 8px;
-    font-size: 14px;
+    font-size: 0.875rem;
 }
 
 
@@ -168,7 +168,7 @@
             background-color: #13a1df;
             border-radius: 12px;
             color: #fff;
-            font-size: 16px;
+            font-size: 1rem;
             border: none;
             box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
         }
@@ -192,7 +192,7 @@
             margin: auto 0;
             p {
                 padding-left: 48px;
-                font-size: 14px;
+                font-size: 0.875rem;
                 font-weight: 500;
                 position: relative;
                 color: #333;
@@ -232,12 +232,6 @@
     padding: 12px 12px;
     background-color: #fff;
     overflow-y: scroll;
-}
-
-caption{
-    padding-top: 0;
-    width: max-content;
-    font-weight: bold;
 }
 
 .modal-calendar-overlay {
@@ -324,8 +318,4 @@ caption{
     object-fit: cover;
     box-shadow: 1px 2px 1px 0 rgba(0, 0, 0, 0.4);
     margin-right: 16px;
-}
-
-.br-primary{
-    background-color: #13a1df;
 }

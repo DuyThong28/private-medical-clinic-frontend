@@ -47,6 +47,14 @@ function HomePage() {
             thanhTien: '40$',
         },
     ];
+    // Patient of day
+    const [patients, setPatients] = useState([
+        {
+            name: "Phạm Ngọc Thịnh",
+            gender: "Nam",
+            url: "https://upload.wikimedia.org/wikipedia/commons/7/76/Sphynx_-_totte71.jpg"
+        }
+    ])
     // Greeting
     const [greeting, setGreeting] = useState('');
 
@@ -123,6 +131,16 @@ function HomePage() {
             return getWeek(day);
         });
     };
+    const selectDay = (day)=>{
+        setSelectedDay(day)
+        setPatients(pre=>[...pre,
+            {
+                name: "Đinh Như Thông",
+                gender: "Nam",
+                url: "https://upload.wikimedia.org/wikipedia/commons/7/76/Sphynx_-_totte71.jpg"
+            }
+        ])
+    }
 
     const toggleModal = ()=>{
         setIsShowModal(!isShowModal)
@@ -162,7 +180,7 @@ function HomePage() {
     
                 <div className='overview-number'>
                     <div>
-                        <caption>Patient of day</caption>
+                        <h6>Patient of day</h6>
                         <h3 className='overview-number-patient'>40</h3>
                     </div>
                     <div className='overview-number-percents'>
@@ -182,7 +200,7 @@ function HomePage() {
                 </div>
     
                 <div className='overview-patient-ofday '>
-                    <caption>Number Of Patients</caption>
+                    <h6>Number Of Patients</h6>
                     <div className='overview-patient-chart'>
                         <Bar data={data} options={optionschart} width={600} className='overview-chart'/>
                         <div className='chart-note'>
@@ -217,7 +235,7 @@ function HomePage() {
                 </div>
     
                 <div className='overview-topmedicine '>
-                    <caption>Top Medicines</caption>
+                    <h6>Top Medicines</h6>
                     <div className='table-responsive'>
                       <table className="table">
                           <thead>
@@ -250,13 +268,14 @@ function HomePage() {
             </div>
 
             <div id="calendar" className='col-3'>
-                <caption className='calendar-title'>Calendar</caption>
+                <h6 className='calendar-title'>Calendar</h6>
                 <style>{css}</style>
                 <div className='calendar-container'>
                     <DayPicker
                         defaultMonth={new Date()}
                         selected={selectedDay}
-                        onSelect={setSelectedDay}
+                        onSelect={selectDay}
+                        // onDayFocus={selectDay}
                         mode="single"
                         modifiersClassNames={{
                             today: 'my-today',
@@ -264,18 +283,24 @@ function HomePage() {
                         showOutsideDays
                     ></DayPicker>
                 </div>
-                <caption className="patients-of-day">Up comming</caption>
+                <h6 className="patients-of-day">Up comming</h6>
                 <div className="patients-list">
-                    <div className="patient-item">
-                        <img
-                            src="https://upload.wikimedia.org/wikipedia/commons/7/76/Sphynx_-_totte71.jpg"
-                            alt="Avatar"
-                        ></img>
-                        <div>
-                            <h6>Phạm Ngọc Thịnh</h6>
-                            <h7 className='gender'>Giới tính: Nam</h7>
-                        </div>
-                    </div>
+                    {
+                        patients.map((patient, index)=>
+                            (
+                            <div className="patient-item" key={index}>
+                                <img
+                                    src={patient.url}
+                                    alt="Avatar"
+                                ></img>
+                                <div>
+                                    <h6>{patient.name}</h6>
+                                    <h6 className='gender'>Giới tính: {patient.gender}</h6>
+                                </div>
+                            </div>
+                            )
+                        )
+                    }
                 </div>
             </div>
         </div>
