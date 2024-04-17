@@ -6,6 +6,8 @@ import dayjs from 'dayjs';
 import Card from '../../../components/Card'
 import './Revenue.scss'
 
+import GridViewRevenue from './GridViewRevenue';
+
 import {
     fetchAllPatients
 } from '../../../services/patients'
@@ -20,7 +22,7 @@ import { Bar, Line } from 'react-chartjs-2';
 import SelectTime from '../../../components/SelectTime';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
-import { faCaretDown, faChartSimple } from '@fortawesome/free-solid-svg-icons';
+import { faBorderAll, faCaretDown, faChartSimple } from '@fortawesome/free-solid-svg-icons';
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 
@@ -96,10 +98,17 @@ function Revenue() {
         setIsOpenTimeOption(value);
     }
     const [timeOption, setTimeOption] = React.useState('Tuần');
-    const handleSetTimeOption = (value) => {
+    const handleSetTimeOption = (value, sV) => {
         setTimeOption(value);
+        if(sV === 1) return;
         if(value === 'Tuần') getDataForChartWeek(valueTime);
         else if(value === 'Tháng') getDataForChartMonth(valueTime);
+    }
+    const [selectView, setSelectView] = useState(0);
+    const handleSetSelectView = (value) => {
+        setSelectView(value);
+        if(value == 1) handleSetTimeOption('Tháng', 1);
+        else handleSetTimeOption('Tuần', 0);
     }
     const formatDate = (date) => {
         const day = getWeekStartAndEnd(date);
@@ -120,7 +129,10 @@ function Revenue() {
             return time.start + '/' + time.ms + '/' + time.ys + ' - ' + time.end + '/' + time.me + '/' + time.ye;
         }
         if(timeOption == 'Tháng') {
-            return  time.year; 
+            if(selectView == 0)
+                return  time.year; 
+            else 
+                return 'Thg ' + time.month + ' ' + time.year;
         }
         if(timeOption == 'Năm') {
             return time.year; 
@@ -291,7 +303,6 @@ function Revenue() {
         ]
         setChartData(tmp);
     }
-    console.log('in1');
     const [chartData, setChartData] = useState(
         {
             labels: getLabelForChartWeek(valueTime), // Replace with your category labels
@@ -307,7 +318,6 @@ function Revenue() {
             ],
         }
     );
-    console.log('out1');
 
     const optionschart = {
         title: {
@@ -332,11 +342,13 @@ function Revenue() {
             },
         },
     };
+
+    
     return ( <Card>
         <div className="position-relative">
-            <div className="d-flex">
-                <div className="d-flex justify-content-start">
-                    <div className='select-box-1' >
+            <div className="row">
+                <div className="d-flex col-md-6 justify-content-start">
+                    <div className='select-box-3' >
                         <div className='combobox' onClick={() => handleOpenCalendar(!isOpenCalendar)}>
                             <p>{displayTime(valueTime)}</p>
                             <div className='icon'>
@@ -356,12 +368,12 @@ function Revenue() {
                                 <FontAwesomeIcon className='icon' icon={faCaretDown} />
                             </div>
                         </div>
-                        {isOpenTimeOption &&
+                        {isOpenTimeOption && selectView == 0 &&
                             <div className='select-time' >
-                                <div className='item' onClick={() => {handleSetTimeOption('Tuần');  handleOpenTimeOption(false)}}>
+                                <div className='item' onClick={() => {handleSetTimeOption('Tuần',selectView);  handleOpenTimeOption(false)}}>
                                     <p>Tuần</p>
                                 </div>
-                                <div className='item' onClick={() => {handleSetTimeOption('Tháng');  handleOpenTimeOption(false)}}>
+                                <div className='item' onClick={() => {handleSetTimeOption('Tháng',selectView);  handleOpenTimeOption(false)}}>
                                     <p>Tháng</p>
                                 </div>
                                 {/* <div className='item' onClick={() => {handleSetTimeOption('Năm');  handleOpenTimeOption(false)}}>
@@ -369,16 +381,32 @@ function Revenue() {
                                 </div> */}
                             </div>
                         }
+                        {isOpenTimeOption && selectView == 1 &&
+                            <div className='select-time' >
+                                {/* <div className='item' onClick={() => {handleSetTimeOption('Tuần');  handleOpenTimeOption(false)}}>
+                                    <p>Tuần</p>
+                                </div> */}
+                                <div className='item' onClick={() => {handleSetTimeOption('Tháng',selectView);  handleOpenTimeOption(false)}}>
+                                    <p>Tháng</p>
+                                </div>
+                                <div className='item' onClick={() => {handleSetTimeOption('Năm',selectView);  handleOpenTimeOption(false)}}>
+                                    <p>Năm</p>
+                                </div>
+                            </div>
+                        }
                     </div>
                 </div>
-                <div className="position-absolute top-20 end-0">
-                    <FontAwesomeIcon className='icon' icon={faChartSimple} />
+                <div className="d-flex col-md-6 justify-content-end">
+                    <FontAwesomeIcon onClick={() => handleSetSelectView(0)} className='icon' icon={faChartSimple} />
+                    <FontAwesomeIcon onClick={() => handleSetSelectView(1)} className='icon' icon={faBorderAll} />
                 </div>
             </div>
         </div>
 
-        <div className='chart'>
-            <Bar data={chartData} options={optionschart} />
+        <div className='chart h'>
+            {selectView===0 && <Bar data={chartData} options={optionschart} />}
+            {selectView===1 && <GridViewRevenue date={formatDate(valueTime)} getDayOfMonth={getDayofMonth} aptList={aptList} 
+                                billList={billList} timeOption={timeOption}></GridViewRevenue>}
         </div>
         
     </Card> );

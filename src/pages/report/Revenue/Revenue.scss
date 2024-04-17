@@ -6,14 +6,16 @@
 // }
 .icon {
     font-size: 25px;
+    margin-left: 15px;
 }
-.select-box-1 {
+.select-box-3 {
     position: relative;
     display: flex;
     align-items: center;
     height: 40px;
     width: 215px;
     border-radius: 5px;
+    z-index: 1;
     border: 1px solid blue;
     .combobox {
         height: 100%;
@@ -42,6 +44,7 @@
     width: 100px;
     border-radius: 5px;
     border: 1px solid blue;
+    z-index: 1;
     .combobox {
         height: 100%;
         width: 100%;
@@ -84,4 +87,6 @@
 
 .chart {
     margin-top: 10px;
+    height: 100%;
+    z-index: -99;
 }
