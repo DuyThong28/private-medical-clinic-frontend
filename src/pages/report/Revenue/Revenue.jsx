@@ -61,7 +61,6 @@ function Revenue() {
     const aptList = ConvernToArray(appointmentLists);
     const billList = ConvernToArray(bills);
     const patientList = ConvernToArray(patients);
-    console.log('bill ' +billList);
 
     const StringToDate = (str) => {
         if(str != null)
@@ -226,8 +225,6 @@ function Revenue() {
                 newData2.push(cnt);
             }
         }
-        console.log(billList);
-        console.log(newData1);
         return {
             sum: newData2,
             count: newData1,
@@ -267,14 +264,7 @@ function Revenue() {
         tmp.labels = getLabelForChartWeek(date);
         const tmp2 = getDataNewForChartWeek(date);
         tmp.datasets = [
-            // {
-            //     label: 'Số lượng bênh nhân',
-            //     data: tmp2.sum, // Replace with your variable 1 data
-            //     backgroundColor: 'blue',
-            //     borderWidth: 1,
-            //     barThickness: 30,
-            //     borderRadius: 2,
-            // },
+           
             {label: 'Doanh thu',
                 data: tmp2.count, // Replace with your variable 2 data
                 backgroundColor: 'red',
@@ -290,14 +280,7 @@ function Revenue() {
         tmp.labels = ['Thg 1', 'Thg 2', 'Thg 3', 'Thg 4', 'Thg 5', 'Thg 6', 'Thg 7', 'Thg 8', 'Thg 9', 'Thg 10', 'Thg 11', 'Thg 12'];
         const tmp2 = getDataNewForChartMonth(date);
         tmp.datasets = [
-            // {
-            //     label: 'Số lượng bênh nhân',
-            //     data: tmp2.sum, // Replace with your variable 1 data
-            //     backgroundColor: 'blue',
-            //     borderWidth: 1,
-            //     barThickness: 30,
-            //     borderRadius: 2,
-            // },
+            
             {label: 'Doanh thu',
                 data: tmp2.count, // Replace with your variable 2 data
                 backgroundColor: 'red',
@@ -313,14 +296,7 @@ function Revenue() {
         {
             labels: getLabelForChartWeek(valueTime), // Replace with your category labels
             datasets: [
-                // {
-                //     label: 'Số lượng bênh nhân',
-                //     data: [0, 0, 0, 0, 0, 0, 20], // Replace with your variable 1 data
-                //     backgroundColor: 'blue',
-                //     borderWidth: 1,
-                //     barThickness: 30,
-                //     borderRadius: 2,
-                // },
+                
                 {label: 'Doanh thu',
                     data: getDataNewForChartWeek(valueTime).count, // Replace with your variable 2 data
                     backgroundColor: 'red',
