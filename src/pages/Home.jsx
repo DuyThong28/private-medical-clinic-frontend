@@ -5,12 +5,18 @@ import { DayPicker } from 'react-day-picker';
 import 'react-day-picker/dist/style.css';
 import { Bar } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
+import {fetchAllAppointmentList} from '../services/appointmentList'
 
 import './Home.scss'
 
 function HomePage() {
+
+    // useEffect(()=>{
+    //     const appointmentList = fetchAllAppointmentList()
+    // },[])
+
     //Medicines
-    const medicines = [
+    const [medicines, setMedicines] = useState([
         {
             id: '2359834758493983945',
             tenThuoc: 'Thuốc đau đầu',
@@ -46,7 +52,7 @@ function HomePage() {
             banDuoc: 180,
             thanhTien: '40$',
         },
-    ];
+    ]);
     // Patient of day
     const [patients, setPatients] = useState([
         {
@@ -154,7 +160,7 @@ function HomePage() {
                     { ...pre.datasets[1], data: [7, 7, 7, 7, 7, 7, 7] },
                 ],
             }));
-        toggleModal()
+        setIsShowModal(!isShowModal)
     }
 
     // Format day
@@ -165,6 +171,14 @@ function HomePage() {
       month: 'short',
       day: 'numeric',
     })
+    // Top medicines
+    const [selectedOption, setOptions] = useState("Week")
+    const selecWeek = ()=>{
+        setOptions("Week")
+    }
+    const selecMonth = ()=>{
+        setOptions("Month")
+    }
 
     return (
       <>
@@ -213,13 +227,13 @@ function HomePage() {
                         </div>
                     </div>
                     <div className='weeks-selection'>
-                        <label for="toggle-modal" className="show-modal"  onClick={toggleModal}>
+                        <label className="show-modal" onClick={toggleModal}>
                             Weeks
                             <FontAwesomeIcon className='weeks-icon' icon={faCaretDown}></FontAwesomeIcon>
                         </label>
                         <input id="toggle-modal" type="checkbox" checked={isShowModal}></input>
                         <div className='modal-calendar'>
-                            <label for="toggle-modal" className='modal-calendar-overlay' onClick={toggleModal}></label>
+                            <label className='modal-calendar-overlay' onClick={toggleModal}></label>
                             <div className='modal-calendar-content'>
                                 <DayPicker
                                     defaultMonth={new Date()}
@@ -236,6 +250,16 @@ function HomePage() {
     
                 <div className='overview-topmedicine '>
                     <h6>Top Medicines</h6>
+                    <div className="dropdown-center selecweekormonth">
+                        <p className="btn btn-secondary dropdown-toggle" style={{backgroundColor: "#13a1df", border: "none"}}  role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            {selectedOption}
+                        </p>
+
+                        <ul className="dropdown-menu">
+                            <li className={`dropdown-item ${selectedOption === "Week"?"active":""}`} onClick={selecWeek}>Week</li>
+                            <li className={`dropdown-item ${selectedOption === "Month"?"active":""}`} onClick={selecMonth}>Month</li>
+                        </ul>
+                    </div>
                     <div className='table-responsive'>
                       <table className="table">
                           <thead>

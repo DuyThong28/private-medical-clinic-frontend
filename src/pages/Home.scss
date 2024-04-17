@@ -110,8 +110,6 @@
     font-size: 0.875rem;
 }
 
-
-
 .overview-patient-ofday {
     margin-top: 16px;
     // width: 100%;
@@ -146,6 +144,11 @@
         .show-modal {
             margin: 0 8px;
             font-weight: 600;
+            padding: 8px;
+            border-radius: 6px;
+            &:hover{
+                background-color: rgba(0, 0, 0, 0.1);
+            }
         }
 
         #toggle-modal {
@@ -222,18 +225,6 @@
     }
 }
 
-/* Top medicine */
-.overview-topmedicine {
-    margin-top: 16px;
-    // width: 100%;
-    border-radius: 12px;
-    box-shadow: 2px 2px 4px 0px rgba(0, 0, 0, 0.5);
-    height: 200px;
-    padding: 12px 12px;
-    background-color: #fff;
-    overflow-y: scroll;
-}
-
 .modal-calendar-overlay {
     width: 100%;
     height: 100%;
@@ -257,6 +248,40 @@
     flex-wrap: wrap;
     height: 430px;
 }
+
+/* Top medicine */
+.overview-topmedicine {
+    margin-top: 16px;
+    // width: 100%;
+    border-radius: 12px;
+    box-shadow: 2px 2px 4px 0px rgba(0, 0, 0, 0.5);
+    height: 200px;
+    padding: 12px 12px;
+    background-color: #fff;
+    overflow-y: scroll;
+    position: relative;
+}
+
+.selecweekormonth{
+    position: absolute;
+    top: 12px;
+    right: 12px;
+}
+
+.table-responsive{
+    margin-top: 12px;
+}
+
+.dropdown-menu{
+    max-width: 100px ;
+    .active{
+        background-color: #13a1df;
+    } 
+    .dropdown-item:active{
+        background-color: #13a1df;
+    }
+}
+    
 
 // Calendar
 #calendar {
