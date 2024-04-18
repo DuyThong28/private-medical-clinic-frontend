@@ -6,14 +6,15 @@ import 'react-day-picker/dist/style.css';
 import { Bar } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
 import {fetchAllAppointmentList} from '../services/appointmentList'
+import {fetchAllPatients} from '../services/patients'
 
 import './Home.scss'
 
 function HomePage() {
 
-    // useEffect(()=>{
-    //     const appointmentList = fetchAllAppointmentList()
-    // },[])
+    useEffect(()=>{
+        fetchAllPatients({name: "", phoneNumber: ""}).then((data)=>data)
+    },[])
 
     //Medicines
     const [medicines, setMedicines] = useState([
