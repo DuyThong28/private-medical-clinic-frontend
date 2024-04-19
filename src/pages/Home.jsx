@@ -1,127 +1,46 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCaretDown } from '@fortawesome/free-solid-svg-icons';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { DayPicker } from 'react-day-picker';
 import 'react-day-picker/dist/style.css';
 import { Bar } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
-import {fetchAllAppointmentList} from '../services/appointmentList'
-import {fetchAllPatients} from '../services/patients'
+import { fetchAllAppointmentListById} from '../services/appointmentList'
+import {fetchPatientById} from '../services/patients'
+import {fetchAllAppointmentListPatients} from '../services/appointmentListPatients'
+import {fetchAllAppointmentRecordDetails} from '../services/appointmentRecordDetails'
+import {fetchDrugById} from '../services/drugs'
+import { useQuery } from '@tanstack/react-query';
 
 import './Home.scss'
+import { queryClient } from '../App';
+import doctorImg from '../assets/doctor.png'
 
-function HomePage() {
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
-    useEffect(()=>{
-        fetchAllPatients({name: "", phoneNumber: ""}).then((data)=>data)
-    },[])
-
-    //Medicines
-    const [medicines, setMedicines] = useState([
-        {
-            id: '2359834758493983945',
-            tenThuoc: 'Thuốc đau đầu',
-            tonKho: 50,
-            banDuoc: 100,
-            thanhTien: '100$',
-        },
-        {
-            id: '23732848238992',
-            tenThuoc: 'Thuốc ho',
-            tonKho: 60,
-            banDuoc: 120,
-            thanhTien: '300$',
-        },
-        {
-            id: '234812983912',
-            tenThuoc: 'Thuốc tiêu hóa',
-            tonKho: 70,
-            banDuoc: 140,
-            thanhTien: '200$',
-        },
-        {
-            id: '329327595293',
-            tenThuoc: 'Thuốc đau răng',
-            tonKho: 80,
-            banDuoc: 160,
-            thanhTien: '50$',
-        },
-        {
-            id: '2338959469845695',
-            tenThuoc: 'Thuốc tránh thai',
-            tonKho: 90,
-            banDuoc: 180,
-            thanhTien: '40$',
-        },
-    ]);
-    // Patient of day
-    const [patients, setPatients] = useState([
-        {
-            name: "Phạm Ngọc Thịnh",
-            gender: "Nam",
-            url: "https://upload.wikimedia.org/wikipedia/commons/7/76/Sphynx_-_totte71.jpg"
-        }
-    ])
-    // Greeting
-    const [greeting, setGreeting] = useState('');
-
-    useEffect(() => {
-        const now = new Date();
-        const hour = now.getHours();
-
-        if (hour < 12) {
-            setGreeting('Good Morning!');
-        } else if (hour < 18) {
-            setGreeting('Good Afternoon!');
-        } else {
-            setGreeting('Good Evening!');
-        }
-    }, []);
-
-    // Chart
-    ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
-    const [data, setData] = useState({
-        labels: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
-        datasets: [
-            {
-                data: [0, 0, 0, 0, 0, 0, 10],
-                backgroundColor: '#89d0ef',
-                borderWidth: 1,
-                barThickness: 10,
-            },
-            {
-                data: [0, 0, 0, 0, 0, 0, 8],
-                backgroundColor: '#eb7474',
-                borderWidth: 1,
-                barThickness: 10,
-            },
-        ],
-    });
-
-    const optionschart = {
-        scales: {
-            y: {
-                ticks: {
-                    maxTicksLimit: 3,
-                },
+const optionschart = {
+    scales: {
+        y: {
+            ticks: {
+                maxTicksLimit: 3,
             },
         },
-        plugins: {
-            legend: {
-                display: false,
-            },
+    },
+    plugins: {
+        legend: {
+            display: false,
         },
-    };
-    // Calendar
-    const [selectedDay, setSelectedDay] = useState(new Date());
-    const [isShowModal, setIsShowModal] = useState(false)
-    const css = `
+    },
+};
+
+const css = `
         .my-today { 
             font-weight: bold;
             color: #d74f4a;
         }
     `;
-    // Lấy week của day đang chọn
+
+function HomePage() {
     const getWeek = (day) => {
         const startOfWeek = new Date(day);
         startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay());
@@ -132,48 +51,255 @@ function HomePage() {
             to: endOfWeek,
         };
     };
+    const preRange = useRef(getWeek(new Date()))
     const [range, setRange] = useState(() => getWeek(new Date()));
+    const [selectedDay, setSelectedDay] = useState(new Date());
+    const [isShowModal, setIsShowModal] = useState(false);
+    const [greeting, setGreeting] = useState('');
+    const [selectedOption, setOptions] = useState("Week")
+
+    const optionQuery = function (queryKey,optionFilter = (data)=>data){
+        return {
+            queryKey: [queryKey],
+            queryFn: async () => {
+                const data = await fetchAllAppointmentListPatients();
+                const finalData = await Promise.all(
+                    data.map(async (item) => {
+                        const patient = await fetchPatientById({ id: item.patientId });
+                        const appointmentList = await fetchAllAppointmentListById({
+                            id: item.appointmentListId,
+                        });
+    
+                        return {
+                            ...item,
+                            patient,
+                            appointmentList,
+                        };
+                    })
+                );
+                const searchData = optionFilter(finalData)
+                return searchData;
+            },
+        }
+    }
+
+    const compareDate = (date1, date2) =>{
+        const year1 = date1.getFullYear(); const month1 = date1.getMonth(); const day1 = date1.getDate();
+        const year2 = date2.getFullYear(); const month2 = date2.getMonth(); const day2 = date2.getDate();
+
+        if(year1 > year2){
+            return 1
+        } else if(year1 === year2 && month1 > month2){
+            return 1
+        } else if(year1 === year2 && month1 === month2 && day1 > day2){
+            return 1
+        } else if(year1 === year2 && month1 === month2 && day1 === day2){
+            return 0
+        }
+        return -1
+    }
+
+    const getListAppointmentByToDay = (data)=>{
+        const finalData = data.filter(
+            (item)=> compareDate(new Date(item?.appointmentList.scheduleDate.slice(0, 10)), new Date()) === 0
+        )
+        return finalData
+    }
+
+    const getListAppointmentBySelectedDay = (data)=>{
+        const finalData = data.filter(
+            (item)=> compareDate(new Date(item?.appointmentList.scheduleDate.slice(0, 10)), selectedDay) === 0
+        )
+        return finalData
+    }
+
+    const getListAppointmentByWeek = (data)=>{
+        const finalData = data.filter(
+            (item)=> compareDate(new Date(item?.appointmentList.scheduleDate.slice(0, 10)), range.from) >= 0 && 
+            compareDate(new Date(item?.appointmentList.scheduleDate), range.to) <= 0
+        )
+        return finalData
+    }
+
+    const getPreListAppointment = (data)=>{
+        const finalData = data.filter(
+            (item)=> compareDate(new Date(item?.appointmentList.scheduleDate.slice(0, 10)), new Date()) < 0
+        )
+        return finalData
+    }
+
+    const query = optionQuery("allAppointmentListPatients",getPreListAppointment)
+    const query1 = optionQuery("appointmentListToday",getListAppointmentByToDay)
+    const query2 = optionQuery("appointmentListSelectedDay",getListAppointmentBySelectedDay)
+    const query3 = optionQuery("appointmentListWeek",getListAppointmentByWeek)
+
+    const preAppointmentListPatientQuery = useQuery(query);
+    const appointmentListPatientTodayQuery = useQuery(query1);
+    const appointmentListPatientSelectedDayQuery = useQuery(query2);
+    const appointmentListPatientWeekQuery = useQuery(query3);
+
+    const appointmentListPatientToday = appointmentListPatientTodayQuery.data || []
+    const appointmentListPatientSelectedDay = appointmentListPatientSelectedDayQuery.data || []
+    const appointmentListPatientWeek = appointmentListPatientWeekQuery.data || []
+    const preAppointmentListPatient = preAppointmentListPatientQuery.data || []
+
+    
+    const dataToday = (()=>{
+        let newPatient = 0
+        let oldPatient = 0
+        for(const item of appointmentListPatientToday){
+            const preAppointment =  preAppointmentListPatient.filter(
+                appointment => appointment.patient?.id === item.patient?.id 
+            )
+            if(preAppointment.length>0){
+                ++oldPatient
+            }else{
+                ++newPatient
+            }
+        }
+        return {
+            newPatient, oldPatient
+        }
+    })()
+
+    const appointmentRecordDetailsQuery = useQuery({
+        queryKey: ['appointmentRecordDetails'],
+        queryFn: async () => {
+            const data = await fetchAllAppointmentRecordDetails();
+            // const finalData = await Promise.all(
+            //     data.map(async (item) => {
+            //         const drug = await fetchDrugById({ id: item.drugId });
+            //         return {
+            //             ...item,
+            //             drug
+            //         };
+            //     })
+            // );
+            return data;
+        },
+    })
+
+    const appointmentRecordDetails = appointmentRecordDetailsQuery.data || []
+    console.log(appointmentRecordDetails);
+
+    const [dataMale, setDataMale] = useState([])
+    const [dataFemale, setDataFemale] = useState([])
+    
+    useEffect(()=>{
+        const dataMale = []
+        const dataFemale = []
+        for(let i = 0;i < 7; ++i){
+            const cloneDay = new Date(preRange.current.from)
+            cloneDay.setDate(cloneDay.getDate() + i)
+            const dayData = appointmentListPatientWeek.filter(
+                item=>compareDate(new Date(item?.appointmentList?.scheduleDate.slice(0, 10)), cloneDay) === 0
+            )
+            dataMale.push(dayData.filter(item=>item?.patient?.gender === "Nam").length)
+            dataFemale.push(dayData.filter(item=>item?.patient?.gender === "Nữ").length)
+        }
+        setDataMale(dataMale)
+        setDataFemale(dataFemale)
+    },[appointmentListPatientWeek])
+
+    const dataOfChart = {
+        labels: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+        datasets: [
+            {
+                data: [...dataMale],
+                backgroundColor: '#89d0ef',
+                borderWidth: 1,
+                barThickness: 10,
+            },
+            {
+                data: [...dataFemale],
+                backgroundColor: '#eb7474',
+                borderWidth: 1,
+                barThickness: 10,
+            },
+        ],
+    }
+
+    useEffect(() => {
+        queryClient.invalidateQueries({ queryKey: ["appointmentListSelectedDay"] });
+    }, [selectedDay]);
+
+    
+    //Medicines
+    // const [medicines, setMedicines] = useState([
+    //     {
+    //         id: '2359834758493983945',
+    //         tenThuoc: 'Thuốc đau đầu',
+    //         tonKho: 50,
+    //         banDuoc: 100,
+    //         thanhTien: '100$',
+    //     },
+    //     {
+    //         id: '23732848238992',
+    //         tenThuoc: 'Thuốc ho',
+    //         tonKho: 60,
+    //         banDuoc: 120,
+    //         thanhTien: '300$',
+    //     },
+    //     {
+    //         id: '234812983912',
+    //         tenThuoc: 'Thuốc tiêu hóa',
+    //         tonKho: 70,
+    //         banDuoc: 140,
+    //         thanhTien: '200$',
+    //     },
+    //     {
+    //         id: '329327595293',
+    //         tenThuoc: 'Thuốc đau răng',
+    //         tonKho: 80,
+    //         banDuoc: 160,
+    //         thanhTien: '50$',
+    //     },
+    //     {
+    //         id: '2338959469845695',
+    //         tenThuoc: 'Thuốc tránh thai',
+    //         tonKho: 90,
+    //         banDuoc: 180,
+    //         thanhTien: '40$',
+    //     },
+    // ]);
+    
+    // Greeting
+
+    useEffect(() => {
+        const now = new Date();
+        const formatDay = now.toLocaleDateString('en-US', {
+            weekday: 'short',
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+        })
+        const hour = now.getHours();
+
+        if (hour < 12) {
+            setGreeting('Good Morning! ' + formatDay);
+        } else if (hour < 18) {
+            setGreeting('Good Afternoon! ' + formatDay);
+        } else {
+            setGreeting('Good Evening! ' + formatDay);
+        }
+    }, []);
+
     const handleSelectedWeek = (day) => {
         setRange(() => {
             return getWeek(day);
         });
     };
-    const selectDay = (day)=>{
-        setSelectedDay(day)
-        setPatients(pre=>[...pre,
-            {
-                name: "Đinh Như Thông",
-                gender: "Nam",
-                url: "https://upload.wikimedia.org/wikipedia/commons/7/76/Sphynx_-_totte71.jpg"
-            }
-        ])
-    }
 
     const toggleModal = ()=>{
         setIsShowModal(!isShowModal)
     }
 
     const handleShowChart = ()=>{
-        setData((pre) => ({
-                ...pre,
-                datasets: [
-                    { ...pre.datasets[0], data: [5, 5, 5, 5, 5, 5, 5] },
-                    { ...pre.datasets[1], data: [7, 7, 7, 7, 7, 7, 7] },
-                ],
-            }));
+        queryClient.invalidateQueries({ queryKey: ["appointmentListWeek"] });
         setIsShowModal(!isShowModal)
+        preRange.current = range
     }
 
-    // Format day
-    const date = new Date()
-    const formatDay = date.toLocaleDateString('en-US', {
-      weekday: 'short',
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    })
-    // Top medicines
-    const [selectedOption, setOptions] = useState("Week")
     const selecWeek = ()=>{
         setOptions("Week")
     }
@@ -187,28 +313,34 @@ function HomePage() {
             <div className='col-9 pad-16'>
                 <div className='overview-greeting '>
                     <img
-                        src="https://static.wixstatic.com/media/c3c425_73e09c65cec240069ecb484238b84a39~mv2.png/v1/fill/w_540,h_498,al_c,q_85,usm_0.66_1.00_0.01,enc_auto/shutterstock_1175753779%20copy_edited.png"
+                        src={doctorImg}
                         alt="Doctor"
                     />
-                    <h1>{greeting} {formatDay}</h1>
+                    <h1>{greeting}</h1>
                 </div>
     
                 <div className='overview-number'>
                     <div>
                         <h6>Patient of day</h6>
-                        <h3 className='overview-number-patient'>40</h3>
+                        <h3 className='overview-number-patient'>{appointmentListPatientToday.length}</h3>
                     </div>
                     <div className='overview-number-percents'>
                         <div className='overview-number-percent'>
                             <p className='overview-number-typepatient'>New Patients</p>
                             <p>
-                                40<span className='overview-typepatient-percent new'>30%</span>
+                                {dataToday.newPatient}
+                                <span className='overview-typepatient-percent new'>
+                                    {(dataToday.newPatient/appointmentListPatientToday.length*100).toFixed(2) || 0}%
+                                </span>
                             </p>
                         </div>
                         <div className='overview-number-percent'>
                             <p className='overview-number-typepatient'>Old Patients</p>
                             <p>
-                                30<span className='overview-typepatient-percent old'>20%</span>
+                                {dataToday.oldPatient}
+                                <span className='overview-typepatient-percent old'>
+                                    {(dataToday.oldPatient/appointmentListPatientToday.length*100).toFixed(2) || 0}%
+                                </span>
                             </p>
                         </div>
                     </div>
@@ -217,7 +349,7 @@ function HomePage() {
                 <div className='overview-patient-ofday '>
                     <h6>Number Of Patients</h6>
                     <div className='overview-patient-chart'>
-                        <Bar data={data} options={optionschart} width={600} className='overview-chart'/>
+                        <Bar data={dataOfChart} options={optionschart} width={600} className='overview-chart'/>
                         <div className='chart-note'>
                             <div className='note'>
                                 <p className='male'>Male</p>
@@ -234,7 +366,7 @@ function HomePage() {
                         </label>
                         <input id="toggle-modal" type="checkbox" checked={isShowModal}></input>
                         <div className='modal-calendar'>
-                            <label className='modal-calendar-overlay' onClick={toggleModal}></label>
+                            <label className='modal-calendar-overlay' onClick={()=>{toggleModal();setRange(preRange.current)}}></label>
                             <div className='modal-calendar-content'>
                                 <DayPicker
                                     defaultMonth={new Date()}
@@ -274,17 +406,17 @@ function HomePage() {
                           </thead>
                           <tbody>
                               {
-                                  medicines.map((medicine, index)=>{
-                                      return (
-                                          <tr key={medicine.id} >
-                                              <th scope="row">{medicine.id}</th>
-                                              <td>{medicine.tenThuoc}</td>
-                                              <td>{medicine.tonKho}</td>
-                                              <td>{medicine.banDuoc}</td>
-                                              <td>{medicine.thanhTien}</td>
-                                          </tr>
-                                      )
-                                  })
+                                //   medicines.map((medicine, index)=>{
+                                //       return (
+                                //           <tr key={medicine.id} >
+                                //               <th scope="row">{medicine.id}</th>
+                                //               <td>{medicine.tenThuoc}</td>
+                                //               <td>{medicine.tonKho}</td>
+                                //               <td>{medicine.banDuoc}</td>
+                                //               <td>{medicine.thanhTien}</td>
+                                //           </tr>
+                                //       )
+                                //   })
                               }
                           </tbody>
                       </table>
@@ -299,8 +431,7 @@ function HomePage() {
                     <DayPicker
                         defaultMonth={new Date()}
                         selected={selectedDay}
-                        onSelect={selectDay}
-                        // onDayFocus={selectDay}
+                        onSelect={setSelectedDay}
                         mode="single"
                         modifiersClassNames={{
                             today: 'my-today',
@@ -311,20 +442,12 @@ function HomePage() {
                 <h6 className="patients-of-day">Up comming</h6>
                 <div className="patients-list">
                     {
-                        patients.map((patient, index)=>
-                            (
-                            <div className="patient-item" key={index}>
-                                <img
-                                    src={patient.url}
-                                    alt="Avatar"
-                                ></img>
-                                <div>
-                                    <h6>{patient.name}</h6>
-                                    <h6 className='gender'>Giới tính: {patient.gender}</h6>
-                                </div>
+                        appointmentListPatientSelectedDay.map((item)=>(                            
+                            <div className="patient-item" key={item.id}>
+                                <h6 className='patient-name'>{item.patient?.fullName}</h6>
+                                <h6 className='gender'>Giới tính: {item.patient?.gender}</h6>
                             </div>
-                            )
-                        )
+                        ))
                     }
                 </div>
             </div>

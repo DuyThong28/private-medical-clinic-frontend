@@ -85,7 +85,7 @@
 .overview-typepatient-percent {
     float: right;
     font-size: 0.75rem;
-    width: 40px;
+    width: 50px;
     height: 20px;
     border-radius: 12px;
     display: inline-flex;
@@ -322,6 +322,7 @@
 .patient-item {
     display: flex;
     align-items: center;
+    justify-content: center;
     border-radius: 12px;
     background-color: #89d0ef;
     padding: 8px;
@@ -330,17 +331,14 @@
         color: #666;
         font-weight: 400;
     }
+    .patient-name{
+        flex: 1
+    }
+    h6{
+        margin: 0;
+    }
 }
 
 .patient-item + .patient-item {
     margin-top: 8px;
-}
-
-.patient-item img {
-    width: 45px;
-    height: 45px;
-    border-radius: 50%;
-    object-fit: cover;
-    box-shadow: 1px 2px 1px 0 rgba(0, 0, 0, 0.4);
-    margin-right: 16px;
 }
