@@ -5,16 +5,18 @@ import { DayPicker } from 'react-day-picker';
 import 'react-day-picker/dist/style.css';
 import { Bar } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
+import { useQuery } from '@tanstack/react-query';
+
 import { fetchAllAppointmentListById} from '../services/appointmentList'
 import {fetchPatientById} from '../services/patients'
 import {fetchAllAppointmentListPatients} from '../services/appointmentListPatients'
 import {fetchAllAppointmentRecordDetails} from '../services/appointmentRecordDetails'
-import {fetchDrugById} from '../services/drugs'
-import { useQuery } from '@tanstack/react-query';
-
+import {fetchDrugById, fetchAllDrugs} from '../services/drugs'
+import { fetchAllAppointmentRecords, fetchAppointmentRecordById } from '../services/appointmentRecords'
 import './Home.scss'
 import { queryClient } from '../App';
 import doctorImg from '../assets/doctor.png'
+import{formatToVND}from '../util/money'
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
@@ -116,7 +118,7 @@ function HomePage() {
     const getListAppointmentByWeek = (data)=>{
         const finalData = data.filter(
             (item)=> compareDate(new Date(item?.appointmentList.scheduleDate.slice(0, 10)), range.from) >= 0 && 
-            compareDate(new Date(item?.appointmentList.scheduleDate), range.to) <= 0
+            compareDate(new Date(item?.appointmentList.scheduleDate.slice(0, 10)), range.to) <= 0
         )
         return finalData
     }
@@ -162,25 +164,87 @@ function HomePage() {
         }
     })()
 
+    // fetchAllAppointmentRecordDetails không ra kết quả ?
+
     const appointmentRecordDetailsQuery = useQuery({
-        queryKey: ['appointmentRecordDetails'],
+        queryKey: ["appointmentRecordDetails"],
         queryFn: async () => {
             const data = await fetchAllAppointmentRecordDetails();
-            // const finalData = await Promise.all(
-            //     data.map(async (item) => {
-            //         const drug = await fetchDrugById({ id: item.drugId });
-            //         return {
-            //             ...item,
-            //             drug
-            //         };
-            //     })
-            // );
-            return data;
+            const finalData = await Promise.all(
+                data.map(async (item) => {
+                    const record = await fetchAppointmentRecordById({id: item.appointmentRecordId})
+                    return {
+                        ...item,
+                        record
+                    };
+                })
+            );
+            return finalData;
         },
     })
 
+    const drugsQuery = useQuery({
+        queryKey: ["druglist"],
+        queryFn: async()=>{
+            const data = await fetchAllDrugs()
+            return data
+        },
+    });
+    const recordQuery = useQuery({
+        queryKey: ["recordlist"],
+        queryFn: async()=>{
+            const data = await fetchAllAppointmentRecords()
+            return data
+        },
+    });
+
+    const records = recordQuery.data|| []
     const appointmentRecordDetails = appointmentRecordDetailsQuery.data || []
-    console.log(appointmentRecordDetails);
+    const drugs = drugsQuery.data || []
+
+
+    const [topDrug, setTopDrug] = useState([])
+    useEffect(()=>{
+        const drugInfo = drugs.map((item)=>{
+            if(selectedOption === "Week"){
+                const items = appointmentRecordDetails.filter((appointment)=>
+                    appointment?.drugId === item?.id && 
+                    compareDate(new Date(appointment?.record.appointmentList.scheduleDate.slice(0, 10)),getWeek(new Date()).from) >= 0 &&
+                    compareDate(new Date(appointment?.record.appointmentList.scheduleDate.slice(0, 10)),getWeek(new Date()).to) <= 0
+                )
+                let soldout = 0;
+                for(const detail of items){
+                    soldout += detail?.count
+                }
+
+                return {
+                    ...item,
+                    soldout
+                }
+            }else{
+                const items = appointmentRecordDetails.filter((appointment)=>
+                    appointment?.drugId === item?.id && 
+                    new Date(appointment?.record.appointmentList.scheduleDate.slice(0, 10)).getMonth === new Date().getMonth &&
+                    new Date(appointment?.record.appointmentList.scheduleDate.slice(0, 10)).getFullYear === new Date().getFullYear
+                )
+                let soldout = 0;
+                for(const detail of items){
+                    soldout += detail?.count
+                }
+                return {
+                    ...item,
+                    soldout
+                }
+            }
+        })
+
+        drugInfo.sort((a,b)=>b.soldout*b.price - a.soldout*a.price)
+
+        const topDrug = drugInfo.slice(0,5)
+
+        setTopDrug(topDrug)
+
+    },[appointmentRecordDetails, selectedOption])
 
     const [dataMale, setDataMale] = useState([])
     const [dataFemale, setDataFemale] = useState([])
@@ -224,47 +288,6 @@ function HomePage() {
     }, [selectedDay]);
 
     
-    //Medicines
-    // const [medicines, setMedicines] = useState([
-    //     {
-    //         id: '2359834758493983945',
-    //         tenThuoc: 'Thuốc đau đầu',
-    //         tonKho: 50,
-    //         banDuoc: 100,
-    //         thanhTien: '100$',
-    //     },
-    //     {
-    //         id: '23732848238992',
-    //         tenThuoc: 'Thuốc ho',
-    //         tonKho: 60,
-    //         banDuoc: 120,
-    //         thanhTien: '300$',
-    //     },
-    //     {
-    //         id: '234812983912',
-    //         tenThuoc: 'Thuốc tiêu hóa',
-    //         tonKho: 70,
-    //         banDuoc: 140,
-    //         thanhTien: '200$',
-    //     },
-    //     {
-    //         id: '329327595293',
-    //         tenThuoc: 'Thuốc đau răng',
-    //         tonKho: 80,
-    //         banDuoc: 160,
-    //         thanhTien: '50$',
-    //     },
-    //     {
-    //         id: '2338959469845695',
-    //         tenThuoc: 'Thuốc tránh thai',
-    //         tonKho: 90,
-    //         banDuoc: 180,
-    //         thanhTien: '40$',
-    //     },
-    // ]);
-    
-    // Greeting
-
     useEffect(() => {
         const now = new Date();
         const formatDay = now.toLocaleDateString('en-US', {
@@ -406,17 +429,15 @@ function HomePage() {
                           </thead>
                           <tbody>
                               {
-                                //   medicines.map((medicine, index)=>{
-                                //       return (
-                                //           <tr key={medicine.id} >
-                                //               <th scope="row">{medicine.id}</th>
-                                //               <td>{medicine.tenThuoc}</td>
-                                //               <td>{medicine.tonKho}</td>
-                                //               <td>{medicine.banDuoc}</td>
-                                //               <td>{medicine.thanhTien}</td>
-                                //           </tr>
-                                //       )
-                                //   })
+                                topDrug.map((drug, index)=>(
+                                    <tr key={index} >
+                                        <th scope="row">{drug.id}</th>
+                                        <td>{drug.drugName}</td>
+                                        <td>{drug.count}</td>
+                                        <td>{drug.soldout}</td>
+                                        <td>{formatToVND(drug.soldout*drug.price)}</td>
+                                    </tr>
+                                ))
                               }
                           </tbody>
                       </table>
