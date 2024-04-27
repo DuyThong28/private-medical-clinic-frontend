@@ -6,9 +6,12 @@ import {
   updateMaxNumberOfPatients,
 } from "../../services/argument";
 import Card from "../../components/Card";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { queryClient } from "../../App";
 import { Form } from "react-bootstrap";
+import NotificationDialog, {
+  DialogAction,
+} from "../../components/NotificationDialog";
 
 function PrincipleView() {
   const [dataState, setDataState] = useState({
@@ -17,6 +20,7 @@ function PrincipleView() {
     isEditable: false,
   });
   const [validated, setValidated] = useState(false);
+  const notiDialogRef = useRef();
 
   const maxpatientsQuery = useQuery({
     queryKey: ["maxpatients"],
@@ -73,12 +77,20 @@ function PrincipleView() {
       const feeconsult = data.feeconsult;
       feeConsultMutate.mutate({ feeConsult: feeconsult });
     }
+    notiDialogRef.current.setDialogData({
+      action: DialogAction.UPDATE,
+    });
+    if (maxPatientsMutate.isError || feeConsultMutate.isError) {
+      notiDialogRef.current.toastError();
+    } else {
+      notiDialogRef.current.toastSuccess();
+    }
 
     setDataState(() => {
       return {
         isEditable: false,
-        maxpatients: maxPatientsMutate.data,
-        feeconsult: feeConsultMutate.data,
+        feeconsult: data.feeconsult,
+        maxpatients: data.maxpatients,
       };
     });
     setValidated(false);
@@ -126,13 +138,14 @@ function PrincipleView() {
 
   return (
     <div className="col h-100">
+      <NotificationDialog ref={notiDialogRef} keyQuery={[]} />
       <div
         className="h-100 position-relative"
         style={{ backgroundColor: "#F9F9F9" }}
       >
         <div className="position-absolute top-50 mt-50 start-50 translate-middle">
           <Card>
-            <div className="col fw-bold fs-4 text-center">
+            <div className="col fw-bold fs-4 text-center text-black">
               <label>Quy Định Phòng Khám</label>
             </div>
             <div>
@@ -143,13 +156,16 @@ function PrincipleView() {
                 className="h-100"
               >
                 <div className="row fw-bold">
-                  <label htmlFor="maxpatients" className="col-form-label">
+                  <label
+                    htmlFor="maxpatients"
+                    className="col-form-label text-black"
+                  >
                     Số Bệnh Nhân Tối Đa Trong Ngày
                   </label>
                   <input
                     type="number"
                     id="maxpatients"
-                    className="form-control"
+                    className="form-control fw-bold"
                     name="maxpatients"
                     value={dataState.maxpatients ?? 0}
                     disabled={!dataState.isEditable}
@@ -160,13 +176,16 @@ function PrincipleView() {
                   />
                 </div>
                 <div className="row fw-bold">
-                  <label htmlFor="feeconsult" className="col-form-label">
+                  <label
+                    htmlFor="feeconsult"
+                    className="col-form-label text-black"
+                  >
                     Phí Khám Bệnh
                   </label>
                   <input
                     type="number"
                     id="feeconsult"
-                    className="form-control"
+                    className="form-control fw-bold"
                     name="feeconsult"
                     value={dataState.feeconsult ?? 0}
                     disabled={!dataState.isEditable}

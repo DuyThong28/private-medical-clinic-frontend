@@ -25,37 +25,37 @@ export async function createNewDisease(data) {
   const diseaseID = data?.id ?? null;
   let response;
 
-  if (diseaseID) {
-    response = await fetch(
-      `http://localhost:8080/api/v1/diseases/${diseaseID}`,
-      {
-        Credentials: "include",
-        method: "PUT",
-        body: JSON.stringify({ diseaseName }),
-        headers: {
-          "Content-Type": "application/json",
-          authorization: "Bearer",
-        },
-      }
-    );
-  } else {
-    response = await fetch(`http://localhost:8080/api/v1/diseases`, {
-      credentials: "include",
-      method: "POST",
-      body: JSON.stringify({ diseaseName }),
-      headers: {
-        "Content-Type": "application/json",
-        authorization: "Bearer",
-      },
-    });
-  }
+  // if (diseaseID !== null) {
+  //   response = await fetch(
+  //     `http://localhost:8080/api/v1/diseases/${diseaseID}`,
+  //     {
+  //       credentials: "include",
+  //       method: "PUT",
+  //       body: JSON.stringify({ diseaseName }),
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //         authorization: "Bearer",
+  //       },
+  //     }
+  //   );
+  // } else {
+  //   response = await fetch(`http://localhost:8080/api/v1/diseases`, {
+  //     credentials: "include",
+  //     method: "POST",
+  //     body: JSON.stringify({ diseaseName }),
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //       authorization: "Bearer",
+  //     },
+  //   });
+  // }
 
-  if (!response.ok) {
+  // if (!response.ok) {
     const error = new Error("An error occurred");
     error.code = response.status;
     error.info = await response.json();
     throw error;
-  }
+  // }
 
   const { event } = await response.json();
 

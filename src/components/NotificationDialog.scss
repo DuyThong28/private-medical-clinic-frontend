@@ -1,0 +1,87 @@
+.warning-notification {
+    .button {
+        background: #DC7609;
+        color: white;
+        font-weight: bold;
+        &:hover {
+            background: #e69136;
+            color: white;
+        }
+    }
+    
+    .button-outline {
+        color: #DC7609;
+        font-weight: bold;
+        border: 1px solid #DC7609!important;
+        &:hover {
+            background: #FFFCF0;
+            color: #DC7609;
+        }
+    }
+
+    .noti-icon {
+        height: 70px;
+        width: 70px;
+        background: #FFFCF0;  
+        border-radius: 45px;
+    }
+}
+
+.success-notification {
+    .button {
+        background: #008A2E;
+        color: white;
+        font-weight: bold;
+        &:hover {
+            background: #13bd4b;
+            color: white;
+        }
+    }
+    
+    .button-outline {
+        color: #008A2E;
+        font-weight: bold;
+        border: 1px solid #008A2E!important;
+        &:hover {
+            background: #ECFDF3;
+            color: #13bd4b;
+        }
+    }
+
+    .noti-icon {
+        height: 70px;
+        width: 70px;
+        background: #ECFDF3;  
+        border-radius: 45px;
+    }
+}
+
+.error-notification {
+    .button {
+        background: #E50000;
+        color: white;
+        font-weight: bold;
+        &:hover {
+            background: #E50000;
+            color: white;
+        }
+    }
+    
+    .button-outline {
+        color: #E50000;
+        font-weight: bold;
+        border: 1px solid #E50000!important;
+        &:hover {
+            background: #FFF0F0;
+            color: #E50000;
+        }
+    }
+
+    .noti-icon {
+        height: 70px;
+        width: 70px;
+        background: #FFF0F0;  
+        border-radius: 45px;
+    }
+}
+

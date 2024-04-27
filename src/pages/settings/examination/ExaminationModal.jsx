@@ -90,7 +90,6 @@ const ExaminationModal = forwardRef(function ExaminationModal(
         ...prevState,
         data: null,
         isEditable: true,
-        
       };
     });
   }
@@ -189,7 +188,6 @@ const ExaminationModal = forwardRef(function ExaminationModal(
       scheduleDate: data.scheduledate,
     };
 
-
     setDialogState((prevState) => {
       return {
         ...prevState,
@@ -201,7 +199,7 @@ const ExaminationModal = forwardRef(function ExaminationModal(
 
   return (
     <div className=" w-100  d-flex flex-row justify-content-around">
-      <div className="col fw-bold fs-4">
+      <div className="col fw-bold fs-4 text-black">
         <label>Danh sách ca khám</label>
       </div>
       <div className="row gap-3">
@@ -278,7 +276,7 @@ const ExaminationModal = forwardRef(function ExaminationModal(
                 </label>
                 <input
                   type="text"
-                  className="form-control"
+                  className="form-control bg-body-secondary"
                   id="patientid"
                   name="patientid"
                   readOnly={true}
@@ -402,7 +400,11 @@ const ExaminationModal = forwardRef(function ExaminationModal(
                   name="scheduledate"
                   id="scheduledate"
                   min={inputToDayFormat()}
-                  value={inputDateFormat(dialogState.data?.scheduleDate) ?? ""}
+                  value={
+                    dialogState.data && dialogState.data?.scheduleDate
+                      ? inputDateFormat(dialogState.data?.scheduleDate)
+                      : inputToDayFormat()
+                  }
                   required
                 ></input>
               </div>

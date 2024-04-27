@@ -12,11 +12,14 @@ import {
 } from "../../../services/appointmentRecords";
 import { convertDate } from "../../../util/date";
 import { fetchAppointentListPatientById } from "../../../services/appointmentListPatients";
-import { queryClient } from "../../../App";
 import { fetchAllDisease } from "../../../services/diseases";
+import NotificationDialog, {
+  DialogAction,
+} from "../../../components/NotificationDialog";
 
-export default function HistoryTab({isEditable}) {
+export default function HistoryTab({ isEditable }) {
   const modalRef = useRef();
+  const notiDialogRef = useRef();
   const { appopintmentListPatientId } = useParams();
   let { patientId } = useParams();
 
@@ -46,7 +49,7 @@ export default function HistoryTab({isEditable}) {
 
   function getDiseaseName({ id }) {
     const res = diseaseState.filter((disease) => disease.id == id);
-    return res[0]?.diseaseName || "";
+    return res[0]?.diseaseName ?? "";
   }
 
   async function showRecordHandler({ id }) {
@@ -54,14 +57,19 @@ export default function HistoryTab({isEditable}) {
   }
 
   async function deleterecordHandler({ id }) {
-    await deleteAppointmentRecordById({ id });
-    queryClient.invalidateQueries({
-      queryKey: ["appointmentrecords", patientId],
+    notiDialogRef.current.setDialogData({
+      action: DialogAction.DELETE,
+      dispatchFn: () => deleteAppointmentRecordById({ id }),
     });
+    notiDialogRef.current.showDialogWarning();
   }
 
   return (
     <>
+      <NotificationDialog
+        ref={notiDialogRef}
+        keyQuery={["appointmentrecords", patientId]}
+      />
       <RescordHistoryModal ref={modalRef} />
       <div className="w-100 h-100 d-flex flex-column gap-3">
         <TableHeader>
@@ -113,22 +121,23 @@ export default function HistoryTab({isEditable}) {
                         <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8m8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7" />
                       </svg>
                     </span>
-                    {isEditable && <span
-                      className="p-2"
-                      onClick={() => deleterecordHandler({ id: record.id })}
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="16"
-                        height="16"
-                        fill="#1B59F8"
-                        className="bi bi-archive-fill"
-                        viewBox="0 0 16 16"
+                    {isEditable && (
+                      <span
+                        className="p-2"
+                        onClick={() => deleterecordHandler({ id: record.id })}
                       >
-                        <path d="M12.643 15C13.979 15 15 13.845 15 12.5V5H1v7.5C1 13.845 2.021 15 3.357 15zM5.5 7h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1 0-1M.8 1a.8.8 0 0 0-.8.8V3a.8.8 0 0 0 .8.8h14.4A.8.8 0 0 0 16 3V1.8a.8.8 0 0 0-.8-.8z" />
-                      </svg>
-                    </span>}
-                    
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="16"
+                          height="16"
+                          fill="#1B59F8"
+                          className="bi bi-archive-fill"
+                          viewBox="0 0 16 16"
+                        >
+                          <path d="M12.643 15C13.979 15 15 13.845 15 12.5V5H1v7.5C1 13.845 2.021 15 3.357 15zM5.5 7h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1 0-1M.8 1a.8.8 0 0 0-.8.8V3a.8.8 0 0 0 .8.8h14.4A.8.8 0 0 0 16 3V1.8a.8.8 0 0 0-.8-.8z" />
+                        </svg>
+                      </span>
+                    )}
                   </div>
                 </li>
               );

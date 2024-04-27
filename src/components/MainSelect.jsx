@@ -10,7 +10,7 @@ export default function MainSelect({
 }) {
   return (
     <div className="col">
-      <label htmlFor={name} className="col-form-label fw-bold">
+      <label htmlFor={name} className="col-form-label fw-bold  text-dark">
         {label}
       </label>
       <div className={isEditable ? "" : "input-visible"}>

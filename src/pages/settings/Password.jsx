@@ -121,7 +121,7 @@ function PasswordView() {
       >
         <div className="position-absolute top-50 mt-50 start-50 translate-middle">
           <Card>
-            <div className="col fw-bold fs-4 text-center">
+            <div className="col fw-bold fs-4 text-center text-dark">
               <label>Thay đổi mật khẩu</label>
             </div>
             <div>

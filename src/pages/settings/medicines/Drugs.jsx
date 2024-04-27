@@ -14,9 +14,14 @@ import TableBody from "../../../components/TableBody";
 import Card from "../../../components/Card";
 import MainDialog from "../../../components/MainDialog";
 import { fetchAllUnit } from "../../../services/units";
+import NotificationDialog, {
+  DialogAction,
+} from "../../../components/NotificationDialog";
+import { formatNumber } from "../../../util/money";
 
 function DrugTab() {
   const dialogRef = useRef();
+  const notiDialogRef = useRef();
   const [dialogState, setDialogState] = useState({
     data: null,
     isEditable: true,
@@ -72,16 +77,20 @@ function DrugTab() {
   }
 
   async function deleteDrugHandler(id) {
-    await deleteDrugById({ id });
-    queryClient.invalidateQueries({ queryKey: ["drugs"] });
+    notiDialogRef.current.setDialogData({
+      action: DialogAction.DELETE,
+      dispatchFn: () => deleteDrugById({ id }),
+    });
+    notiDialogRef.current.showDialogWarning();
   }
 
   return (
     <div className="h-100 w-100">
+      <NotificationDialog ref={notiDialogRef} keyQuery={["drugs"]} />
       <Card>
         <div className="w-100 h-100 d-flex flex-column gap-3">
           <div className=" w-100  d-flex flex-row justify-content-around">
-            <div className="col fw-bold fs-4">
+            <div className="col fw-bold fs-4 text-black">
               <label>Thuốc</label>
             </div>
             <div className="row gap-3">
@@ -121,7 +130,10 @@ function DrugTab() {
                 >
                   <div className="row gap-3">
                     <div className="col">
-                      <label htmlFor="drugname" className="col-form-label">
+                      <label
+                        htmlFor="drugname"
+                        className="col-form-label  text-dark"
+                      >
                         Tên thuốc
                       </label>
                       <input
@@ -135,14 +147,17 @@ function DrugTab() {
                       />
                     </div>
                     <div className="col">
-                      <label htmlFor="price" className="col-form-label">
-                        Giá bán
+                      <label
+                        htmlFor="note"
+                        className="col-form-label  text-dark"
+                      >
+                        Hoạt chất
                       </label>
                       <input
                         className="form-control"
-                        id="price"
-                        name="price"
-                        defaultValue={dialogState.data?.price ?? ""}
+                        id="note"
+                        name="note"
+                        defaultValue={dialogState.data?.note ?? ""}
                         disabled={!dialogState.isEditable}
                         required
                       ></input>
@@ -150,7 +165,10 @@ function DrugTab() {
                   </div>
                   <div className="row gap-3">
                     <div className="col">
-                      <label htmlFor="count" className="col-form-label">
+                      <label
+                        htmlFor="count"
+                        className="col-form-label  text-dark"
+                      >
                         Số lượng
                       </label>
                       <input
@@ -165,7 +183,7 @@ function DrugTab() {
                     <div className="col">
                       <label
                         htmlFor="diagnostic"
-                        className="col-form-label fw-bold"
+                        className="col-form-label fw-bold  text-dark"
                       >
                         Đơn vị
                       </label>
@@ -187,6 +205,22 @@ function DrugTab() {
                           })}
                       </select>
                     </div>
+                    <div className="col">
+                      <label
+                        htmlFor="price"
+                        className="col-form-label  text-dark"
+                      >
+                        Giá bán
+                      </label>
+                      <input
+                        className="form-control"
+                        id="price"
+                        name="price"
+                        defaultValue={dialogState.data?.price ?? ""}
+                        disabled={!dialogState.isEditable}
+                        required
+                      ></input>
+                    </div>
                   </div>
                 </MainDialog>
               </div>
@@ -200,15 +234,19 @@ function DrugTab() {
               <div className="text-start" style={{ width: "24%" }}>
                 Tên
               </div>
-              <div className="text-start" style={{ width: "20%" }}>
-                Đơn vị
+              <div className="text-start" style={{ width: "15%" }}>
+                Hoạt chất
               </div>
-              <div className="text-start" style={{ width: "20%" }}>
-                Giá bán
-              </div>
-              <div className="text-start" style={{ width: "20%" }}>
+              <div className="text-start" style={{ width: "15%" }}>
                 Số lượng
               </div>
+              <div className="text-start" style={{ width: "15%" }}>
+                Đơn vị
+              </div>
+              <div className="text-start" style={{ width: "15%" }}>
+                Giá bán
+              </div>
+
               <div className="text-start" style={{ width: "10%" }}>
                 Thao tác
               </div>
@@ -240,7 +278,23 @@ function DrugTab() {
                       </div>
                       <div
                         className="text-start"
-                        style={{ width: "20%" }}
+                        style={{ width: "15%" }}
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false"
+                      >
+                        {drug.note}
+                      </div>
+                      <div
+                        className="text-start"
+                        style={{ width: "15%" }}
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false"
+                      >
+                        {drug.count}
+                      </div>
+                      <div
+                        className="text-start"
+                        style={{ width: "15%" }}
                         data-bs-toggle="dropdown"
                         aria-expanded="false"
                       >
@@ -248,20 +302,13 @@ function DrugTab() {
                       </div>
                       <div
                         className="text-start"
-                        style={{ width: "20%" }}
+                        style={{ width: "15%" }}
                         data-bs-toggle="dropdown"
                         aria-expanded="false"
                       >
-                        {drug.price}
+                        {formatNumber(drug.price)}
                       </div>
-                      <div
-                        className="text-start"
-                        style={{ width: "20%" }}
-                        data-bs-toggle="dropdown"
-                        aria-expanded="false"
-                      >
-                        {drug.count}
-                      </div>
+
                       <div
                         className="text-start"
                         style={{ width: "10%" }}

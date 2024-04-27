@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -13,10 +13,14 @@ import Card from "../../components/Card";
 import TableHeader from "../../components/TableHeader";
 import TableBody from "../../components/TableBody";
 import MainDialog from "../../components/MainDialog";
+import NotificationDialog, {
+  DialogAction,
+} from "../../components/NotificationDialog";
 
 function PatientsPage() {
   const searchRef = useRef();
   const dialogRef = useRef();
+  const notiDialogRef = useRef();
   const navigate = useNavigate();
   const [dialogState, setDialogState] = useState({
     data: null,
@@ -49,7 +53,6 @@ function PatientsPage() {
       };
     });
   }
-  
 
   function viewHandler({ id }) {
     navigate(`${id}`);
@@ -59,17 +62,21 @@ function PatientsPage() {
     await dialogRef.current.edit({ id, action });
   }
 
-  async function deletePatientHandler(id) {
-    await deletePatientById({ id });
-    patientsQuery.refetch();
+  async function deletePatientHandler({ id }) {
+    notiDialogRef.current.setDialogData({
+      action: DialogAction.DELETE,
+      dispatchFn: () => deletePatientById({ id }),
+    });
+    notiDialogRef.current.showDialogWarning();
   }
 
   return (
     <div className="h-100 w-100">
+      <NotificationDialog ref={notiDialogRef} keyQuery={["patientlist"]} />
       <Card>
         <div className="w-100 h-100 d-flex flex-column gap-3">
           <div className=" w-100  d-flex flex-row justify-content-around">
-            <div className="col fw-bold fs-4">
+            <div className="col fw-bold fs-4 text-black">
               <label>Bệnh nhân</label>
             </div>
             <div className="col">
@@ -354,7 +361,11 @@ function PatientsPage() {
                         </span>
                         <span
                           className="p-2"
-                          onClick={() => deletePatientHandler(patient.id)}
+                          data-bs-toggle="modal"
+                          data-bs-target="#notification"
+                          onClick={() =>
+                            deletePatientHandler({ id: patient.id })
+                          }
                         >
                           <svg
                             xmlns="http://www.w3.org/2000/svg"

@@ -14,9 +14,13 @@ import { convertDate, compareDates, inputToDayFormat } from "../../util/date";
 import { formatNumber } from "../../util/money";
 import { queryClient } from "../../App";
 import { fetchFeeConsult } from "../../services/argument";
+import NotificationDialog, {
+  DialogAction,
+} from "../../components/NotificationDialog";
 
 function PatientsPage() {
   const searchRef = useRef();
+  const notiDialogRef = useRef();
   const dialogRef = useRef();
   const [billState, setBillState] = useState({
     date: inputToDayFormat(),
@@ -72,22 +76,29 @@ function PatientsPage() {
   }
 
   function viewHandler({ bill }) {
-    dialogRef.current.showDetail({  bill});
+    dialogRef.current.showDetail({ bill });
   }
 
   async function deleteBillHandler({ id }) {
-    await deleteBillById({ id });
-    queryClient.invalidateQueries({ queryKey: ["bills"] });
+    async function deletefunction() {
+      await deleteBillById({ id });
+    }
+    notiDialogRef.current.setDialogData({
+      action: DialogAction.DELETE,
+      dispatchFn: deletefunction,
+    });
+    notiDialogRef.current.showDialogWarning();
   }
 
   return (
     <>
       <InvoiceDetail ref={dialogRef} />
+      <NotificationDialog ref={notiDialogRef} keyQuery={["bills"]} />
       <div className="h-100 w-100">
         <Card>
           <div className="w-100 h-100 d-flex flex-column gap-3">
             <div className=" w-100  d-flex flex-row justify-content-around">
-              <div className="col fw-bold fs-4">
+              <div className="col fw-bold fs-4 text-black">
                 <label>Hóa đơn</label>
               </div>
               <form
@@ -152,7 +163,7 @@ function PatientsPage() {
                             className="p-2"
                             onClick={() =>
                               viewHandler({
-                                bill
+                                bill,
                               })
                             }
                           >

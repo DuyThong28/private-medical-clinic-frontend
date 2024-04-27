@@ -1,7 +1,7 @@
 import { NavLink, Outlet, useParams, useNavigate } from "react-router-dom";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useSelector, useDispatch } from "react-redux";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Form from "react-bootstrap/Form";
 
 import "./ExaminationDetail.scss";
@@ -17,10 +17,15 @@ import { fetchAppointentListPatientById } from "../../../services/appointmentLis
 import { createAppointmentRecordDetail } from "../../../services/appointmentRecordDetails";
 import { createAppointmentRecord } from "../../../services/appointmentRecords";
 import { fetchAllDisease } from "../../../services/diseases";
+import NotificationDialog, {
+  DialogAction,
+} from "../../../components/NotificationDialog";
 
 export default function ExaminationDetail() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const notiDialogRef = useRef();
+  const formRef = useRef();
   const [validated, setValidated] = useState(false);
   const { appopintmentListPatientId } = useParams();
   const [dataState, setDataState] = useState({
@@ -69,32 +74,15 @@ export default function ExaminationDetail() {
         });
       });
       dispatch(prescriptionAction.removeAll());
-      navigate("/systems/examinations");
+      notiDialogRef.current.toastSuccess();
+      setTimeout(() => {
+        navigate("/systems/examinations");
+      }, 1050);
+    },
+    onError: () => {
+      notiDialogRef.current.toastError();
     },
   });
-
-  function finishExamHandler(event) {
-    event.preventDefault();
-    const form = event.currentTarget;
-    if (form.checkValidity() === false) {
-      setValidated(true);
-      return;
-    }
-
-    const formData = new FormData(form);
-    const examData = Object.fromEntries(formData);
-    const symptoms = examData.symptoms.trim();
-    const diseaseId = examData.diagnostic;
-    const patientId = appointmentListPatientData.patientId;
-    const appointmentListId = appointmentListPatientData.appointmentListId;
-    appointmentRecordMutate.mutate({
-      symptoms,
-      diseaseId,
-      patientId,
-      appointmentListId,
-    });
-    setValidated(false);
-  }
 
   function changeFormHandler(event) {
     event.preventDefault();
@@ -113,11 +101,42 @@ export default function ExaminationDetail() {
     });
   }
 
+  function finishHandler() {
+    function finishExamHandler() {
+      const form = formRef.current;
+      if (form.checkValidity() === false) {
+        setValidated(true);
+        return;
+      }
+
+      const formData = new FormData(form);
+      const examData = Object.fromEntries(formData);
+      const symptoms = examData.symptoms.trim();
+      const diseaseId = examData.diagnostic;
+      const patientId = appointmentListPatientData.patientId;
+      const appointmentListId = appointmentListPatientData.appointmentListId;
+      appointmentRecordMutate.mutate({
+        symptoms,
+        diseaseId,
+        patientId,
+        appointmentListId,
+      });
+      setValidated(false);
+    }
+    notiDialogRef.current.setDialogData({
+      action: DialogAction.FINISH,
+      dispatchFn: finishExamHandler,
+    });
+
+    notiDialogRef.current.showDialogWarning();
+  }
+
   return (
     <Card>
+      <NotificationDialog ref={notiDialogRef} keyQuery={["patientlist"]} />
       <Form
         className="w-100 h-100 d-flex flex-row  gap-3"
-        onSubmit={finishExamHandler}
+        ref={formRef}
         noValidate
         onChange={changeFormHandler}
         validated={validated}
@@ -288,7 +307,8 @@ export default function ExaminationDetail() {
             <div className="col text-end">
               <button
                 className="btn btn-primary"
-                type="submit"
+                type="button"
+                onClick={finishHandler}
                 disabled={dataState.data?.symptoms ? false : true}
               >
                 Hoàn thành

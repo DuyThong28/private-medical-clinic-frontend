@@ -17,9 +17,13 @@ import { fetchAllDisease } from "../../services/diseases";
 import { fetchFeeConsult } from "../../services/argument";
 import { createBill } from "../../services/bill";
 import { queryClient } from "../../App";
+import NotificationDialog, {
+  DialogAction,
+} from "../../components/NotificationDialog";
 
 const InvoiceDetail = forwardRef(function InvoiceDetail({ children }, ref) {
   const modalRef = useRef();
+  const notiDialogRef = useRef();
   modalRef.current?.isLarge();
   const [dialogState, setDialogState] = useState({
     feeconsult: 0,
@@ -54,12 +58,16 @@ const InvoiceDetail = forwardRef(function InvoiceDetail({ children }, ref) {
     onSuccess: () => {
       modalRef.current.close();
       queryClient.invalidateQueries({ queryKey: ["appointmentList"] });
+      notiDialogRef.current.toastSuccess();
       setDialogState((prevState) => {
         return {
           ...prevState,
           drugExpense: 0,
         };
       });
+    },
+    onError: () => {
+      notiDialogRef.current.toastError();
     },
   });
 
@@ -117,190 +125,202 @@ const InvoiceDetail = forwardRef(function InvoiceDetail({ children }, ref) {
   });
 
   function submitHandler() {
-    billMutate.mutate({
-      patientId: appointmentRecordData?.patientId,
-      appointmentListId: appointmentRecordData?.appointmentListId,
-      drugExpense: dialogState?.drugExpense,
+    function submit() {
+      billMutate.mutate({
+        patientId: appointmentRecordData?.patientId,
+        appointmentListId: appointmentRecordData?.appointmentListId,
+        drugExpense: dialogState?.drugExpense,
+      });
+    }
+
+    notiDialogRef.current.setDialogData({
+      action: DialogAction.PAYFEE,
+      dispatchFn: submit,
     });
+    notiDialogRef.current.showDialogWarning();
   }
 
   return (
-    <MainModal ref={modalRef}>
-      <div tabIndex="-1" className="h-100">
-        <div className="modal-body h-100">
-          <Form className="w-100 h-100  gap-3">
-            <div className="row  gap-3">
-              <div className="col">
-                <div className="row gap-3">
-                  <MainInput
-                    name={"patientid"}
-                    isEditable={dialogState.isEditable}
-                    defaultValue={
-                      appointmentRecordData && appointmentRecordData.patientId
-                    }
-                    label={"Mã bệnh nhân"}
-                  />
-                  <MainInput
-                    name={"fullname"}
-                    isEditable={dialogState.isEditable}
-                    defaultValue={
-                      appointmentRecordData &&
-                      appointmentRecordData.patient.fullName
-                    }
-                    label={"Tên bệnh nhân"}
-                  />
+    <>
+      <NotificationDialog ref={notiDialogRef} keyQuery={["appointmentList"]} />
+      <MainModal ref={modalRef}>
+        <div tabIndex="-1" className="h-100">
+          <div className="modal-body h-100">
+            <Form className="w-100 h-100  gap-3">
+              <div className="row  gap-3">
+                <div className="col">
+                  <div className="row gap-3">
+                    <MainInput
+                      name={"patientid"}
+                      isEditable={dialogState.isEditable}
+                      defaultValue={
+                        appointmentRecordData && appointmentRecordData.patientId
+                      }
+                      label={"Mã bệnh nhân"}
+                    />
+                    <MainInput
+                      name={"fullname"}
+                      isEditable={dialogState.isEditable}
+                      defaultValue={
+                        appointmentRecordData &&
+                        appointmentRecordData.patient.fullName
+                      }
+                      label={"Tên bệnh nhân"}
+                    />
 
-                  <MainInput
-                    name={"phonenumber"}
-                    isEditable={dialogState.isEditable}
-                    defaultValue={
-                      appointmentRecordData &&
-                      appointmentRecordData.patient.phoneNumber
-                    }
-                    label={"Số điện thoại"}
-                  />
-                  <MainInput
-                    name={"gender"}
-                    isEditable={dialogState.isEditable}
-                    defaultValue={
-                      appointmentRecordData &&
-                      appointmentRecordData.patient.gender
-                    }
-                    label={"Giới tính"}
-                  />
-                  <MainInput
-                    name={"birthyear"}
-                    isEditable={dialogState.isEditable}
-                    defaultValue={
-                      appointmentRecordData &&
-                      appointmentRecordData.patient.birthYear
-                    }
-                    label={"Năm sinh"}
-                  />
-                  <MainInput
-                    name={"address"}
-                    isEditable={dialogState.isEditable}
-                    defaultValue={
-                      appointmentRecordData &&
-                      appointmentRecordData.patient.address
-                    }
-                    label={"Địa chỉ"}
-                  />
-                </div>
-                <div className="row gap-3 w-100">
-                  <div className="col w-100">
-                    <div className="row">
-                      <MainInput
-                        name={"appointmentid"}
-                        isEditable={dialogState.isEditable}
-                        defaultValue={
-                          appointmentRecordData && appointmentRecordData.id
-                        }
-                        label={"Mã ca khám"}
-                      />
-                      <MainInput
-                        name="scheduledate"
+                    <MainInput
+                      name={"phonenumber"}
+                      isEditable={dialogState.isEditable}
+                      defaultValue={
+                        appointmentRecordData &&
+                        appointmentRecordData.patient.phoneNumber
+                      }
+                      label={"Số điện thoại"}
+                    />
+                    <MainInput
+                      name={"gender"}
+                      isEditable={dialogState.isEditable}
+                      defaultValue={
+                        appointmentRecordData &&
+                        appointmentRecordData.patient.gender
+                      }
+                      label={"Giới tính"}
+                    />
+                    <MainInput
+                      name={"birthyear"}
+                      isEditable={dialogState.isEditable}
+                      defaultValue={
+                        appointmentRecordData &&
+                        appointmentRecordData.patient.birthYear
+                      }
+                      label={"Năm sinh"}
+                    />
+                    <MainInput
+                      name={"address"}
+                      isEditable={dialogState.isEditable}
+                      defaultValue={
+                        appointmentRecordData &&
+                        appointmentRecordData.patient.address
+                      }
+                      label={"Địa chỉ"}
+                    />
+                  </div>
+                  <div className="row gap-3 w-100">
+                    <div className="col w-100">
+                      <div className="row">
+                        <MainInput
+                          name={"appointmentid"}
+                          isEditable={dialogState.isEditable}
+                          defaultValue={
+                            appointmentRecordData && appointmentRecordData.id
+                          }
+                          label={"Mã ca khám"}
+                        />
+                        <MainInput
+                          name="scheduledate"
+                          defaultValue={
+                            appointmentRecordData &&
+                            convertDate(
+                              appointmentRecordData.appointmentList.scheduleDate
+                            )
+                          }
+                          isEditable={dialogState.isEditable}
+                          label={"Ngày khám"}
+                          type={"date"}
+                        />
+                        <MainTextarea
+                          name="symptoms"
+                          defaultValue={
+                            appointmentRecordData &&
+                            appointmentRecordData.symptoms
+                          }
+                          isEditable={dialogState.isEditable}
+                          label={"Triệu chứng"}
+                        />
+                      </div>
+                    </div>
+                    <div className="col w-100">
+                      <MainSelect
+                        name={"diagnostic"}
                         defaultValue={
                           appointmentRecordData &&
-                          convertDate(
-                            appointmentRecordData.appointmentList.scheduleDate
-                          )
+                          appointmentRecordData.diseaseId
                         }
                         isEditable={dialogState.isEditable}
-                        label={"Ngày khám"}
-                        type={"date"}
-                      />
-                      <MainTextarea
-                        name="symptoms"
-                        defaultValue={
+                        label={"Chuẩn đoán"}
+                        options={
+                          diseaseState &&
+                          diseaseState.map((disease) => {
+                            return (
+                              <option key={disease.id} value={disease.id}>
+                                {disease.diseaseName}
+                              </option>
+                            );
+                          })
+                        }
+                        text={
                           appointmentRecordData &&
-                          appointmentRecordData.symptoms
+                          getDiseaseName({
+                            id: appointmentRecordData.diseaseId,
+                          })
                         }
-                        isEditable={dialogState.isEditable}
-                        label={"Triệu chứng"}
                       />
                     </div>
                   </div>
-                  <div className="col w-100">
-                    <MainSelect
-                      name={"diagnostic"}
-                      defaultValue={
-                        appointmentRecordData && appointmentRecordData.diseaseId
-                      }
-                      isEditable={dialogState.isEditable}
-                      label={"Chuẩn đoán"}
-                      options={
-                        diseaseState &&
-                        diseaseState.map((disease) => {
-                          return (
-                            <option key={disease.id} value={disease.id}>
-                              {disease.diseaseName}
-                            </option>
-                          );
-                        })
-                      }
-                      text={
-                        appointmentRecordData &&
-                        getDiseaseName({
-                          id: appointmentRecordData.diseaseId,
-                        })
-                      }
-                    />
+                </div>
+              </div>
+              <div className="row  overflow-hidden h-100">
+                <PreScriptionTab
+                  recordId={appointmentRecordData?.id}
+                  isEditable={dialogState.isEditable}
+                  setExpense={calculateDrugExpense}
+                  isBill={true}
+                />
+              </div>
+              <div className="d-flex mt-3 justify-content-end">
+                <div style={{ width: "20rem" }}>
+                  <div className="row justify-content-around">
+                    <span className="col">Tổng tiền thuốc:</span>
+                    <span className="col text-end">
+                      {formatToVND(dialogState.drugExpense)}
+                    </span>
+                  </div>
+                  <div className="row justify-content-around">
+                    <span className="col">Tiền khám:</span>
+                    <span className="col text-end">
+                      {formatToVND(dialogState.feeconsult)}
+                    </span>
+                  </div>
+                  <div className="row justify-content-around">
+                    <span className="col">Bệnh nhân phải trả: </span>
+                    <span className="col text-end">
+                      {formatToVND(
+                        dialogState.drugExpense + dialogState.feeconsult
+                      )}
+                    </span>
                   </div>
                 </div>
               </div>
-            </div>
-            <div className="row  overflow-hidden h-100">
-              <PreScriptionTab
-                recordId={appointmentRecordData?.id}
-                isEditable={dialogState.isEditable}
-                setExpense={calculateDrugExpense}
-                isBill={true}
-              />
-            </div>
-            <div className="d-flex mt-3 justify-content-end">
-              <div style={{ width: "20rem" }}>
-                <div className="row justify-content-around">
-                  <span className="col">Tổng tiền thuốc:</span>
-                  <span className="col text-end">
-                    {formatToVND(dialogState.drugExpense)}
-                  </span>
-                </div>
-                <div className="row justify-content-around">
-                  <span className="col">Tiền khám:</span>
-                  <span className="col text-end">
-                    {formatToVND(dialogState.feeconsult)}
-                  </span>
-                </div>
-                <div className="row justify-content-around">
-                  <span className="col">Bệnh nhân phải trả: </span>
-                  <span className="col text-end">
-                    {formatToVND(
-                      dialogState.drugExpense + dialogState.feeconsult
-                    )}
-                  </span>
-                </div>
-              </div>
-            </div>
-            {!isBill && (
-              <div className="d-flex gap-3 mt-3 justify-content-end">
-                <button type="button" className="btn btn-secondary fw-bold">
-                  In biên lai
-                </button>
+              {!isBill && (
+                <div className="d-flex gap-3 mt-3 justify-content-end">
+                  <button type="button" className="btn btn-secondary fw-bold">
+                    In biên lai
+                  </button>
 
-                <button
-                  type="button"
-                  className="btn btn-primary fw-bold"
-                  onClick={submitHandler}
-                >
-                  Thanh toán
-                </button>
-              </div>
-            )}
-          </Form>
+                  <button
+                    type="button"
+                    className="btn btn-primary fw-bold"
+                    onClick={submitHandler}
+                  >
+                    Thanh toán
+                  </button>
+                </div>
+              )}
+            </Form>
+          </div>
         </div>
-      </div>
-    </MainModal>
+      </MainModal>
+    </>
   );
 });
 

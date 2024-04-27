@@ -25,13 +25,14 @@ export async function createNewDrug(data) {
   const count = data.count;
   const unitId = data.unitid;
   const drugID = data?.id ?? null;
+  const note = data.note;
 
   let response;
   if (drugID) {
     response = await fetch(`http://localhost:8080/api/v1/drugs/${drugID}`, {
       credentials: "include",
       method: "PUT",
-      body: JSON.stringify({ drugName, price, count, unitId }),
+      body: JSON.stringify({ drugName, price, count, unitId, note }),
       headers: {
         "Content-Type": "application/json",
         authorization: "Bearer",
@@ -41,7 +42,7 @@ export async function createNewDrug(data) {
     response = await fetch(`http://localhost:8080/api/v1/drugs`, {
       method: "POST",
       credentials: "include",
-      body: JSON.stringify({ drugName, price, count, unitId }),
+      body: JSON.stringify({ drugName, price, count, unitId, note }),
       headers: {
         "Content-Type": "application/json",
         authorization: "Bearer",

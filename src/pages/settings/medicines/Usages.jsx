@@ -12,9 +12,13 @@ import TableHeader from "../../../components/TableHeader";
 import TableBody from "../../../components/TableBody";
 import Card from "../../../components/Card";
 import MainDialog from "../../../components/MainDialog";
+import NotificationDialog, {
+  DialogAction,
+} from "../../../components/NotificationDialog";
 
 function UsagesTab() {
   const dialogRef = useRef();
+  const notiDialogRef = useRef();
   const [dialogState, setDialogState] = useState({
     data: null,
     isEditable: true,
@@ -54,16 +58,20 @@ function UsagesTab() {
   }
 
   async function deleteUnitHandnler(id) {
-    await deleteUsage({ id });
-    queryClient.invalidateQueries({ queryKey: ["usages"] });
+    notiDialogRef.current.setDialogData({
+      action: DialogAction.DELETE,
+      dispatchFn: () => deleteUsage({ id }),
+    });
+    notiDialogRef.current.showDialogWarning();
   }
 
   return (
     <div className="h-100 w-100">
+      <NotificationDialog ref={notiDialogRef} keyQuery={["usages"]} />
       <Card>
         <div className="w-100 h-100 d-flex flex-column gap-3">
           <div className=" w-100  d-flex flex-row justify-content-around">
-            <div className="col fw-bold fs-4">
+            <div className="col fw-bold fs-4 text-black">
               <label>Cách dùng</label>
             </div>
             <div className="row gap-3">
@@ -101,7 +109,10 @@ function UsagesTab() {
                   onEdit={setData}
                 >
                   <div className="mb-3">
-                    <label htmlFor="drugname" className="col-form-label">
+                    <label
+                      htmlFor="drugname"
+                      className="col-form-label  text-dark"
+                    >
                       Cách dùng
                     </label>
                     <input

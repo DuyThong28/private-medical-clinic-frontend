@@ -2,7 +2,7 @@ export async function fetchAllPatients({ name, phoneNumber }) {
   const fullName = name.toLowerCase().trim();
   const phone = phoneNumber.trim();
   const response = await fetch(`http://localhost:8080/api/v1/patients`, {
-    credentials: "include", // Include cookies for cross-origin requests
+    credentials: "include",
     headers: {
       "Content-Type": "application/json",
       authorization: "Bearer",
@@ -32,7 +32,7 @@ export async function fetchOnePatient({ name, phoneNumber }) {
   const fullName = name.toLowerCase().trim();
   const phone = phoneNumber.trim();
   const response = await fetch(`http://localhost:8080/api/v1/patients`, {
-    credentials: "include", // Include cookies for cross-origin requests
+    credentials: "include",
     headers: {
       "Content-Type": "application/json",
       authorization: "Bearer",
@@ -71,7 +71,7 @@ export async function addPatient(patientData) {
       "http://localhost:8080/api/v1/patients/" + patientID,
       {
         method: "PUT",
-        credentials: "include", // Include cookies for cross-origin requests
+        credentials: "include",
         headers: {
           authorization: "Bearer",
           "Content-Type": "application/json",
@@ -88,7 +88,7 @@ export async function addPatient(patientData) {
   } else {
     response = await fetch("http://localhost:8080/api/v1/patients", {
       method: "POST",
-      credentials: "include", // Include cookies for cross-origin requests
+      credentials: "include",
       headers: {
         authorization: "Bearer",
         "Content-Type": "application/json",
@@ -109,6 +109,12 @@ export async function addPatient(patientData) {
 
   const resData = await response.json();
   const data = resData.data;
+  if (resData.status === 200) {
+    const error = new Error(
+      "Số điện thoại đã tồn tại vui lòng chọn số điện thoại khác"
+    );
+    throw error;
+  }
   return data;
 }
 
@@ -133,7 +139,7 @@ export async function fetchPatientById({ id }) {
 export async function deletePatientById({ id }) {
   const response = await fetch(`http://localhost:8080/api/v1/patients/${id}`, {
     method: "DELETE",
-    credentials: "include", // Include cookies for cross-origin requests
+    credentials: "include",
     headers: {
       authorization: "Bearer",
       "Content-Type": "application/json",

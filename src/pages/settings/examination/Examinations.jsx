@@ -20,12 +20,16 @@ import { fetchAllAppointmentListById } from "../../../services/appointmentList";
 import { compareDates } from "../../../util/date";
 import RescordHistoryModal from "./RecordHistoryModal";
 import InvoiceDetail from "../../Invoice/InvoiceDetail";
+import NotificationDialog, {
+  DialogAction,
+} from "../../../components/NotificationDialog";
 
 function ExaminationsPage() {
   const navigate = useNavigate();
   const modalRef = useRef();
   const payModalRef = useRef();
   const invoiceRef = useRef();
+  const notiDialogRef = useRef();
   const dispatch = useDispatch();
   const [examState, setExamState] = useState({
     name: "",
@@ -91,8 +95,14 @@ function ExaminationsPage() {
   }
 
   async function deleteAppointmentHandler({ id }) {
-    await deleteAppointmentListPatientById({ id });
-    queryClient.invalidateQueries({ queryKey: ["appointmentList"] });
+    async function deletefunction() {
+      await deleteAppointmentListPatientById({ id });
+    }
+    notiDialogRef.current.setDialogData({
+      action: DialogAction.DELETE,
+      dispatchFn: deletefunction,
+    });
+    notiDialogRef.current.showDialogWarning();
   }
 
   function setSearchData({ name, date, state }) {
@@ -109,6 +119,7 @@ function ExaminationsPage() {
     <>
       <RescordHistoryModal ref={payModalRef} />
       <InvoiceDetail ref={invoiceRef} />
+      <NotificationDialog ref={notiDialogRef} keyQuery={["appointmentList"]} />
       <div className="h-100 w-100">
         <Card>
           <div className="w-100 h-100 d-flex flex-column gap-3">

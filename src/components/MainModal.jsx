@@ -3,6 +3,8 @@ import { useMutation } from "@tanstack/react-query";
 import Modal from "react-bootstrap/Modal";
 import { queryClient } from "../App";
 import Form from "react-bootstrap/Form";
+import NotificationDialog, { DialogAction } from "./NotificationDialog";
+import { message } from "antd";
 
 const MainModal = forwardRef(function MainModal(
   { children, addFn, keyQuery, onSubmit, searchElement, onChange },
@@ -10,6 +12,7 @@ const MainModal = forwardRef(function MainModal(
 ) {
   const [show, setShow] = useState(false);
   const [validated, setValidated] = useState(false);
+  const notiDialogRef = useRef();
   const modalState = useRef({
     header: "",
     isEditable: true,
@@ -25,6 +28,17 @@ const MainModal = forwardRef(function MainModal(
       setShow(() => {
         return false;
       });
+      if (modalState.current.id !== null) {
+        notiDialogRef.current.setDialogData({ action: DialogAction.UPDATE });
+      } else {
+        notiDialogRef.current.setDialogData({ action: DialogAction.ADD });
+      }
+      notiDialogRef.current.toastSuccess();
+      modalState.current.id = null;
+    },
+    onError: (data) => {
+      notiDialogRef.current.setDialogData({ action: DialogAction.ADD });
+      notiDialogRef.current.toastError({ message: data.message });
     },
   });
 
@@ -85,40 +99,46 @@ const MainModal = forwardRef(function MainModal(
       if (modalState.current.id !== null) data.id = modalState.current.id;
       onSubmit({ data, addMutate });
     }
-
     setValidated(false);
-    modalState.current.id = null;
   }
 
   return (
-    <Modal
-      ref={ref}
-      show={show}
-      onHide={closeHandler}
-      centered
-      size={modalState.current.size}
-    >
-      <Modal.Header closeButton style={{ height: "50px" }}>
-        <Modal.Title>{modalState.current.header}</Modal.Title>
-      </Modal.Header>
-      <div tabIndex="-1" className="h-100">
-        <div
-          className="modal-body fw-bold h-100"
-          style={{ padding: "0 0.75rem 0.75rem 0.75rem" }}
+    <>
+      <NotificationDialog ref={notiDialogRef} />
+      <Modal
+        ref={ref}
+        show={show}
+        onHide={closeHandler}
+        centered
+        size={modalState.current.size}
+        style={{ zIndex: "1050" }}
+      >
+        <Modal.Header
+          closeButton
+          className="text-dark"
+          style={{ height: "50px" }}
         >
-          {!modalState.current.id && searchElement}
-          <Form
-            onChange={onChange}
-            onSubmit={submitHandler}
-            noValidate
-            validated={validated}
-            className="h-100"
+          <Modal.Title>{modalState.current.header}</Modal.Title>
+        </Modal.Header>
+        <div tabIndex="-1" className="h-100">
+          <div
+            className="modal-body fw-bold h-100"
+            style={{ padding: "0 0.75rem 0.75rem 0.75rem" }}
           >
-            {children}
-          </Form>
+            {!modalState.current.id && searchElement}
+            <Form
+              onChange={onChange}
+              onSubmit={submitHandler}
+              noValidate
+              validated={validated}
+              className="h-100"
+            >
+              {children}
+            </Form>
+          </div>
         </div>
-      </div>
-    </Modal>
+      </Modal>
+    </>
   );
 });
 

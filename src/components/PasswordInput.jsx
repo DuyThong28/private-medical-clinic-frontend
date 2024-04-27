@@ -48,7 +48,7 @@ export default function PasswordInput({
   return (
     <>
       <div className="row fw-bold">
-        <label htmlFor="currentpassword" className="col-form-label">
+        <label htmlFor="currentpassword" className="col-form-label  text-dark">
           {label}
         </label>
         <div className="d-flex flex-row position-relative">

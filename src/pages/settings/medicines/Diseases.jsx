@@ -6,15 +6,18 @@ import {
   deleteDisease,
   fetchAllDisease,
 } from "../../../services/diseases";
-import { queryClient } from "../../../App";
 
 import TableHeader from "../../../components/TableHeader";
 import TableBody from "../../../components/TableBody";
 import Card from "../../../components/Card";
 import MainDialog from "../../../components/MainDialog";
+import NotificationDialog, {
+  DialogAction,
+} from "../../../components/NotificationDialog";
 
 function DiseasesTab() {
   const dialogRef = useRef();
+  const notiDialogRef = useRef();
   const [dialogState, setDialogState] = useState({
     data: null,
     isEditable: true,
@@ -38,7 +41,7 @@ function DiseasesTab() {
   }
 
   useEffect(() => {
-   setListState(() => diseases);
+    setListState(() => diseases);
   }, [diseases]);
 
   function searchHandler(event) {
@@ -54,16 +57,20 @@ function DiseasesTab() {
   }
 
   async function deleteDiseaseHandnler(id) {
-    await deleteDisease({ id });
-    queryClient.invalidateQueries({ queryKey: ["diseases"] });
+    notiDialogRef.current.setDialogData({
+      action: DialogAction.DELETE,
+      dispatchFn: () => deleteDisease({ id }),
+    });
+    notiDialogRef.current.showDialogWarning();
   }
 
   return (
     <div className="h-100 w-100">
+      <NotificationDialog ref={notiDialogRef} keyQuery={["diseases"]} />
       <Card>
         <div className="w-100 h-100 d-flex flex-column gap-3">
           <div className=" w-100  d-flex flex-row justify-content-around">
-            <div className="col fw-bold fs-4">
+            <div className="col fw-bold fs-4 text-black">
               <label>Bệnh</label>
             </div>
             <div className="row gap-3">
@@ -101,14 +108,17 @@ function DiseasesTab() {
                   onEdit={setData}
                 >
                   <div>
-                    <label htmlFor="drugname" className="col-form-label">
+                    <label
+                      htmlFor="drugname"
+                      className="col-form-label  text-dark"
+                    >
                       Bệnh
                     </label>
                     <input
                       type="text"
                       className="form-control"
-                      id="usagedes"
-                      name="usagedes"
+                      id="diseasename"
+                      name="diseasename"
                       defaultValue={dialogState.data?.diseaseName ?? ""}
                       disabled={!dialogState.isEditable}
                       required

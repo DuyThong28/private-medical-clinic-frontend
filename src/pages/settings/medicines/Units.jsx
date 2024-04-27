@@ -12,9 +12,13 @@ import TableHeader from "../../../components/TableHeader";
 import TableBody from "../../../components/TableBody";
 import Card from "../../../components/Card";
 import MainDialog from "../../../components/MainDialog";
+import NotificationDialog, {
+  DialogAction,
+} from "../../../components/NotificationDialog";
 
 function UnitsTab() {
   const dialogRef = useRef();
+  const notiDialogRef = useRef();
   const [dialogState, setDialogState] = useState({
     data: null,
     isEditable: true,
@@ -54,16 +58,20 @@ function UnitsTab() {
   }
 
   async function deleteUnitHandnler(id) {
-    await deleteUnit({ id });
-    queryClient.invalidateQueries({ queryKey: ["units"] });
+    notiDialogRef.current.setDialogData({
+      action: DialogAction.DELETE,
+      dispatchFn: () => deleteUnit({ id }),
+    });
+    notiDialogRef.current.showDialogWarning();
   }
 
   return (
     <div className="h-100 w-100">
+      <NotificationDialog ref={notiDialogRef} keyQuery={["units"]} />
       <Card>
         <div className="w-100 h-100 d-flex flex-column gap-3">
           <div className=" w-100  d-flex flex-row justify-content-around">
-            <div className="col fw-bold fs-4">
+            <div className="col fw-bold fs-4 text-black">
               <label>Đơn vị</label>
             </div>
             <div className="row gap-3">
@@ -101,14 +109,17 @@ function UnitsTab() {
                   onEdit={setData}
                 >
                   <div className="mb-3">
-                    <label htmlFor="drugname" className="col-form-label">
+                    <label
+                      htmlFor="drugname"
+                      className="col-form-label  text-dark"
+                    >
                       Đơn vị
                     </label>
                     <input
                       type="text"
                       className="form-control"
-                      id="usagedes"
-                      name="usagedes"
+                      id="unitname"
+                      name="unitname"
                       defaultValue={dialogState.data?.unitName ?? ""}
                       disabled={!dialogState.isEditable}
                     />
