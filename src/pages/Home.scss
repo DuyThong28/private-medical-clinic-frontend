@@ -47,26 +47,21 @@
 }
 
 .overview-number {
-    margin-top: 20px;
-    height: 100px;
     border-radius: 12px;
     box-shadow: 2px 2px 4px 0px rgba(0, 0, 0, 0.5);
-    padding: 12px;
+    padding: 20px 16px;
     background-image: linear-gradient(to right, #54b5e2, #7c5bb5);
     color: #333;
     font-weight: 600;
-    display: flex;
 }
 
 .overview-number-patient {
-    font-size: 2rem;
-    text-align: center;
+    font-size: 2.2rem;
 }
 
 .overview-number-percents {
     display: flex;
     flex: 1;
-    justify-content: center;
 }
 
 .overview-number-percent {
@@ -110,24 +105,64 @@
     font-size: 0.875rem;
 }
 
+.modal-calendar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    z-index: 3;
+    display: none;
+}
+
+.show-modal {
+    border: 1px solid #13a1df;
+    margin: 0 8px;
+    font-weight: 600;
+    padding: 8px;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    &:hover{
+        background-color: rgba(0, 0, 0, 0.1);
+    }
+}
+
+#toggle-modal,#toggle-modal-2 {
+    display: none;
+}
+
+#toggle-modal:checked + .modal-calendar, #toggle-modal-2:checked + .modal-calendar{
+    display: block;
+}
+
+.btn-modal {
+    width: 90%;
+    height: 45px;
+    background-color: #13a1df;
+    border-radius: 12px;
+    color: #fff;
+    font-size: 1rem;
+    border: none;
+    box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.btn-modal:hover {
+    opacity: 0.8;
+}
+
+.weeks-icon {
+    margin-left: 8px;
+} 
+
 .overview-patient-ofday {
     margin-top: 16px;
-    // width: 100%;
     border-radius: 12px;
     box-shadow: 2px 2px 4px 0px rgba(0, 0, 0, 0.5);
-    height: 200px;
     padding: 12px 12px;
     background-color: #fff;
     position: relative;
-
-    .modal-calendar {
-        position: fixed;
-        top: 0;
-        bottom: 0;
-        right: 0;
-        left: 0;
-        z-index: 3;
-        display: none;
+    h6{
+        margin-bottom: 20px;
     }
 
     .weeks-selection {
@@ -137,59 +172,22 @@
         display: flex;
         align-items: center;
         color: #63797d;
-        .weeks-icon {
-            margin-left: 8px;
-        }
-
-        .show-modal {
-            margin: 0 8px;
-            font-weight: 600;
-            padding: 8px;
-            border-radius: 6px;
-            &:hover{
-                background-color: rgba(0, 0, 0, 0.1);
-            }
-        }
-
-        #toggle-modal {
-            display: none;
-        }
-
-        #toggle-modal:checked + .modal-calendar {
-            display: block;
-        }
-
+        
         .rdp {
             // --rdp-cell-size: 34px;
             --rdp-accent-color: #13a1df;
             --rdp-background-color: #13a1df;
         }
-
-        .btn-modal {
-            width: 90%;
-            height: 45px;
-            background-color: #13a1df;
-            border-radius: 12px;
-            color: #fff;
-            font-size: 1rem;
-            border: none;
-            box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-        }
-
-        .btn-modal:hover {
-            opacity: 0.8;
-        }
     }
 
     .overview-patient-chart {
         width: 100%;
-        height: 180px;
         display: flex;
         overflow: hidden;
-        justify-content: center;
+        padding-left: 50px;
         .overview-chart{
             height: 150px !important;
-            width: 700px !important;
+            width: 650px !important;
         }
         .chart-note {
             margin: auto 0;
@@ -238,7 +236,6 @@
     right: 50%;
     transform: translate(50%, -50%);
     width: 350px;
-    height: 350px;
     background-color: #fff;
     border-radius: 12px;
     padding: 8px;
@@ -252,36 +249,81 @@
 /* Top medicine */
 .overview-topmedicine {
     margin-top: 16px;
-    // width: 100%;
     border-radius: 12px;
     box-shadow: 2px 2px 4px 0px rgba(0, 0, 0, 0.5);
-    height: 200px;
+    height: 220px;
     padding: 12px 12px;
     background-color: #fff;
-    overflow-y: scroll;
     position: relative;
+    h6{
+        margin-bottom: 20px;
+    }
+    .rdp {
+        // --rdp-cell-size: 34px;
+        --rdp-accent-color: #13a1df;
+        --rdp-background-color: #13a1df;
+    }
+
+    .option-container{
+        display: flex;
+    }
+
+    .hg-lg{
+        height: 450px;
+    }
+
+    .selected-option{
+        margin: 0;
+        padding: 4px 16px;
+        border: 1px solid #13a1df;
+        color: #13a1df;
+        font-weight: bold;
+    }
+
+    .selected-option.active{
+        background-color: #13a1df;
+        color: #fff;
+    }
+
+    .table-top-drug{
+        width: 100%;
+        font-weight: bold;
+        p{
+            font-size: 1rem;
+            flex: 1;
+            margin-bottom: 8px;
+        }
+        .table-header{
+            color: #13a1df;
+        }
+        .table-body-row, .table-header{
+            display: flex;
+            position: relative;
+            ::after{
+                content: '';
+                width: 100%;
+                border-bottom: 1px solid #999;
+                position: absolute;
+                bottom: 0;
+                right: 0;
+            }
+        }
+        .table-body{
+            height: 135px;
+            overflow-y: scroll;
+            p{
+                font-weight: 400;
+                padding-left: 8px;
+            }
+        }
+    }
 }
 
-.selecweekormonth{
+.week-or-month-info{
     position: absolute;
     top: 12px;
     right: 12px;
-}
-
-.table-responsive{
-    margin-top: 12px;
-}
-
-.dropdown-menu{
-    max-width: 100px ;
-    .active{
-        background-color: #13a1df;
-    } 
-    .dropdown-item:active{
-        background-color: #13a1df;
-    }
-}
-    
+}   
 
 // Calendar
 #calendar {
@@ -341,4 +383,42 @@
 
 .patient-item + .patient-item {
     margin-top: 8px;
+}
+
+.month-picker{
+    width: 280px;
+    height: 280px;
+    margin: 16px;
+}
+
+.select-year{
+    display: flex;
+    padding: 8px;
+    background-color: #13a1df;
+    align-items: center;
+    margin-bottom: 20px;
+    color: #fff;
+    p{
+        flex: 1;
+        text-align: center;
+        margin: 0;
+    }
+    .icon-month{
+        padding: 4px;
+    }
+}
+
+.month-container{
+    display: flex;
+    flex-wrap: wrap;
+    p{
+        width: 33.33%;
+        text-align: center;
+        margin: 0;
+        padding: 12px 8px;
+    }
+    .month-selected{
+        color: #fff;
+        background-color: #13a1df;
+    }
 }
