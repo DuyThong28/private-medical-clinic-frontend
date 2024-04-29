@@ -23,16 +23,15 @@ export async function createAppointmentRecord({
   );
 
   if (!response.ok) {
-    const error = new Error(
-      "An error occurred while create appointment record"
-    );
+    const error = new Error("Ca khám chưa hoàn thành");
     error.code = response.status;
     error.info = await response.json();
     throw error;
   }
 
   const resData = await response.json();
-  const data = resData.data;
+  const data = {...resData.data};
+  data.message = "Hoàn thành ca khám";
   return data;
 }
 
@@ -86,8 +85,6 @@ export async function fetchAppointmentRecordByPatientId({ patientId }) {
   return data;
 }
 
-
-
 export async function fetchAppointmentRecordByBill({ bill }) {
   const patientId = bill.patientId;
   const appointmentListId = bill.appointmentListId;
@@ -115,7 +112,6 @@ export async function fetchAppointmentRecordByBill({ bill }) {
   const data = resData.data;
   return data;
 }
-
 
 export async function fetchAppointmentRecordById({ id }) {
   const response = await fetch(
@@ -156,13 +152,15 @@ export async function deleteAppointmentRecordById({ id }) {
   );
 
   if (!response.ok) {
-    const error = new Error(
-      "An error occurred while deleting appointment record"
-    );
+    const error = new Error("Xóa phiếu khám bệnh thất bại");
     error.code = response.status;
     error.info = await response.json();
     throw error;
   }
 
-  return response.json();
+  const resData = await response.json();
+  const data = { ...resData.data };
+  data.message = "Xóa phiếu khám bệnh thành công";
+
+  return data;
 }

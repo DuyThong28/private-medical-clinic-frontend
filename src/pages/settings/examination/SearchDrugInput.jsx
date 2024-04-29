@@ -44,7 +44,6 @@ export default function SearchDrugInput() {
     const drugResult = drugState.filter((drug) =>
       drug.drugName.toLowerCase().includes(textSearch)
     );
-    console.log("this is drug data", drugState);
     setDrugs(() => drugResult);
   }
 

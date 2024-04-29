@@ -30,13 +30,14 @@ export async function createBill(data) {
     });
 
     if (!response.ok) {
-      const error = new Error("An error occurred while create bill");
+      const error = new Error("Thanh toán thất bại");
       error.code = response.status;
       error.info = await response.json();
       throw error;
     }
     const resData = await response.json();
     const data = resData.data;
+    data.message = "Thanh toán thành công";
     return data;
   }
 }
@@ -92,11 +93,14 @@ export async function deleteBillById({ id }) {
   });
 
   if (!response.ok) {
-    const error = new Error("An error occurred while deleting bill");
+    const error = new Error("Xóa hóa đơn thất bại");
     error.code = response.status;
     error.info = await response.json();
     throw error;
   }
 
-  return response.json();
+  const resData = await response.json();
+  const data = {...resData.data};
+  data.message = "Xóa hóa đơn thành công";
+  return data;
 }

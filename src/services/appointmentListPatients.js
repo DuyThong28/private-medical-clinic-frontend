@@ -100,7 +100,7 @@ export async function createAppointmentPatientList({
     );
     throw error;
   }
-  
+
   let response;
   if (appointmentData) {
     // update appointment list patient
@@ -118,6 +118,17 @@ export async function createAppointmentPatientList({
         body: JSON.stringify({ patientId, appointmentListId }),
       }
     );
+    if (!response.ok) {
+      const error = new Error("Cập nhật lịch khám thất bại");
+      error.code = response.status;
+      error.info = await response.json();
+      throw error;
+    }
+
+    const resData = await response.json();
+    const data = resData.data;
+    data.message = "Cập nhật lịch khám thành công";
+    return data;
   } else {
     //create new appointment list patient
     let patientId;
@@ -163,20 +174,19 @@ export async function createAppointmentPatientList({
         body: JSON.stringify({ patientId, appointmentListId }),
       }
     );
-  }
 
-  if (!response.ok) {
-    const error = new Error(
-      "An error occurred while create appointment patient list"
-    );
-    error.code = response.status;
-    error.info = await response.json();
-    throw error;
-  }
+    if (!response.ok) {
+      const error = new Error("Đăng ký lịch khám thất bại");
+      error.code = response.status;
+      error.info = await response.json();
+      throw error;
+    }
 
-  const resData = await response.json();
-  const data = resData.data;
-  return data;
+    const resData = await response.json();
+    const data = resData.data;
+    data.message = "Đăng ký lịch khám thành công";
+    return data;
+  }
 }
 
 export async function fetchAppointentListPatientById({ id }) {
@@ -214,13 +224,15 @@ export async function deleteAppointmentListPatientById({ id }) {
   );
 
   if (!response.ok) {
-    const error = new Error(
-      "An error occurred while deleting appointment list patient"
-    );
+    const error = new Error("Hủy lịch khám thất bại");
     error.code = response.status;
     error.info = await response.json();
     throw error;
   }
 
-  return response.json();
+  const resData = await response.json();
+  const data = {...resData.data};
+  data.message = "Hủy lịch khám thành công";
+
+  return data;
 }

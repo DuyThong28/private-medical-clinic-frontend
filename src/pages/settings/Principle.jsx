@@ -81,9 +81,9 @@ function PrincipleView() {
       action: DialogAction.UPDATE,
     });
     if (maxPatientsMutate.isError || feeConsultMutate.isError) {
-      notiDialogRef.current.toastError();
+      notiDialogRef.current.toastError({message:"Cập nhật quy định thất bại"});
     } else {
-      notiDialogRef.current.toastSuccess();
+      notiDialogRef.current.toastSuccess({message:"Cập nhật quy định thành công"});
     }
 
     setDataState(() => {

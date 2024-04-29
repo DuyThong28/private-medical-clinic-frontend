@@ -62,7 +62,7 @@ function UnitsTab() {
       action: DialogAction.DELETE,
       dispatchFn: () => deleteUnit({ id }),
     });
-    notiDialogRef.current.showDialogWarning();
+    notiDialogRef.current.showDialogWarning({message:"Xác nhận xóa đơn vị?"});
   }
 
   return (

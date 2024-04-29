@@ -5,10 +5,18 @@ import GoogleButton from "react-google-button";
 import { login } from "../../util/auth";
 import { useDispatch } from "react-redux";
 import { userAction } from "../../store/user";
+import NotificationDialog from "../../components/NotificationDialog";
+import { useRef, useState } from "react";
+import PasswordInput from "../../components/PasswordInput";
+import { Form } from "react-bootstrap";
+import Card from "../../components/Card";
+import MainInput from "../../components/MainInput";
 
 function LoginPage() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const notiDialogRef = useRef();
+  const [validated, setValidated] = useState(false);
 
   const { mutate } = useMutation({
     mutationKey: ["login"],
@@ -16,20 +24,33 @@ function LoginPage() {
     onSuccess: (data) => {
       const user = data?.user?.user;
       dispatch(userAction.setUser(user));
-      navigate("/systems/home");
+      notiDialogRef.current.toastSuccess({ message: data.message });
+      setTimeout(() => {
+        setValidated(false);
+        navigate("/systems/home");
+      }, 500);
+    },
+    onError: (data) => {
+      notiDialogRef.current.toastError({ message: data.message });
     },
   });
 
-  // const isAuth = localStorage.getItem("refreshToken");
-  // if (isAuth) {
-  //   return <Navigate to="/systems/home" />;
-  // }
+  const isAuth = localStorage.getItem("refreshToken");
+  if (isAuth) {
+    return <Navigate to="/systems/home" />;
+  }
 
   async function localLoginHandler(event) {
     event.preventDefault();
+    const form = event.currentTarget;
+    if (form.checkValidity() === false) {
+      setValidated(true);
+      return;
+    }
+
     const formData = new FormData(event.target);
-    const username = formData.get("username");
-    const password = formData.get("password");
+    const username = formData.get("username").trim();
+    const password = formData.get("password").trim();
     if (username && password) {
       const userData = {
         username,
@@ -58,6 +79,7 @@ function LoginPage() {
 
   return (
     <>
+      <NotificationDialog ref={notiDialogRef} />
       <div className="d-flex flex-row h-100">
         <div className="col w-100 h-100">
           <img src={loginImage} className="w-100 h-100" />
@@ -67,50 +89,61 @@ function LoginPage() {
           className="col h-100 position-relative"
           style={{ backgroundColor: "#F9F9F9" }}
         >
-          <div
-            className="w-75 modal-content rounded-4 shadow content position-absolute top-50 start-50 translate-middle"
-            style={{ backgroundColor: "#FEFEFE" }}
-          >
-            <div className=" p-5 pb-4 border-bottom-0 align-self-center">
-              <h1 className="fw-bold mb-0 fs-2 ">Log In</h1>
-            </div>
-
-            <div className="modal-body p-5 pt-0">
-              <form method="post" onSubmit={localLoginHandler}>
-                <GoogleButton
-                  className="w-100  mb-2"
-                  onClick={loginWithGoogleHandler}
-                />
-
-                <hr className="my-4" />
-
-                <div className="form-floating mb-3">
-                  <input
-                    type="text"
-                    className="form-control rounded-3"
-                    id="username"
-                    placeholder="username"
-                    name="username"
-                  />
-                  <label htmlFor="username">Username</label>
-                </div>
-                <div className="form-floating mb-3">
-                  <input
-                    type="password"
-                    className="form-control rounded-3"
-                    id="password"
-                    placeholder="Password"
-                    name="password"
-                  />
-                  <label htmlFor="password">Password</label>
-                </div>
-                <button
-                  className="w-100 mb-2 btn btn-lg rounded-3 btn-primary"
-                  type="submit"
-                >
-                  Log In
-                </button>
-              </form>
+          <div className="col h-100">
+            <div
+              className="h-100 position-relative"
+              style={{ backgroundColor: "#F9F9F9" }}
+            >
+              <div
+                className="position-absolute top-50 mt-50 start-50 translate-middle"
+                style={{ width: "70%" }}
+              >
+                <Card>
+                  <div className="col fw-bold fs-4 mb-4 text-center text-dark">
+                    <label>Đăng nhập</label>
+                  </div>
+                  <div>
+                    <GoogleButton
+                      className="w-100  mb-4"
+                      onClick={loginWithGoogleHandler}
+                    />
+                    <hr />
+                    <Form
+                      method="post"
+                      onSubmit={localLoginHandler}
+                      noValidate
+                      validated={validated}
+                      className="h-100"
+                    >
+                      <div className="col">
+                        <label
+                          htmlFor="username"
+                          className="col-form-label fw-bold  text-dark"
+                        >
+                          Tên đăng nhập
+                        </label>
+                        <div>
+                          <input
+                            className="form-control"
+                            type="text"
+                            name="username"
+                            id="username"
+                            placeholder="Tên đăng nhập"
+                            required
+                          ></input>
+                        </div>
+                      </div>
+                      <PasswordInput name={"password"} label={"Mật khẩu"} />
+                      <button
+                        className="w-100 mb-2 mt-3 btn rounded-3 btn-primary shadow"
+                        type="submit"
+                      >
+                        Đăng nhập
+                      </button>
+                    </Form>
+                  </div>
+                </Card>
+              </div>
             </div>
           </div>
         </div>

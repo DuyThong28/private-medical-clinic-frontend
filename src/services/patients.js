@@ -65,8 +65,16 @@ export async function addPatient(patientData) {
   const phoneNumber = patientData.phonenumber;
   const patientID = patientData?.id ?? patientData?.patientid ?? null;
   let response;
+  const existedPatient = await findExistedPatientByPhoneNumber({ phoneNumber });
 
   if (patientID) {
+    if (existedPatient !== null && existedPatient.fullName !== fullName) {
+      const error = new Error(
+        "Số điện thoại đã tồn tại vui lòng chọn số điện thoại khác"
+      );
+      throw error;
+    }
+
     response = await fetch(
       "http://localhost:8080/api/v1/patients/" + patientID,
       {
@@ -85,7 +93,23 @@ export async function addPatient(patientData) {
         }),
       }
     );
+
+    if (!response.ok) {
+      throw new Error("Cập nhật bệnh nhân thất bại");
+    }
+
+    const resData = await response.json();
+    const data = resData.data;
+    data.message = "Cập nhật bệnh nhân thành công";
+    return data;
   } else {
+    if (existedPatient !== null) {
+      const error = new Error(
+        "Số điện thoại đã tồn tại vui lòng chọn số điện thoại khác"
+      );
+      throw error;
+    }
+
     response = await fetch("http://localhost:8080/api/v1/patients", {
       method: "POST",
       credentials: "include",
@@ -101,21 +125,38 @@ export async function addPatient(patientData) {
         phoneNumber,
       }),
     });
-  }
 
-  if (!response.ok) {
-    throw new Error("can not fetch all patients");
+    if (!response.ok) {
+      throw new Error("Thao tác thất bại");
+    }
+
+    const resData = await response.json();
+    const data = resData.data;
+    data.message = "Thêm bệnh nhân thành công";
+    return data;
   }
+}
+
+export async function findExistedPatientByPhoneNumber({ phoneNumber }) {
+  //check existed phone number
+  const response = await fetch(
+    `http://localhost:8080/api/v1/patients?phoneNumber=${phoneNumber}`,
+    {
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+        authorization: "Bearer",
+      },
+    }
+  );
 
   const resData = await response.json();
   const data = resData.data;
-  if (resData.status === 200) {
-    const error = new Error(
-      "Số điện thoại đã tồn tại vui lòng chọn số điện thoại khác"
-    );
-    throw error;
+  if (data.length > 0) {
+    return data[0];
   }
-  return data;
+
+  return null;
 }
 
 export async function fetchPatientById({ id }) {
@@ -147,8 +188,11 @@ export async function deletePatientById({ id }) {
   });
 
   if (!response.ok) {
-    throw new Error("can not delete patient");
+    throw new Error("Xóa bệnh nhân thất bại");
   }
 
-  return response.json();
+  const resData = await response.json();
+  const data = { ...resData.data };
+  data.message = "Xóa bệnh nhân thành công";
+  return data;
 }

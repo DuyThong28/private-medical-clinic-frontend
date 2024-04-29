@@ -80,14 +80,16 @@ function PatientsPage() {
   }
 
   async function deleteBillHandler({ id }) {
-    async function deletefunction() {
-      await deleteBillById({ id });
+    function deletefunction() {
+      return deleteBillById({ id });
     }
     notiDialogRef.current.setDialogData({
       action: DialogAction.DELETE,
       dispatchFn: deletefunction,
     });
-    notiDialogRef.current.showDialogWarning();
+    notiDialogRef.current.showDialogWarning({
+      message: "Xác nhận xóa hóa đơn?",
+    });
   }
 
   return (

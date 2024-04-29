@@ -34,6 +34,17 @@ export async function createNewUnit(data) {
         authorization: "Bearer",
       },
     });
+    if (!response.ok) {
+      const error = new Error("Cập nhật đơn vị thất bại");
+      error.code = response.status;
+      error.info = await response.json();
+      throw error;
+    }
+
+    const resData = await response.json();
+    const finalData = {...resData.data};
+    finalData.message = "Cập nhật đơn vị thành công";
+    return finalData;
   } else {
     response = await fetch(`http://localhost:8080/api/v1/units`, {
       method: "POST",
@@ -44,18 +55,18 @@ export async function createNewUnit(data) {
         authorization: "Bearer",
       },
     });
+    if (!response.ok) {
+      const error = new Error("Thêm đơn vị thất bại");
+      error.code = response.status;
+      error.info = await response.json();
+      throw error;
+    }
+
+    const resData = await response.json();
+    const finalData = {...resData.data};
+    finalData.message = "Thêm đơn vị thành công";
+    return finalData;
   }
-
-  if (!response.ok) {
-    const error = new Error("An error occurred");
-    error.code = response.status;
-    error.info = await response.json();
-    throw error;
-  }
-
-  const { event } = await response.json();
-
-  return event;
 }
 
 export async function deleteUnit({ id }) {
@@ -69,13 +80,16 @@ export async function deleteUnit({ id }) {
   });
 
   if (!response.ok) {
-    const error = new Error("An error occurred while deleting the unit");
+    const error = new Error("Xóa đơn vị thất bại");
     error.code = response.status;
     error.info = await response.json();
     throw error;
   }
 
-  return response.json();
+  const resData = await response.json();
+  const data = {...resData.data};
+  data.message = "Xóa đơn vị thành công";
+  return data;
 }
 
 export async function fetchUnitById({ id }) {
@@ -92,6 +106,6 @@ export async function fetchUnitById({ id }) {
     }
   }
   const resData = await response.json();
-  const patientData = resData.data;
-  return patientData;
+  const data = resData.data;
+  return data;
 }

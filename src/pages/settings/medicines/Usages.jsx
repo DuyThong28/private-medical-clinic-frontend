@@ -62,7 +62,7 @@ function UsagesTab() {
       action: DialogAction.DELETE,
       dispatchFn: () => deleteUsage({ id }),
     });
-    notiDialogRef.current.showDialogWarning();
+    notiDialogRef.current.showDialogWarning({message:"Xác nhận xóa cách dùng?"});
   }
 
   return (

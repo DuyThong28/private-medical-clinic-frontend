@@ -46,18 +46,16 @@ export async function createAppointmentRecord(appointmentData) {
       }),
     }
   );
-
   if (!response.ok) {
-    const error = new Error(
-      "An error occurred while creating neww apponiment record"
-    );
+    const error = new Error("Ca khám chưa hoàn thành");
     error.code = response.status;
     error.info = await response.json();
     throw error;
   }
 
-  const resData = await response.jsobn();
+  const resData = await response.json();
   const data = resData.data;
+  data.message = "Hoàn thành ca khám";
   return data;
 }
 
@@ -139,15 +137,15 @@ export async function deleteAppointmentRecordById({ id }) {
   );
 
   if (!response.ok) {
-    const error = new Error(
-      "An error occurred while deleting appointment record"
-    );
+    const error = new Error("Xóa phiếu khám bệnh thất bại");
     error.code = response.status;
     error.info = await response.json();
     throw error;
   }
 
   const resData = await response.json();
-  const data = resData.data;
+  const data = {...resData.data};
+  data.message = "Xóa phiếu khám bệnh thành công";
+
   return data;
 }

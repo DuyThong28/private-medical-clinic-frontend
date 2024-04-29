@@ -20,6 +20,7 @@ import { queryClient } from "../../App";
 import NotificationDialog, {
   DialogAction,
 } from "../../components/NotificationDialog";
+import { message } from "antd";
 
 const InvoiceDetail = forwardRef(function InvoiceDetail({ children }, ref) {
   const modalRef = useRef();
@@ -55,10 +56,10 @@ const InvoiceDetail = forwardRef(function InvoiceDetail({ children }, ref) {
 
   const billMutate = useMutation({
     mutationFn: createBill,
-    onSuccess: () => {
+    onSuccess: (data) => {
       modalRef.current.close();
       queryClient.invalidateQueries({ queryKey: ["appointmentList"] });
-      notiDialogRef.current.toastSuccess();
+      notiDialogRef.current.toastSuccess({ message: data.message });
       setDialogState((prevState) => {
         return {
           ...prevState,
@@ -66,8 +67,8 @@ const InvoiceDetail = forwardRef(function InvoiceDetail({ children }, ref) {
         };
       });
     },
-    onError: () => {
-      notiDialogRef.current.toastError();
+    onError: (data) => {
+      notiDialogRef.current.toastError({ message: data.message });
     },
   });
 
@@ -134,10 +135,13 @@ const InvoiceDetail = forwardRef(function InvoiceDetail({ children }, ref) {
     }
 
     notiDialogRef.current.setDialogData({
-      action: DialogAction.PAYFEE,
+      action: DialogAction.FINISH,
       dispatchFn: submit,
     });
-    notiDialogRef.current.showDialogWarning();
+
+    notiDialogRef.current.showDialogWarning({
+      message: "Xác nhận thanh toán?",
+    });
   }
 
   return (

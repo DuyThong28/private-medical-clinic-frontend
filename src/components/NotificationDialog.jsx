@@ -9,7 +9,45 @@ export const DialogAction = {
   ADD: "add",
   UPDATE: "update",
   FINISH: "finish",
-  PAYFEE: "payfees",
+};
+
+const icon = {
+  ["warning-notification"]: (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="30"
+      height="30"
+      fill="#DC7609"
+      className="bi bi-trash3-fill"
+      viewBox="0 0 16 16"
+    >
+      <path d="M11 1.5v1h3.5a.5.5 0 0 1 0 1h-.538l-.853 10.66A2 2 0 0 1 11.115 16h-6.23a2 2 0 0 1-1.994-1.84L2.038 3.5H1.5a.5.5 0 0 1 0-1H5v-1A1.5 1.5 0 0 1 6.5 0h3A1.5 1.5 0 0 1 11 1.5m-5 0v1h4v-1a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5M4.5 5.029l.5 8.5a.5.5 0 1 0 .998-.06l-.5-8.5a.5.5 0 1 0-.998.06m6.53-.528a.5.5 0 0 0-.528.47l-.5 8.5a.5.5 0 0 0 .998.058l.5-8.5a.5.5 0 0 0-.47-.528M8 4.5a.5.5 0 0 0-.5.5v8.5a.5.5 0 0 0 1 0V5a.5.5 0 0 0-.5-.5" />
+    </svg>
+  ),
+  ["success-notification"]: (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="30"
+      height="30"
+      fill="#008A2E"
+      className="bi bi-check-circle-fill"
+      viewBox="0 0 16 16"
+    >
+      <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />
+    </svg>
+  ),
+  ["error-notification"]: (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="30"
+      height="30"
+      fill="#E50000"
+      className="bi bi-exclamation-circle-fill"
+      viewBox="0 0 16 16"
+    >
+      <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M8 4a.905.905 0 0 0-.9.995l.35 3.507a.552.552 0 0 0 1.1 0l.35-3.507A.905.905 0 0 0 8 4m.002 6a1 1 0 1 0 0 2 1 1 0 0 0 0-2" />
+    </svg>
+  ),
 };
 
 const NotificationDialog = forwardRef(function NotificationDialog(
@@ -19,91 +57,28 @@ const NotificationDialog = forwardRef(function NotificationDialog(
   const [show, setShow] = useState(false);
   const modalState = useRef({
     isToast: true,
-    message: null,
+    message: "Thông báo",
     buttonGroup: null,
     class: "",
     actionFn: null,
   });
 
-  const icon = {
-    ["warning-notification"]: (
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="30"
-        height="30"
-        fill="#DC7609"
-        className="bi bi-exclamation-triangle-fill"
-        viewBox="0 0 16 16"
-      >
-        <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5m.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2" />
-      </svg>
-    ),
-    ["success-notification"]: (
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="30"
-        height="30"
-        fill="#008A2E"
-        className="bi bi-check-circle-fill"
-        viewBox="0 0 16 16"
-      >
-        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />
-      </svg>
-    ),
-    ["error-notification"]: (
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="30"
-        height="30"
-        fill="#E50000"
-        className="bi bi-exclamation-circle-fill"
-        viewBox="0 0 16 16"
-      >
-        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M8 4a.905.905 0 0 0-.9.995l.35 3.507a.552.552 0 0 0 1.1 0l.35-3.507A.905.905 0 0 0 8 4m.002 6a1 1 0 1 0 0 2 1 1 0 0 0 0-2" />
-      </svg>
-    ),
-  };
-
-  const messageDelete = {
-    ["warning-notification"]: "Bạn có chắc chắn xóa không?",
-    ["success-notification"]: "Xóa thành công",
-    ["error-notification"]: "Xóa thất bại",
-  };
-
-  const messageAdd = {
-    ["warning-notification"]: "Xác nhận lưu thông tin?",
-    ["success-notification"]: "Thêm thành công",
-    ["error-notification"]: "Thêm thất bại",
-  };
-
-  const messageUpdate = {
-    ["warning-notification"]: "xác nhận cập nhật thông tin?",
-    ["success-notification"]: "Cập nhật thông tin thành công",
-    ["error-notification"]: "Cập nhật thông tin thất bại",
-  };
-
-  const messageComplete = {
-    ["warning-notification"]: "Xác nhận hoàn thành ca khám?",
-    ["success-notification"]: "Hoàn thành ca khám",
-    ["error-notification"]: "Chưa hoàn thành ca khám",
-  };
-
-  const messagePayFee = {
-    ["warning-notification"]: "Xác nhận thanh toán?",
-    ["success-notification"]: "Thanh toán thành công",
-    ["error-notification"]: "Thanh toán thất bại",
-  };
-
   const buttonDelete = (
     <div className="d-flex gap-3 mt-3 justify-content-center">
       <button
         type="button"
-        className="btn button-outline"
+        className="btn button-outline  shadow-sm"
         onClick={closeHandler}
+        style={{ minWidth: "70px" }}
       >
         Hủy
       </button>
-      <button type="button" className="btn button" onClick={deleteHandler}>
+      <button
+        type="button"
+        className="btn button  shadow-sm"
+        onClick={deleteHandler}
+        style={{ minWidth: "70px" }}
+      >
         Xóa
       </button>
     </div>
@@ -115,10 +90,16 @@ const NotificationDialog = forwardRef(function NotificationDialog(
         type="button"
         className="btn button-outline"
         onClick={closeHandler}
+        style={{ minWidth: "70px" }}
       >
         Hủy
       </button>
-      <button type="button" className="btn button" onClick={saveHandler}>
+      <button
+        type="button"
+        className="btn button"
+        onClick={saveHandler}
+        style={{ minWidth: "70px" }}
+      >
         Lưu
       </button>
     </div>
@@ -152,28 +133,14 @@ const NotificationDialog = forwardRef(function NotificationDialog(
     complete: buttonComplete,
   };
 
-  const message = {
-    delete: messageDelete,
-    add: messageAdd,
-    update: messageUpdate,
-    complete: messageComplete,
-    payFee: messagePayFee,
-  };
-
   const deleteMutate = useMutation({
     mutationFn: modalState.actionFn,
-    onSuccess: () => {
+    onSuccess: (data) => {
+      toastSuccess({ message: data.message });
       queryClient.invalidateQueries({ queryKey: [...keyQuery] });
-      setShow(() => {
-        return false;
-      });
-      toastSuccess();
     },
-    onError: () => {
-      setShow(() => {
-        return false;
-      });
-      toastError();
+    onError: (data) => {
+      toastError({ message: data.message });
     },
   });
 
@@ -197,45 +164,38 @@ const NotificationDialog = forwardRef(function NotificationDialog(
       return {
         setDialogData({ action, dispatchFn }) {
           if (action === DialogAction.ADD) {
-            modalState.message = message.add;
             modalState.buttonGroup = buttongroup.add;
+          } else if (action === DialogAction.UPDATE) {
+            modalState.buttonGroup = buttongroup.update;
           } else if (action === DialogAction.DELETE) {
             modalState.actionFn = dispatchFn;
-            modalState.message = message.delete;
             modalState.buttonGroup = buttongroup.delete;
-          } else if (action === DialogAction.UPDATE) {
-            modalState.message = message.update;
-            modalState.buttonGroup = buttongroup.update;
           } else if (action === DialogAction.FINISH) {
             modalState.actionFn = dispatchFn;
-            modalState.message = message.complete;
-            modalState.buttonGroup = buttongroup.complete;
-          } else if (action === DialogAction.PAYFEE) {
-            modalState.actionFn = dispatchFn;
-            modalState.message = message.payFee;
             modalState.buttonGroup = buttongroup.complete;
           }
         },
-        toastSuccess() {
-          toastSuccess();
+        toastSuccess(data) {
+          toastSuccess(data);
         },
-        toastError({ message }) {
-          toastError({ message });
+        toastError(data) {
+          toastError(data);
         },
-        showDialogWarning() {
-          dialogWarning();
+        showDialogWarning(data) {
+          dialogWarning(data);
         },
-        toastWarning() {
-          toastWarning();
+        toastWarning(data) {
+          toastWarning(data);
         },
       };
     },
     []
   );
 
-  function toastSuccess() {
+  function toastSuccess(data) {
     modalState.isToast = true;
     modalState.class = "success-notification";
+    modalState.message = data?.message ?? "Thao tác thành công";
     setShow(() => {
       return true;
     });
@@ -246,12 +206,10 @@ const NotificationDialog = forwardRef(function NotificationDialog(
     }, 1000);
   }
 
-  function toastError({ message }) {
+  function toastError(data) {
     modalState.isToast = true;
     modalState.class = "error-notification";
-    if (message !== null) {
-      modalState.message[modalState.class] = message;
-    }
+    modalState.message = data?.message ?? "Thao tác thất bại";
     setShow(() => {
       return true;
     });
@@ -262,9 +220,10 @@ const NotificationDialog = forwardRef(function NotificationDialog(
     }, 1000);
   }
 
-  function toastWarning() {
+  function toastWarning(data) {
     modalState.isToast = true;
     modalState.class = "warning-notification";
+    modalState.message = data?.message ?? "Thông báo";
     setShow(() => {
       return true;
     });
@@ -275,9 +234,10 @@ const NotificationDialog = forwardRef(function NotificationDialog(
     }, 1000);
   }
 
-  function dialogWarning() {
+  function dialogWarning(data) {
     modalState.isToast = false;
     modalState.class = "warning-notification";
+    modalState.message = data?.message ?? "Thông báo";
     setShow(() => {
       return true;
     });
@@ -327,7 +287,7 @@ const NotificationDialog = forwardRef(function NotificationDialog(
             </div>
           </div>
           <div className="modal-body fs-5 text-center text-dark fw-bold">
-            {modalState.message && modalState.message[modalState.class]}
+            {modalState.message}
           </div>
           {!modalState.isToast && modalState.buttonGroup}
         </div>

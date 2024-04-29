@@ -36,6 +36,17 @@ export async function createNewUsage(data) {
         authorization: "Bearer",
       },
     });
+    if (!response.ok) {
+      const error = new Error("Cập nhật cách dùng thất bại");
+      error.code = response.status;
+      error.info = await response.json();
+      throw error;
+    }
+
+    const resData = await response.json();
+    const finalData = {...resData.data};
+    finalData.message = "Cập nhật cách dùng thành công";
+    return finalData;
   } else {
     response = await fetch(`http://localhost:8080/api/v1/usage`, {
       method: "POST",
@@ -46,18 +57,18 @@ export async function createNewUsage(data) {
         authorization: "Bearer",
       },
     });
-  }
+    if (!response.ok) {
+      const error = new Error("Thêm cách dùng thất bại");
+      error.code = response.status;
+      error.info = await response.json();
+      throw error;
+    }
 
-  if (!response.ok) {
-    const error = new Error("An error occurred while creating the usage");
-    error.code = response.status;
-    error.info = await response.json();
-    throw error;
+    const resData = await response.json();
+    const finalData = {...resData.data};
+    finalData.message = "Thêm cách dùng thành công";
+    return finalData;
   }
-
-  const resData = await response.json();
-  const usages = resData.data;
-  return usages;
 }
 
 export async function deleteUsage({ id }) {
@@ -71,11 +82,14 @@ export async function deleteUsage({ id }) {
   });
 
   if (!response.ok) {
-    const error = new Error("An error occurred while deleting the usage");
+    const error = new Error("Xóa cách dùng thất bại");
     error.code = response.status;
     error.info = await response.json();
     throw error;
   }
 
-  return response.json();
+  const resData = await response.json();
+  const data = {...resData.data};
+  data.message = "Xóa cách dùng thành công";
+  return data;
 }

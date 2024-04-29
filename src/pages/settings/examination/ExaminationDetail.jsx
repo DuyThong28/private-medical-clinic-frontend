@@ -73,14 +73,14 @@ export default function ExaminationDetail() {
           usageId,
         });
       });
-      dispatch(prescriptionAction.removeAll());
-      notiDialogRef.current.toastSuccess();
+      notiDialogRef.current.toastSuccess({ message: data.message });
       setTimeout(() => {
         navigate("/systems/examinations");
+        dispatch(prescriptionAction.removeAll());
       }, 1050);
     },
-    onError: () => {
-      notiDialogRef.current.toastError();
+    onError: (data) => {
+      notiDialogRef.current.toastError({ message: data.message });
     },
   });
 
@@ -128,7 +128,9 @@ export default function ExaminationDetail() {
       dispatchFn: finishExamHandler,
     });
 
-    notiDialogRef.current.showDialogWarning();
+    notiDialogRef.current.showDialogWarning({
+      message: "Xác nhận hoàn thành ca khám?",
+    });
   }
 
   return (

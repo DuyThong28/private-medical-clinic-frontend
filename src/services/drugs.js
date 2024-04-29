@@ -38,6 +38,17 @@ export async function createNewDrug(data) {
         authorization: "Bearer",
       },
     });
+    if (!response.ok) {
+      const error = new Error("Cập nhật thuốc thất bại");
+      error.code = response.status;
+      error.info = await response.json();
+      throw error;
+    }
+
+    const resData = await response.json();
+    const finalData = {...resData.data};
+    finalData.message = "Cập nhật thuốc thành công";
+    return finalData;
   } else {
     response = await fetch(`http://localhost:8080/api/v1/drugs`, {
       method: "POST",
@@ -48,18 +59,19 @@ export async function createNewDrug(data) {
         authorization: "Bearer",
       },
     });
+
+    if (!response.ok) {
+      const error = new Error("Thêm thuốc thất bại");
+      error.code = response.status;
+      error.info = await response.json();
+      throw error;
+    }
+
+    const resData = await response.json();
+    const finalData = {...resData.data};
+    finalData.message = "Thêm thuốc thành công";
+    return finalData;
   }
-
-  if (!response.ok) {
-    const error = new Error("An error occurred while creating the drugs");
-    error.code = response.status;
-    error.info = await response.json();
-    throw error;
-  }
-
-  const { event } = await response.json();
-
-  return event;
 }
 
 export async function deleteDrugById({ id }) {
@@ -73,13 +85,15 @@ export async function deleteDrugById({ id }) {
   });
 
   if (!response.ok) {
-    const error = new Error("An error occurred while deleting the drug");
+    const error = new Error("Xóa thuốc thất bại");
     error.code = response.status;
     error.info = await response.json();
     throw error;
   }
 
-  return response.json();
+  const data = {};
+  data.message = "Xóa thuốc thành công";
+  return data;
 }
 
 export async function fetchDrugById({ id }) {

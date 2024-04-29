@@ -16,13 +16,13 @@ export async function login(userData) {
     //login with google
     response = await fetch("http://localhost:8080/api/v1/auth/success");
   }
+
+  console.log("this is response)", await response.json());
   if (!response.ok) {
-    throw new Error(
-      { message: "could not login" },
-      {
-        status: 500,
-      }
-    );
+    const error = new Error("Thông tin đăng nhập không chính xác");
+    error.code = response.status;
+    error.info = await response.json();
+    throw error;
   }
   const headers = response.headers;
   headers.forEach((value, name) => {
@@ -31,7 +31,10 @@ export async function login(userData) {
   console.log(headers.get("Content-Type"));
   const resData = await response.json();
   const refreshToken = resData.user.refreshToken;
-  localStorage.setItem("refreshToken", refreshToken);
+  setTimeout(() => {
+    localStorage.setItem("refreshToken", refreshToken);
+  }, 1000);
+  resData.message = "Đăng nhập thành công";
   return resData;
 }
 

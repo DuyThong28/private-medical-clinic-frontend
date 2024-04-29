@@ -81,7 +81,7 @@ function DrugTab() {
       action: DialogAction.DELETE,
       dispatchFn: () => deleteDrugById({ id }),
     });
-    notiDialogRef.current.showDialogWarning();
+    notiDialogRef.current.showDialogWarning({message:"Xác nhận xóa thuốc?"});
   }
 
   return (

@@ -25,41 +25,56 @@ export async function createNewDisease(data) {
   const diseaseID = data?.id ?? null;
   let response;
 
-  // if (diseaseID !== null) {
-  //   response = await fetch(
-  //     `http://localhost:8080/api/v1/diseases/${diseaseID}`,
-  //     {
-  //       credentials: "include",
-  //       method: "PUT",
-  //       body: JSON.stringify({ diseaseName }),
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //         authorization: "Bearer",
-  //       },
-  //     }
-  //   );
-  // } else {
-  //   response = await fetch(`http://localhost:8080/api/v1/diseases`, {
-  //     credentials: "include",
-  //     method: "POST",
-  //     body: JSON.stringify({ diseaseName }),
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //       authorization: "Bearer",
-  //     },
-  //   });
-  // }
+  if (diseaseID !== null) {
+    response = await fetch(
+      `http://localhost:8080/api/v1/diseases/${diseaseID}`,
+      {
+        credentials: "include",
+        method: "PUT",
+        body: JSON.stringify({ diseaseName }),
+        headers: {
+          "Content-Type": "application/json",
+          authorization: "Bearer",
+        },
+      }
+    );
 
-  // if (!response.ok) {
-    const error = new Error("An error occurred");
-    error.code = response.status;
-    error.info = await response.json();
-    throw error;
-  // }
+    if (!response.ok) {
+      const error = new Error("Cập nhật bệnh thất bại");
+      error.code = response.status;
+      error.info = await response.json();
+      throw error;
+    }
+  
+    const resData = await response.json();
+    const finalData = {...resData.data};
+    finalData.message = "Cập nhật bệnh thành công";
+    return finalData;
+  } else {
+    response = await fetch(`http://localhost:8080/api/v1/diseases`, {
+      credentials: "include",
+      method: "POST",
+      body: JSON.stringify({ diseaseName }),
+      headers: {
+        "Content-Type": "application/json",
+        authorization: "Bearer",
+      },
+    });
 
-  const { event } = await response.json();
+    if (!response.ok) {
+      const error = new Error("Thêm bệnh thất bại");
+      error.code = response.status;
+      error.info = await response.json();
+      throw error;
+    }
+  
+    const resData = await response.json();
+    const finalData = {...resData.data};
+    finalData.message ="Thêm bệnh thành công";
+    return finalData;
+  }
 
-  return event;
+ 
 }
 
 export async function deleteDisease({ id }) {
@@ -73,11 +88,14 @@ export async function deleteDisease({ id }) {
   });
 
   if (!response.ok) {
-    const error = new Error("An error occurred while deleting the disease");
+    const error = new Error("Xóa bệnh thất bại");
     error.code = response.status;
     error.info = await response.json();
     throw error;
   }
 
-  return response.json();
+  const resData = await response.json();
+  const data = {...resData.data};
+  data.message = "Xóa bệnh thành công";
+  return data;
 }

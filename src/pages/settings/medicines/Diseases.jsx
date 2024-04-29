@@ -61,7 +61,7 @@ function DiseasesTab() {
       action: DialogAction.DELETE,
       dispatchFn: () => deleteDisease({ id }),
     });
-    notiDialogRef.current.showDialogWarning();
+    notiDialogRef.current.showDialogWarning({message:"Xác nhận xóa bệnh?"});
   }
 
   return (

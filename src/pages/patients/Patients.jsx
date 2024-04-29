@@ -16,6 +16,7 @@ import MainDialog from "../../components/MainDialog";
 import NotificationDialog, {
   DialogAction,
 } from "../../components/NotificationDialog";
+import { message } from "antd";
 
 function PatientsPage() {
   const searchRef = useRef();
@@ -67,7 +68,7 @@ function PatientsPage() {
       action: DialogAction.DELETE,
       dispatchFn: () => deletePatientById({ id }),
     });
-    notiDialogRef.current.showDialogWarning();
+    notiDialogRef.current.showDialogWarning({message:"Xác nhận xóa bệnh nhân?"});
   }
 
   return (

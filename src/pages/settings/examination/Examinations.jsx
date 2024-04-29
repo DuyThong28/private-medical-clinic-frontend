@@ -102,7 +102,9 @@ function ExaminationsPage() {
       action: DialogAction.DELETE,
       dispatchFn: deletefunction,
     });
-    notiDialogRef.current.showDialogWarning();
+    notiDialogRef.current.showDialogWarning({
+      message: "Xác nhận hủy ca khám?",
+    });
   }
 
   function setSearchData({ name, date, state }) {

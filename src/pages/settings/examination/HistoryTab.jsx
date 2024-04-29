@@ -61,7 +61,7 @@ export default function HistoryTab({ isEditable }) {
       action: DialogAction.DELETE,
       dispatchFn: () => deleteAppointmentRecordById({ id }),
     });
-    notiDialogRef.current.showDialogWarning();
+    notiDialogRef.current.showDialogWarning({message:"Xác nhận xóa phiếu khám bệnh?"});
   }
 
   return (
