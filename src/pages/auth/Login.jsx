@@ -87,60 +87,62 @@ function LoginPage() {
 
         <div
           className="col h-100 position-relative"
-          style={{ backgroundColor: "#F9F9F9" }}
+          style={{ backgroundColor: "#E9ECEF" }}
         >
           <div className="col h-100">
             <div
               className="h-100 position-relative"
-              style={{ backgroundColor: "#F9F9F9" }}
+              style={{ backgroundColor: "#E9ECEF" }}
             >
               <div
                 className="position-absolute top-50 mt-50 start-50 translate-middle"
-                style={{ width: "60%" }}
+                style={{ width: "70%" }}
               >
                 <Card>
-                  <div className="col fw-bold fs-4 mb-4 text-center text-dark">
-                    <label>Đăng nhập</label>
-                  </div>
-                  <div>
-                    <GoogleButton
-                      className="w-100  mb-4"
-                      onClick={loginWithGoogleHandler}
-                    />
-                    <hr />
-                    <Form
-                      method="post"
-                      onSubmit={localLoginHandler}
-                      noValidate
-                      validated={validated}
-                      className="h-100"
-                    >
-                      <div className="col">
-                        <label
-                          htmlFor="username"
-                          className="col-form-label fw-bold  text-dark"
-                        >
-                          Tên đăng nhập
-                        </label>
-                        <div>
-                          <input
-                            className="form-control"
-                            type="text"
-                            name="username"
-                            id="username"
-                            placeholder="Tên đăng nhập"
-                            required
-                          ></input>
-                        </div>
-                      </div>
-                      <PasswordInput name={"password"} label={"Mật khẩu"} />
-                      <button
-                        className="w-100 mb-4 mt-3 btn rounded-3 btn-primary shadow"
-                        type="submit"
+                  <div className="p-4">
+                    <div className="col fw-bold fs-4 mb-4 text-center text-dark">
+                      <label>Đăng nhập</label>
+                    </div>
+                    <div>
+                      <GoogleButton
+                        className="w-100  mb-4"
+                        onClick={loginWithGoogleHandler}
+                      />
+                      <hr />
+                      <Form
+                        method="post"
+                        onSubmit={localLoginHandler}
+                        noValidate
+                        validated={validated}
+                        className="h-100"
                       >
-                        Đăng nhập
-                      </button>
-                    </Form>
+                        <div className="col">
+                          <label
+                            htmlFor="username"
+                            className="col-form-label fw-bold  text-dark"
+                          >
+                            Tên đăng nhập
+                          </label>
+                          <div>
+                            <input
+                              className="form-control"
+                              type="text"
+                              name="username"
+                              id="username"
+                              placeholder="Tên đăng nhập"
+                              required
+                            ></input>
+                          </div>
+                        </div>
+                        <PasswordInput name={"password"} label={"Mật khẩu"} />
+                        <button
+                          className="w-100 mb-3 mt-4 btn rounded-3 btn-primary shadow"
+                          type="submit"
+                        >
+                          Đăng nhập
+                        </button>
+                      </Form>
+                    </div>
                   </div>
                 </Card>
               </div>
