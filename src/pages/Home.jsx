@@ -26,6 +26,7 @@ import { fetchAllAppointmentListPatients } from "../services/appointmentListPati
 import { fetchAllAppointmentRecordDetails } from "../services/appointmentRecordDetails";
 import { fetchAllDrugs } from "../services/drugs";
 import { fetchAppointmentRecordById } from "../services/appointmentRecords";
+import { fetchAllBills } from '../services/bill'
 import "./Home.scss";
 import { queryClient } from "../App";
 import { convertDate } from "../util/date";
@@ -46,8 +47,13 @@ const optionschart = {
       ticks: {
         maxTicksLimit: 2,
       },
+      stacked: true
     },
+    x:{
+      stacked: true
+    }
   },
+  reponsive: true,
   plugins: {
     legend: {
       display: false,
@@ -165,21 +171,6 @@ function HomePage() {
     return finalData;
   };
 
-  const getPreListAppointment = (data) => {
-    const finalData = data.filter(
-      (item) =>
-        compareDate(
-          new Date(item?.appointmentList.scheduleDate.slice(0, 10)),
-          new Date()
-        ) < 0
-    );
-    return finalData;
-  };
-
-  const query = optionQuery(
-    "allAppointmentListPatients",
-    getPreListAppointment
-  );
   const query1 = optionQuery("appointmentListToday", getListAppointmentByToDay);
   const query2 = optionQuery(
     "appointmentListSelectedDay",
@@ -187,7 +178,6 @@ function HomePage() {
   );
   const query3 = optionQuery("appointmentListWeek", getListAppointmentByWeek);
 
-  const preAppointmentListPatientQuery = useQuery(query);
   const appointmentListPatientTodayQuery = useQuery(query1);
   const appointmentListPatientSelectedDayQuery = useQuery(query2);
   const appointmentListPatientWeekQuery = useQuery(query3);
@@ -197,7 +187,6 @@ function HomePage() {
   const appointmentListPatientSelectedDay =
     appointmentListPatientSelectedDayQuery.data || [];
   const appointmentListPatientWeek = appointmentListPatientWeekQuery.data || [];
-  const preAppointmentListPatient = preAppointmentListPatientQuery.data || [];
 
   let seenIds = {};
 
@@ -219,13 +208,10 @@ function HomePage() {
     let newPatient = 0;
     let oldPatient = 0;
     for (const item of patientsToday) {
-      const preAppointment = preAppointmentListPatient.filter(
-        (appointment) => appointment.patient?.id === item.patient?.id
-      );
-      if (preAppointment.length > 0) {
-        ++oldPatient;
-      } else {
-        ++newPatient;
+      if( compareDate(new Date(item.patient.createdAt.slice(0,10)),new Date()) !== 0){
+        ++oldPatient
+      }else{
+        ++newPatient
       }
     }
     return {
@@ -261,8 +247,18 @@ function HomePage() {
     },
   });
 
+  const billsQuery = useQuery({
+    queryKey: ["billlist"],
+    queryFn: async () => {
+      const data = await fetchAllBills();
+      return data;
+    },
+  });
+
+  
   const appointmentRecordDetails = appointmentRecordDetailsQuery.data || [];
   const drugs = drugsQuery.data || [];
+  const billList = billsQuery.data || []
 
   const [topDrug, setTopDrug] = useState([]);
 
@@ -316,6 +312,7 @@ function HomePage() {
         backgroundColor: "#eb7474",
         borderWidth: 1,
         barThickness: 10,
+        borderRadius: 10,
       },
     ],
   };
@@ -359,6 +356,8 @@ function HomePage() {
     })()
   );
 
+  console.log(appointmentRecordDetails);
+
   const handleTopDrug = () => {
     const drugInfo = drugs.map((item) => {
       if (preState.current.selectedOption) {
@@ -376,7 +375,10 @@ function HomePage() {
                 appointment?.record.appointmentList.scheduleDate.slice(0, 10)
               ),
               preState.current.range.to
-            ) <= 0
+            ) <= 0 && 
+            billList.find((bill)=>bill.appointmentListId === appointment.record.appointmentListId && 
+              bill.patientId === appointment.record.patientId
+            )
         );
         let soldout = 0;
         for (const detail of items) {
@@ -396,7 +398,10 @@ function HomePage() {
             ).getMonth() === preState.current.month &&
             new Date(
               appointment?.record.appointmentList.scheduleDate.slice(0, 10)
-            ).getFullYear() === preState.current.year
+            ).getFullYear() === preState.current.year && 
+            billList.find((bill)=>bill.appointmentListId === appointment.record.appointmentListId && 
+              bill.patientId === appointment.record.patientId
+            )
         );
         let soldout = 0;
         for (const detail of items) {
