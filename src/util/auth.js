@@ -32,7 +32,7 @@ export async function login(userData) {
   const refreshToken = resData.user.refreshToken;
   setTimeout(() => {
     localStorage.setItem("refreshToken", refreshToken);
-  }, 1000);
+  }, 500);
   resData.message = "Đăng nhập thành công";
   return resData;
 }

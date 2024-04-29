@@ -26,8 +26,8 @@ function LoginPage() {
       dispatch(userAction.setUser(user));
       notiDialogRef.current.toastSuccess({ message: data.message });
       setTimeout(() => {
-        setValidated(false);
         navigate("/systems/home");
+        setValidated(false);
       }, 500);
     },
     onError: (data) => {
