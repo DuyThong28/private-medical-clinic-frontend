@@ -5,13 +5,9 @@ function LoginFail() {
     setTimeout(() => {
       window.close();
     }, 1000);
-  },[]);
+  }, []);
 
-  return (
-    <>
-      <div>Log In Fail!</div>
-    </>
-  );
+  return <></>;
 }
 
 export default LoginFail;

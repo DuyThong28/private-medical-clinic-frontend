@@ -21,6 +21,7 @@ import ExaminationDetail from "./pages/settings/examination/ExaminationDetail";
 import PreScriptionTab from "./pages/settings/examination/PrescriptionTab";
 import HistoryTab from "./pages/settings/examination/HistoryTab";
 import Invoice from "./pages/Invoice/Invoice";
+import ForgotPassword from "./pages/auth/ForgotPassword";
 import ErrorPage from "./pages/Error";
 
 const router = createBrowserRouter([
@@ -80,6 +81,7 @@ const router = createBrowserRouter([
     ],
     errorElement: <ErrorPage />,
   },
+  { path: "/forgotpassword", element: <ForgotPassword /> },
 ]);
 
 export const queryClient = new QueryClient();

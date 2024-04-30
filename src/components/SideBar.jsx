@@ -2,17 +2,13 @@ import { useMutation } from "@tanstack/react-query";
 import { NavLink, Link } from "react-router-dom";
 import "./SideBar.scss";
 import { logout } from "../util/auth";
-import { useDispatch } from "react-redux";
-import { userAction } from "../store/user";
 import { useNavigate } from "react-router-dom";
 
 function SideBar() {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
   const logoutMutate = useMutation({
     mutationFn: logout,
     onSuccess: () => {
-      dispatch(userAction.removeUser());
       navigate("/");
     },
   });

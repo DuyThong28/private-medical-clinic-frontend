@@ -102,7 +102,7 @@ const InvoiceDetail = forwardRef(function InvoiceDetail({ children }, ref) {
           return { ...resData };
         });
         setIsBill(false);
-        modalRef.current.show({ isEditable: true, header: "Thanh toán" });
+        modalRef.current.show({ isEditable: true, header: "Thanh toán", action:"add" });
       },
 
       async showDetail({ bill }) {
@@ -119,7 +119,7 @@ const InvoiceDetail = forwardRef(function InvoiceDetail({ children }, ref) {
             return { ...resData[0] };
           });
           setIsBill(true);
-          modalRef.current.show({ isEditable: false, header: "Hóa đơn" });
+          modalRef.current.show({ isEditable: false, header: "Hóa đơn", action:"view" });
         }
       },
     };

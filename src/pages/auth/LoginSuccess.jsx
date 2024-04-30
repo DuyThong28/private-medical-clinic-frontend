@@ -5,13 +5,9 @@ function LoginSuccess() {
     setTimeout(() => {
       window.close();
     }, 1000);
-  },[]);
+  }, []);
 
-  return (
-    <>
-      <div>Log In Success!</div>
-    </>
-  );
+  return <></>;
 }
 
 export default LoginSuccess;

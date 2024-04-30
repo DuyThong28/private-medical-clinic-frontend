@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import {  useQuery } from "@tanstack/react-query";
 import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -16,7 +16,6 @@ import MainDialog from "../../components/MainDialog";
 import NotificationDialog, {
   DialogAction,
 } from "../../components/NotificationDialog";
-import { message } from "antd";
 
 function PatientsPage() {
   const searchRef = useRef();

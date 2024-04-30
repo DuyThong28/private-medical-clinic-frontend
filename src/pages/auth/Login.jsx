@@ -3,27 +3,23 @@ import { Navigate, useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import GoogleButton from "react-google-button";
 import { login } from "../../util/auth";
-import { useDispatch } from "react-redux";
-import { userAction } from "../../store/user";
 import NotificationDialog from "../../components/NotificationDialog";
 import { useRef, useState } from "react";
 import PasswordInput from "../../components/PasswordInput";
 import { Form } from "react-bootstrap";
 import Card from "../../components/Card";
-import MainInput from "../../components/MainInput";
+import "./Login.scss";
 
 function LoginPage() {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
   const notiDialogRef = useRef();
   const [validated, setValidated] = useState(false);
+  localStorage.removeItem("email");
 
   const { mutate } = useMutation({
     mutationKey: ["login"],
     mutationFn: login,
     onSuccess: (data) => {
-      const user = data?.user?.user;
-      dispatch(userAction.setUser(user));
       notiDialogRef.current.toastSuccess({ message: data.message });
       setTimeout(() => {
         navigate("/systems/home");
@@ -31,7 +27,9 @@ function LoginPage() {
       }, 500);
     },
     onError: (data) => {
-      notiDialogRef.current.toastError({ message: data.message });
+      if (data.message !== "cancel-login") {
+        notiDialogRef.current.toastError({ message: data.message });
+      }
     },
   });
 
@@ -61,20 +59,25 @@ function LoginPage() {
   }
 
   async function loginWithGoogleHandler() {
-    const newWindow = window.open(
+    const newWindow = openCenteredWindow(
       "http://localhost:8080/api/v1/auth/google",
-      "_blank",
-      "width=500, height=600"
+      500,
+      550
     );
+    mutate();
 
-    if (newWindow) {
-      const timer = setInterval(() => {
-        if (newWindow.closed) {
-          mutate();
-          if (timer) clearInterval(timer);
-        }
-      });
-    }
+    // if (newWindow) {
+    //   const timer = setInterval(() => {
+    //     if (newWindow.closed) {
+    //       mutate();
+    //       if (timer) clearInterval(timer);
+    //     }
+    //   });
+    // }
+  }
+
+  function navigateToForgotPassHandler() {
+    navigate("/forgotpassword");
   }
 
   return (
@@ -101,13 +104,28 @@ function LoginPage() {
                 <Card>
                   <div className="p-4">
                     <div className="col fw-bold fs-4 mb-4 text-center text-dark">
-                      <label>Đăng nhập</label>
+                      <label>Đăng Nhập</label>
                     </div>
                     <div>
-                      <GoogleButton
-                        className="w-100  mb-4"
-                        onClick={loginWithGoogleHandler}
-                      />
+                      <div
+                        className="position-relative border shadow border-1"
+                        style={{
+                          height: "40px",
+                          overflow: "hidden",
+                          background: "rgb(66 133 244)",
+                          borderColor: "rgb(66 133 244)",
+                        }}
+                      >
+                        <GoogleButton
+                          className="position-absolute top-50 start-50 translate-middle w-100"
+                          style={{
+                            marginLeft: "-1px",
+                          }}
+                          label="Đăng nhập với Google"
+                          onClick={loginWithGoogleHandler}
+                        />
+                      </div>
+
                       <hr />
                       <Form
                         method="post"
@@ -135,6 +153,14 @@ function LoginPage() {
                           </div>
                         </div>
                         <PasswordInput name={"password"} label={"Mật khẩu"} />
+                        <div className="forgot-password">
+                          <a
+                            className="fw-bold nav-link  mt-2 text-end"
+                            onClick={navigateToForgotPassHandler}
+                          >
+                            Quên mật khẩu
+                          </a>
+                        </div>
                         <button
                           className="w-100 mb-3 mt-4 btn rounded-3 btn-primary shadow"
                           type="submit"
@@ -152,6 +178,15 @@ function LoginPage() {
       </div>
     </>
   );
+}
+
+function openCenteredWindow(url, width, height) {
+  const screenWidth = screen.width;
+  const screenHeight = screen.height;
+  const left = (screenWidth - width) / 2;
+  const top = (screenHeight - height) / 2;
+  const windowFeatures = `width=${width},height=${height},top=${top},left=${left}`;
+  return window.open(url, "_blank", windowFeatures);
 }
 
 export default LoginPage;

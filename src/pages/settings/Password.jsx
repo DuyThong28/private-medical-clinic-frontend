@@ -1,10 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Card from "../../components/Card";
 import { Form } from "react-bootstrap";
-import { useSelector } from "react-redux";
 import { useMutation } from "@tanstack/react-query";
 import { changePassword } from "../../util/auth";
 import PasswordInput from "../../components/PasswordInput";
+import NotificationDialog from "../../components/NotificationDialog";
 
 function PasswordView() {
   const [dataState, setDataState] = useState({
@@ -16,11 +16,16 @@ function PasswordView() {
   });
 
   const [validated, setValidated] = useState(false);
-  const user = useSelector((state) => state.user);
+  const user = localStorage.getItem("user");
+  const notiDialogRef = useRef();
+  const userData = JSON.parse(user);
 
   const changePasswordMutate = useMutation({
     mutationFn: changePassword,
     onSuccess: () => {
+      notiDialogRef.current.toastSuccess({
+        message: "Thay đổi mật khẩu thành công",
+      });
       setDataState(() => {
         return {
           currentpassword: "",
@@ -31,6 +36,11 @@ function PasswordView() {
         };
       });
       setValidated(false);
+    },
+    onError: (data) => {
+      notiDialogRef.current.toastError({
+        message: data.message,
+      });
     },
   });
 
@@ -84,21 +94,16 @@ function PasswordView() {
 
     const formData = new FormData(event.target);
     const data = Object.fromEntries(formData);
-
-    // const currentpassword = data.currentpassword;
-    // const username = user.username;
-    // const userData = {
-    //   username: username,
-    //   password: currentpassword,
-    // };
-
-    // const authData = await login(userData);
-    // if (!authData.user) {
-    //   return;
-    // }
-
-    // const newpassword = data.newpassword;
-    // changePasswordMutate.mutate({ id: user.id, password: newpassword });
+    const currentPassword = data.currentpassword;
+    const newPassword = data.newpassword;
+    const confirmPassword = data.retypepassword;
+    const id = userData.id;
+    changePasswordMutate.mutate({
+      id,
+      confirmPassword,
+      newPassword,
+      currentPassword,
+    });
   }
 
   function cancelHandler() {
@@ -115,6 +120,7 @@ function PasswordView() {
 
   return (
     <div className="col h-100">
+      <NotificationDialog ref={notiDialogRef} keyQuery={[]} />
       <div
         className="h-100 position-relative"
         style={{ backgroundColor: "#E9ECEF" }}

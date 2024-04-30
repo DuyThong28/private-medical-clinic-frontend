@@ -45,7 +45,7 @@ const RescordHistoryModal = forwardRef(function RescordHistoryModal(
         setAppointmentRecordData(() => {
           return { ...resData };
         });
-        modalRef.current.show({ isEditable: true, header: "Lịch sử khám" });
+        modalRef.current.show({ isEditable: true, header: "Lịch sử khám", action:"view" });
       },
     };
   });
