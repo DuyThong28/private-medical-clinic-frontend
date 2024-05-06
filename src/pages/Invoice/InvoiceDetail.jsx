@@ -114,6 +114,7 @@ const InvoiceDetail = forwardRef(function InvoiceDetail({ children }, ref) {
         });
 
         const resData = await fetchAppointmentRecordByBill({ bill });
+        console.log("resData", resData);
         if (resData && resData[0]) {
           setAppointmentRecordData(() => {
             return { ...resData[0] };

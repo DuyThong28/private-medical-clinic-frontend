@@ -114,6 +114,19 @@ function GridViewRevenue({
       "Doanh thu",
       "Tỉ lệ",
     ];
+    const headerRow = worksheet.getRow(3);
+    headerRow.values = ["STT", "Ngày", "Số bệnh nhân", "Doanh thu", "Tỉ lệ"];
+    headerRow.eachCell((cell) => {
+    cell.font = { bold: true }; // Bold font
+    cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFCCEEFF' } }; // Light blue background
+    cell.alignment = { horizontal: "left" }; // Left alignment
+    cell.border = {
+      top: { style: 'thin', color: { argb: 'FF000000' } },
+      left: { style: 'thin', color: { argb: 'FF000000' } },
+      right: { style: 'thin', color: { argb: 'FF000000' } },
+      bottom: { style: 'thin', color: { argb: 'FF000000' } },
+    };
+    });
     worksheet.columns = [
       { header: "STT", key: "STT", width: 5 },
       { header: dTime, key: "ngay", width: 20 },
@@ -148,8 +161,36 @@ function GridViewRevenue({
       rowObject.values = row;
       rowObject.eachCell((cell) => {
         cell.alignment = { horizontal: "left" };
+        cell.border = {
+          top: { style: 'thin', color: { argb: 'FF000000' } },
+          left: { style: 'thin', color: { argb: 'FF000000' } },
+          right: { style: 'thin', color: { argb: 'FF000000' } },
+          bottom: { style: 'thin', color: { argb: 'FF000000' } },
+        };
       });
     });
+    worksheet.mergeCells(`A${SumList.length+4}:C${SumList.length+4}`);
+    const LastCell = worksheet.getCell(`A${SumList.length+4}`);
+    LastCell.value = "Tổng doanh thu:";
+    LastCell.font = { bold: true };
+    LastCell.alignment = { horizontal: "left"};
+    LastCell.border = {
+      top: { style: 'thin', color: { argb: 'FF000000' } },
+      left: { style: 'thin', color: { argb: 'FF000000' } },
+      right: { style: 'thin', color: { argb: 'FF000000' } },
+      bottom: { style: 'thin', color: { argb: 'FF000000' } },
+    };
+    worksheet.mergeCells(`D${SumList.length+4}:E${SumList.length+4}`);
+    const LastCell2 = worksheet.getCell(`D${SumList.length+4}`);
+    LastCell2.value = total;
+    LastCell2.font = { bold: false };
+    LastCell2.alignment = { horizontal: "left"};
+    LastCell2.border = {
+      top: { style: 'thin', color: { argb: 'FF000000' } },
+      left: { style: 'thin', color: { argb: 'FF000000' } },
+      right: { style: 'thin', color: { argb: 'FF000000' } },
+      bottom: { style: 'thin', color: { argb: 'FF000000' } },
+    };
     let nameExport;
     if (timeOption == "Tháng")
       nameExport = "Bao_Cao_Doanh_Thu_Thang_" + date.month + "/" + date.year;
@@ -158,88 +199,98 @@ function GridViewRevenue({
       saveAs(new Blob([buffer]), nameExport + ".xlsx");
     });
   };
+  function formatMoney(number) {
+    const strNumber = String(number);
+    const parts = strNumber.split(/(?=(?:\d{3})+(?!\d))/);
+    const formattedNumber = parts.join('.');
+    return formattedNumber;
+  }
+  let STT = 0;
   return (
     <>
-      <div className=" w-100 h-100 overflow-hidden d-flex flex-column gap-3">
-        <div className="export-button">
-          <button onClick={handleExportReport}>
-            <FontAwesomeIcon className="icon-export" icon={faFileExcel} />
-            Export
-          </button>
+      <div className="main-content">
+        <div className=" w-100 h-100 overflow-hidden d-flex flex-column gap-3">
+          <div className="export-button">
+            <button onClick={handleExportReport}>
+              <FontAwesomeIcon className="icon-export" icon={faFileExcel} />
+              Export
+            </button>
+          </div>
+          <TableHeader>
+            <div className="text-start" style={{ width: "10%" }}>
+              STT
+            </div>
+            <div className="text-start" style={{ width: "25%" }}>
+              {timeOption === "Tháng" ? "Ngày" : "Tháng"}
+            </div>
+            <div className="text-start" style={{ width: "20%" }}>
+              Số bệnh nhân
+            </div>
+            <div className="text-start" style={{ width: "25%" }}>
+              Doanh thu
+            </div>
+            <div className="text-start" style={{ width: "19%" }}>
+              Tỷ lệ
+            </div>
+            <div className="text-start" style={{ width: "1%" }}></div>
+          </TableHeader>
+            <TableBody>
+              {SumList &&
+                SumList.map((item, index) => {
+                  return (
+                    CountList[index] > 0 && (<li
+                      className="dropdown-center list-group-item list-group-item-primary list-group-item-action w-100 h-80 d-flex flex-row"
+                      key={index}
+                    >
+                      <div
+                        className="text-start"
+                        style={{ width: "10%" }}
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false"
+                      >
+                        {++STT}
+                      </div>
+                      <div
+                        className="text-start"
+                        style={{ width: "25%" }}
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false"
+                      >
+                        {timeOption === "Tháng" &&
+                          displayTime(index + 1, date.month, date.year)}
+                        {timeOption === "Năm" && index + 1 + "/" + date.year}
+                      </div>
+                      <div
+                        className="text-start"
+                        style={{ width: "20%" }}
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false"
+                      >
+                        {CountList[index]}
+                      </div>
+                      <div
+                        className="text-start"
+                        style={{ width: "25%" }}
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false"
+                      >
+                        {formatMoney(item)}
+                      </div>
+                      <div
+                        className="text-start"
+                        style={{ width: "20%" }}
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false"
+                      >
+                        {total === 0 ? "0" : Math.floor((item / total) * 10000) / 100}%
+                      </div>
+                    </li>)
+                  );
+                })}
+            </TableBody>
         </div>
-        <TableHeader>
-          <div className="text-start" style={{ width: "10%" }}>
-            STT
-          </div>
-          <div className="text-start" style={{ width: "25%" }}>
-            {timeOption === "Tháng" ? "Ngày" : "Tháng"}
-          </div>
-          <div className="text-start" style={{ width: "20%" }}>
-            Số bệnh nhân
-          </div>
-          <div className="text-start" style={{ width: "25%" }}>
-            Doanh thu
-          </div>
-          <div className="text-start" style={{ width: "19%" }}>
-            Tỷ lệ
-          </div>
-          <div className="text-start" style={{ width: "1%" }}></div>
-        </TableHeader>
-        <TableBody>
-          {SumList &&
-            SumList.map((item, index) => {
-              return (
-                <li
-                  className=" dropdown-center list-group-item list-group-item-primary list-group-item-action w-100 d-flex flex-row"
-                  key={index}
-                >
-                  <div
-                    className="text-start"
-                    style={{ width: "10%" }}
-                    data-bs-toggle="dropdown"
-                    aria-expanded="false"
-                  >
-                    {index + 1}
-                  </div>
-                  <div
-                    className="text-start"
-                    style={{ width: "25%" }}
-                    data-bs-toggle="dropdown"
-                    aria-expanded="false"
-                  >
-                    {timeOption === "Tháng" &&
-                      displayTime(index + 1, date.month, date.year)}
-                    {timeOption === "Năm" && index + 1 + "/" + date.year}
-                  </div>
-                  <div
-                    className="text-start"
-                    style={{ width: "20%" }}
-                    data-bs-toggle="dropdown"
-                    aria-expanded="false"
-                  >
-                    {CountList[index]}
-                  </div>
-                  <div
-                    className="text-start"
-                    style={{ width: "25%" }}
-                    data-bs-toggle="dropdown"
-                    aria-expanded="false"
-                  >
-                    {item}
-                  </div>
-                  <div
-                    className="text-start"
-                    style={{ width: "20%" }}
-                    data-bs-toggle="dropdown"
-                    aria-expanded="false"
-                  >
-                    {Math.floor((item / total) * 10000) / 100} %
-                  </div>
-                </li>
-              );
-            })}
-        </TableBody>
       </div>
+      <div className="total-view"></div>
     </>
   );
 }

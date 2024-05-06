@@ -38,6 +38,10 @@ ChartJS.register(
   Legend
 );
 
+let rememberWeek = dayjs();
+let rememberMonth = dayjs();
+let rememberYear = dayjs();
+
 function Revenue() {
   const patientsQuery = useQuery({
     queryKey: ["patientlist"],
@@ -98,6 +102,10 @@ function Revenue() {
     return { start: startOfWeek, end: endOfWeek };
   };
   const [isOpenCalendar, setIsOpenCalendar] = React.useState(false);
+  const handlerSetNewTime = (value) => {
+    setNewTime(value);
+    setIsOpenCalendar(false);
+  }
   const handleOpenCalendar = (value) => {
     setIsOpenCalendar(value);
     setIsOpenTimeOption(false);
@@ -109,12 +117,18 @@ function Revenue() {
   };
   const [timeOption, setTimeOption] = React.useState("Tuần");
   const handleSetTimeOption = (value, sV) => {
+    if(timeOption === "Tuần") rememberWeek = valueTime;
+    else if(timeOption === "Tháng") rememberMonth = valueTime;
+    else rememberYear = valueTime;
     setTimeOption(value);
+    if(value === "Tuần") setValueTime(rememberWeek);
+    else if(value === "Tháng") setValueTime(rememberMonth);
+    else setValueTime(rememberYear);
     if (sV === 1) return;
     if (value === "Tuần") getDataForChartWeek(valueTime);
     else if (value === "Tháng") getDataForChartMonth(valueTime);
   };
-  const [selectView, setSelectView] = useState(0);
+  const [selectView, setSelectView] = useState(1);
   const handleSetSelectView = (value) => {
     setSelectView(value);
     if (value == 1) handleSetTimeOption("Tháng", 1);
@@ -151,8 +165,8 @@ function Revenue() {
       );
     }
     if (timeOption == "Tháng") {
-      if (selectView == 0) return time.year;
-      else return "Thg " + time.month + " " + time.year;
+      
+      return "Thg " + time.month + " " + time.year;
     }
     if (timeOption == "Năm") {
       return time.year;
@@ -307,10 +321,10 @@ function Revenue() {
       {
         label: "Doanh thu",
         data: tmp2.count, // Replace with your variable 2 data
-        backgroundColor: "red",
+        backgroundColor: "#3983fa",
         borderWidth: 1,
-        barThickness: 30,
-        borderRadius: 2,
+        barThickness: 20,
+        borderRadius: 50,
       },
     ];
     setChartData(tmp);
@@ -336,10 +350,10 @@ function Revenue() {
       {
         label: "Doanh thu",
         data: tmp2.count, // Replace with your variable 2 data
-        backgroundColor: "red",
+        backgroundColor: "#3983fa",
         borderWidth: 1,
-        barThickness: 30,
-        borderRadius: 2,
+        barThickness: 20,
+        borderRadius: 50,
       },
     ];
     setChartData(tmp);
@@ -350,18 +364,17 @@ function Revenue() {
       {
         label: "Doanh thu",
         data: getDataNewForChartWeek(valueTime).count, // Replace with your variable 2 data
-        backgroundColor: "red",
+        backgroundColor: "#3983fa",
         borderWidth: 1,
-        barThickness: 30,
-        borderRadius: 2,
+        barThickness: 20,
+        borderRadius: 50,
       },
     ],
   });
 
   const optionschart = {
     title: {
-      display: true,
-      text: "Biểu đồ doanh thu 2 cột",
+      display: false,
     },
     scales: {
       y: {
@@ -372,7 +385,7 @@ function Revenue() {
     },
     plugins: {
       legend: {
-        display: true, // Ẩn chú thích màu
+        display: false, // Ẩn chú thích màu
       },
     },
     elements: {
@@ -381,7 +394,6 @@ function Revenue() {
       },
     },
   };
-
   return (
     <Card>
       <div className=" w-100 h-100 overflow-hidden">
@@ -403,6 +415,8 @@ function Revenue() {
                     <SelectTime
                       setNewTime={setNewTime}
                       value={valueTime}
+                      timeOption={timeOption}
+                      handlerSetNewTime={handlerSetNewTime}
                     ></SelectTime>
                   </div>
                 )}
@@ -437,9 +451,9 @@ function Revenue() {
                     >
                       <p>Tháng</p>
                     </div>
-                    {/* <div className='item' onClick={() => {handleSetTimeOption('Năm');  handleOpenTimeOption(false)}}>
+                    <div className='item' onClick={() => {handleSetTimeOption('Năm');  handleOpenTimeOption(false)}}>
                                     <p>Năm</p>
-                                </div> */}
+                                </div>
                   </div>
                 )}
                 {isOpenTimeOption && selectView == 1 && (

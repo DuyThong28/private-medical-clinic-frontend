@@ -38,7 +38,7 @@ function PatientsPage() {
     queryKey: ["bills"],
     queryFn: async () => {
       const data = await fetchAllBills();
-
+      console.log("data", data);
       const finalData = await Promise.all(
         data.map(async (item) => {
           const patient = await fetchPatientById({ id: item.patientId });
@@ -77,6 +77,7 @@ function PatientsPage() {
   }
 
   function viewHandler({ bill }) {
+    console.log("this is bill", bill);
     dialogRef.current.showDetail({ bill });
   }
 
