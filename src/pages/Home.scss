@@ -199,7 +199,7 @@
         padding-left: 50px;
         .overview-chart{
             height: 150px !important;
-            width: 650px !important;
+            width: 600px !important;
         }
         .chart-note {
             margin: auto 0;
@@ -222,13 +222,13 @@
 
             .male {
                 &::before {
-                    background-color: #89d0ef;
+                    background-color: #3a57e8;
                 }
             }
 
             .female {
                 &::before {
-                    background-color: #eb7474;
+                    background-color: #85f4fa;
                 }
             }
         }
