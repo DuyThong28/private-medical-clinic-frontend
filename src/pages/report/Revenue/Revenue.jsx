@@ -44,6 +44,7 @@ let rememberYear = dayjs();
 let rememberWeek2 = dayjs();
 let rememberMonth2 = dayjs();
 let rememberYear2 = dayjs();
+let stopInitLoad = false;
 
 function Revenue() {
   const patientsQuery = useQuery({
@@ -470,6 +471,49 @@ function Revenue() {
     ];
     setChartData(tmp);
   };
+  React.useEffect(()=>{
+    if(!stopInitLoad){
+      console.log("ok")
+      if(aptList.length > 0)
+      {
+        setChartData({
+          labels: getLabelForChartWeek(valueTime), // Replace with your category labels
+          datasets: [
+            {
+              label: "Doanh thu",
+              data: getDataNewForChartWeek(valueTime).count, // Replace with your variable 2 data
+              backgroundColor: "#3983fa",
+              borderWidth: 1,
+              barThickness: 10,
+              borderRadius: 50,
+            },
+          ],
+        })
+        stopInitLoad = true;
+      }
+    }
+  }, [bills, stopInitLoad])
+
+  // React.useEffect(()=>{
+  //     if(aptList.length > 0)
+  //     {
+  //       setChartData({
+  //         labels: getLabelForChartWeek(valueTime), // Replace with your category labels
+  //         datasets: [
+  //           {
+  //             label: "Doanh thu",
+  //             data: getDataNewForChartWeek(valueTime).count, // Replace with your variable 2 data
+  //             backgroundColor: "#3983fa",
+  //             borderWidth: 1,
+  //             barThickness: 10,
+  //             borderRadius: 50,
+  //           },
+  //         ],
+  //       })
+  //       stopInitLoad = true;
+  //     }
+  // }, [aptList])
+  
   const [chartData, setChartData] = useState({
     labels: getLabelForChartWeek(valueTime), // Replace with your category labels
     datasets: [
@@ -510,7 +554,7 @@ function Revenue() {
     },
   };
 
-  
+
   return (
     <div className="d-flex flex-row w-100">
       <div className="col-md-7">

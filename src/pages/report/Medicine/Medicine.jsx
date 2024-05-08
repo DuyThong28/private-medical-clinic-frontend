@@ -38,7 +38,7 @@ let rememberYear = dayjs();
 let rememberWeek2 = dayjs();
 let rememberMonth2 = dayjs();
 let rememberYear2 = dayjs();
-
+let stopInitLoad = false;
 function Medicine() {
 
   const drugsQuery = useQuery({
@@ -111,7 +111,9 @@ const recList = ConvernToArray(record);
 const aptList = ConvernToArray(appointment);
 const drugList = ConvernToArray(drugs);
 const billList = ConvernToArray(bills);
-
+useEffect(()=>{
+  setSelectItem(drugList[0]);
+},[drugList])
   function searchHandler(event) {
     const textSearch = event.target.value.toLowerCase().trim();
     const result = drugs.filter((drug) =>
@@ -120,7 +122,7 @@ const billList = ConvernToArray(bills);
     setListState(() => result);
   }
 
-    const [selectItem, setSelectItem] = useState({});
+    const [selectItem, setSelectItem] = useState(drugList[0]);
     const setDetailItem = (item) => {
         getDataForChartWeek(valueTime, item);
         setSelectItem(item);
@@ -326,7 +328,7 @@ const billList = ConvernToArray(bills);
           }
           for(let j = 0; j < recDetList.length; j++) {
             if(arrRec.includes(recDetList[j].appointmentRecordId)) {
-              if(recDetList[j].drugId == item.id) {
+              if(recDetList[j]?.drugId == item?.id) {
                 count = count + recDetList[j].count;
               }
             }
@@ -352,7 +354,7 @@ const billList = ConvernToArray(bills);
 
           for(let j = 0; j < recDetList.length; j++) {
             if(arrRec.includes(recDetList[j].appointmentRecordId)) {
-              if(recDetList[j].drugId == item.id) {
+              if(recDetList[j].drugId == item?.id) {
                 count = count + recDetList[j].count;
               }
             }
@@ -505,7 +507,7 @@ const billList = ConvernToArray(bills);
             labels: [1,1,1,1,1,1,1], // Replace with your category labels
             datasets: [
                 {label: 'Số lượng bán ra',
-                    data: [0,0,0,0,0,0,0], // Replace with your variable 2 data
+                    data: [0,0,0,0,0,0,0], 
                     backgroundColor: '#3983fa',
                     borderWidth: 1,
                     barThickness: 25,
@@ -514,6 +516,27 @@ const billList = ConvernToArray(bills);
             ],
         }
     );
+    React.useEffect(()=>{
+      if(!stopInitLoad){
+        console.log("ok2")
+        if(aptList.length > 0)
+        {
+          setChartData({
+            labels: getLabelForChartWeek(valueTime),
+            datasets: [
+                {label: 'Số lượng bán ra',
+                    data: getDataNewForChartWeek(valueTime,selectItem), 
+                    backgroundColor: '#3983fa',
+                    borderWidth: 1,
+                    barThickness: 10,
+                    borderRadius: 50,
+                },
+            ],
+          })
+          stopInitLoad = true;
+        }
+      }
+    }, [appointment,bills, record, recorddt , stopInitLoad])
 
     const optionschart = {
         title: {
@@ -722,113 +745,7 @@ const billList = ConvernToArray(bills);
     });
   }
 
-  const getRevenueOfMedicineWeek = (time, item) => {
-    let res = 0;
-    let arrRecDet = [];
-    const date = formatDate(time);
-    for(let i = 0; i < recDetList.length; i++) {
-      if(recDetList[i].drugId == item.id) {
-        arrRecDet.push(recDetList[i].appointmentRecordId);
-      }
-    }
-    let arrRec = [];
-    for(let i = 0; i < recList.length; i++) {
-      if(arrRecDet.includes(recList[i].id)) {
-        arrRec.push(recList[i].appointmentListId);
-      }
-    }
-    let arrApt = [];
-    if(date.ms == date.me) {
-      for(let j = 0; j < aptList.length; j++) {
-        if(arrRec.includes(aptList[j].id)) {
-          const tmp = StringToDate(aptList[j].scheduleDate);
-          if(tmp.day >= date.start && tmp.day <= date.end && tmp.month == date.month && tmp.year == date.year) {
-            arrApt.push(aptList[j].id);
-          }
-        }
-      }
-    }
-    else {
-      for(let j = 0; j < aptList.length; j++) {
-        if(arrRec.includes(aptList[j].id)) {
-          const tmp = StringToDate(aptList[j].scheduleDate);
-          if((tmp.day >= date.start && tmp.month == date.ms && tmp.year == date.ys) || 
-             (tmp.day <= date.end && tmp.month == date.me && tmp.year == date.ye)) {
-            arrApt.push(aptList[j].id);
-          }
-        }
-      }
-    }
-    for(let i = 0; i < billList.length; i++) {
-      if(arrApt.includes(billList[i].appointmentListId)) {
-        res += billList[i].drugExpense;
-      }
-    }
-    return res;
-  }
-  const getRevenueOfMedicineMonth = (time, item) => {
-    let res = 0;
-    let arrRecDet = [];
-    const date = formatDate(time);
-    for(let i = 0; i < recDetList.length; i++) {
-      if(recDetList[i].drugId == item.id) {
-        arrRecDet.push(recDetList[i].appointmentRecordId);
-      }
-    }
-    let arrRec = [];
-    for(let i = 0; i < recList.length; i++) {
-      if(arrRecDet.includes(recList[i].id)) {
-        arrRec.push(recList[i].appointmentListId);
-      }
-    }
-    let arrApt = [];
-    for(let j = 0; j < aptList.length; j++) {
-      if(arrRec.includes(aptList[j].id)) {
-        const tmp = StringToDate(aptList[j].scheduleDate);
-        if(tmp.month == date.month && tmp.year == date.year) {
-          arrApt.push(aptList[j].id);
-        }
-      }
-    }
-    for(let i = 0; i < billList.length; i++) {
-      if(arrApt.includes(billList[i].appointmentListId)) {
-        res += billList[i].drugExpense;
-      }
-    }
-    return res;
-  }
-  const getRevenueOfMedicineYear = (time, item) => {
-    let res = 0;
-    let arrRecDet = [];
-    const date = formatDate(time);
-    for(let i = 0; i < recDetList.length; i++) {
-      if(recDetList[i].drugId == item.id) {
-        arrRecDet.push(recDetList[i].appointmentRecordId);
-      }
-    }
-    let arrRec = [];
-    for(let i = 0; i < recList.length; i++) {
-      if(arrRecDet.includes(recList[i].id)) {
-        arrRec.push(recList[i].appointmentListId);
-      }
-    }
-    let arrApt = [];
-    for(let j = 0; j < aptList.length; j++) {
-      if(arrRec.includes(aptList[j].id)) {
-        const tmp = StringToDate(aptList[j].scheduleDate);
-        if(tmp.year == date.year) {
-          arrApt.push(aptList[j].id);
-        }
-      }
-    }
-    for(let i = 0; i < billList.length; i++) {
-      if(arrApt.includes(billList[i].appointmentListId)) {
-        res += billList[i].drugExpense;
-      }
-    }
-    console.log(res);
-    return res;
-  }
+  
   function formatMoney(number) {
     const strNumber = String(number);
     const parts = strNumber.split(/(?=(?:\d{3})+(?!\d))/);
@@ -920,7 +837,7 @@ const billList = ConvernToArray(bills);
                             data-bs-toggle="dropdown"
                             aria-expanded="false"
                           >
-                            {drug.drugName}
+                            {drug?.drugName}
                           </div>
                           <div
                             className="text-start"
@@ -928,7 +845,7 @@ const billList = ConvernToArray(bills);
                             data-bs-toggle="dropdown"
                             aria-expanded="false"
                           >
-                            {getUnitName({ id: drug.unitId })}
+                            {getUnitName({ id: drug?.unitId })}
                           </div>
                           <div
                             className="text-start"
@@ -936,9 +853,9 @@ const billList = ConvernToArray(bills);
                             data-bs-toggle="dropdown"
                             aria-expanded="false"
                           >
-                            {timeOption2 === 'Tuần' && formatMoney(getRevenueOfMedicineWeek(valueTime2, drug))}
-                            {timeOption2 === 'Tháng' && formatMoney(getRevenueOfMedicineMonth(valueTime2, drug))}
-                            {timeOption2 === 'Năm' && formatMoney(getRevenueOfMedicineYear(valueTime2, drug))}
+                            {timeOption2 === 'Tuần' && formatMoney(countDrugInRecord(formatDate(valueTime2)?.month, formatDate(valueTime2)?.year, drug) * drug?.price)}
+                            {timeOption2 === 'Tháng' && formatMoney(countDrugInRecordWeek(valueTime2,drug) * drug?.price)}
+                            {timeOption2 === 'Năm' && formatMoney(countDrugInRecord(-1, formatDate(valueTime2)?.year, drug) * drug?.price)}
                           </div>
                           <div
                             className="text-start"
@@ -946,9 +863,9 @@ const billList = ConvernToArray(bills);
                             data-bs-toggle="dropdown"
                             aria-expanded="false"
                           >
-                              {timeOption2 === 'Tháng' && countDrugInRecord(formatDate(valueTime2).month, formatDate(valueTime2).year, drug)}
-                              {timeOption2 === 'Năm' && countDrugInRecord(-1, formatDate(valueTime2).year, drug)}
-                              {timeOption2 === 'Tuần' && countDrugInRecordWeek(valueTime2,drug)}
+                              {timeOption2 === 'Tháng' && countDrugInRecord(formatDate(valueTime2)?.month, formatDate(valueTime2)?.year, drug)}
+                              {timeOption2 === 'Năm' && countDrugInRecord(-1, formatDate(valueTime2)?.year, drug)}
+                              {timeOption2 === 'Tuần' && countDrugInRecordWeek(valueTime2?.drug)}
                           </div>
                           <div
                             className="text-end"
@@ -1037,19 +954,19 @@ const billList = ConvernToArray(bills);
                   </div>
                   <div className='detail-list'>
                   <div className='detail-item'>
-                      <p>Tên thuốc: {selectItem.drugName}</p>
+                      <p>Tên thuốc: {selectItem?.drugName}</p>
                     </div>
                     <div className='detail-item'>
-                      <p>Đơn vị: {getUnitName({ id: selectItem.unitId })}</p>
+                      <p>Đơn vị: {getUnitName({ id: selectItem?.unitId })}</p>
                     </div>
                     <div className='detail-item'>
-                      <p>Giá bán: {selectItem.price}</p>
+                      <p>Giá bán: {selectItem?.price}</p>
                     </div>
                     <div className='detail-item'>
-                      <p>Số lượng tồn kho: {selectItem.count}</p>
+                      <p>Số lượng tồn kho: {selectItem?.count}</p>
                     </div>
                     <div className='detail-item'>
-                      <p>Hoạt chất: {selectItem.note}</p>
+                      <p>Hoạt chất: {selectItem?.note}</p>
                     </div>
                   </div>
                 </div>
