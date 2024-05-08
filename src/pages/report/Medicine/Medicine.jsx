@@ -29,6 +29,7 @@ import { fetchAllUnit } from "../../../services/units";
 import Chart from 'chart.js/auto';
 import { Chart as ChartJS, CategoryScale, LinearScale, Title, Tooltip, Legend } from 'chart.js';
 import { Bar,Line } from 'react-chartjs-2';
+import { da } from 'date-fns/locale';
 ChartJS.register(CategoryScale, LinearScale, Title, Tooltip, Legend);
 
 let rememberWeek = dayjs();
@@ -88,6 +89,14 @@ function Medicine() {
     }, 
   });
   const appointment = appointmentQuery.data;
+  const billsQuery = useQuery({
+    queryKey: ["billlist"],
+    queryFn: () => {
+      return fetchAllBills();
+    },
+  });
+  const bills = billsQuery.data;
+  
   const ConvernToArray = (obj) => {
     let arr = []
     if(obj != null) 
@@ -101,6 +110,7 @@ const recDetList = ConvernToArray(recorddt);
 const recList = ConvernToArray(record);
 const aptList = ConvernToArray(appointment);
 const drugList = ConvernToArray(drugs);
+const billList = ConvernToArray(bills);
 
   function searchHandler(event) {
     const textSearch = event.target.value.toLowerCase().trim();
@@ -122,16 +132,41 @@ const drugList = ConvernToArray(drugs);
         setValueTime(value);
         getDataForChartWeek(value, selectItem);
     }
+    const getFirstDayOfWeek = (date) => {
+      const startOfWeek = dayjs(date).startOf('week');
+      if (startOfWeek.day() === 0) {
+        return startOfWeek.add(1, 'day');
+      }
+      return startOfWeek;
+    }
     const getWeekStartAndEnd = (selectedDay) => {
-        const startOfWeek = selectedDay.startOf('week');
-        const endOfWeek = startOfWeek.add(6, 'days');
-        return { start: startOfWeek, end: endOfWeek };
-    };
+      const startOfWeek = getFirstDayOfWeek(selectedDay);
+      const endOfWeek = startOfWeek.add(6, 'days');
+      return { start: startOfWeek, end: endOfWeek };
+  };
     const [isOpenCalendar, setIsOpenCalendar] = React.useState(false);
     const handleOpenCalendar = (value) => {
         setIsOpenCalendar(value);
+        setIsOpenTimeOption(false);
     }
-
+    const [timeOption, setTimeOption] = React.useState("Tuần");
+    const handleSetTimeOption = (value) => {
+      if(timeOption === "Tuần") rememberWeek = valueTime;
+      else if(timeOption === "Tháng") rememberMonth = valueTime;
+      else rememberYear = valueTime;
+      setTimeOption(value);
+      if(value === "Tuần") setValueTime(rememberWeek);
+      else if(value === "Tháng") setValueTime(rememberMonth);
+      else setValueTime(rememberYear);
+      if (value === "Tuần") getDataForChartWeek(rememberWeek, selectItem);
+      else if (value === "Tháng") getDataForChartMonth(rememberMonth, selectItem);
+      else getDataForChartYear(rememberYear, selectItem)
+    };
+    const [isOpenTimeOption, setIsOpenTimeOption] = React.useState(false);
+  const handleOpenTimeOption = (value) => {
+    setIsOpenCalendar(false);
+    setIsOpenTimeOption(value);
+  };
     const countDrugInRecord = (month, year, item) => {
       let arrApt = [];
           let count = 0;
@@ -145,11 +180,10 @@ const drugList = ConvernToArray(drugs);
             if(arrApt.includes(recList[j].appointmentListId))
               arrRec.push(recList[j].id);
           }
-
           for(let j = 0; j < recDetList.length; j++) {
             if(arrRec.includes(recDetList[j].appointmentRecordId)) {
               if(recDetList[j].drugId === item.id) {
-                count++;
+                count+=recDetList[j].count;
               }
             }
           }
@@ -184,7 +218,7 @@ const drugList = ConvernToArray(drugs);
           for(let j = 0; j < recDetList.length; j++) {
             if(arrRec.includes(recDetList[j].appointmentRecordId)) {
               if(recDetList[j].drugId === item.id) {
-                count++;
+                count+=recDetList[j].count;
               }
             }
           }
@@ -206,8 +240,18 @@ const drugList = ConvernToArray(drugs);
     }
     const displayTime = (date) => {
         const time = formatDate(date);
-            return time.start + '/' + time.ms + '/' + time.ys + ' - ' + time.end + '/' + time.me + '/' + time.ye;
+            return time.start + '/' + time.ms + ' - ' + time.end + '/' + time.me + '/' + time.ye;
     }
+    const displayTime3 = (date) => {
+      const time = formatDate(date);
+      if(timeOption == "Tuần") return displayTime(date);
+      if(timeOption == 'Tháng') {
+              return 'Thg ' + time.month + ' ' + time.year;
+      }
+      if(timeOption == 'Năm') {
+          return time.year; 
+      }
+  }
     const isLeapYear = (year) => {
         if (year % 4 !== 0) {
           return false;
@@ -253,6 +297,15 @@ const drugList = ConvernToArray(drugs);
         return arr;
     }
     
+    const getLabelForChartMonth = (time) => {
+      let arr = [];
+      const date = formatDate(time);
+      for(let i = 1; i <= getDayofMonth(date.month, date.year); i++) {
+        arr.push(i + '/' + date.month);
+      }
+      return arr;
+  }
+
     const getDataNewForChartWeek = (time, item) => {
       const date = formatDate(time);
       let newData = [];
@@ -273,7 +326,7 @@ const drugList = ConvernToArray(drugs);
           }
           for(let j = 0; j < recDetList.length; j++) {
             if(arrRec.includes(recDetList[j].appointmentRecordId)) {
-              if(recDetList[j].drugId === item.id) {
+              if(recDetList[j].drugId == item.id) {
                 count = count + recDetList[j].count;
               }
             }
@@ -299,7 +352,7 @@ const drugList = ConvernToArray(drugs);
 
           for(let j = 0; j < recDetList.length; j++) {
             if(arrRec.includes(recDetList[j].appointmentRecordId)) {
-              if(recDetList[j].drugId === item.id) {
+              if(recDetList[j].drugId == item.id) {
                 count = count + recDetList[j].count;
               }
             }
@@ -322,7 +375,7 @@ const drugList = ConvernToArray(drugs);
           }
           for(let j = 0; j < recDetList.length; j++) {
             if(arrRec.includes(recDetList[j].appointmentRecordId)) {
-              if(recDetList[j].drugId === item.id) {
+              if(recDetList[j].drugId == item.id) {
                 count = count + recDetList[j].count;
               }
             }
@@ -348,6 +401,105 @@ const drugList = ConvernToArray(drugs);
         ]
         setChartData(tmp);
     }
+    const getDataNewForChartMonth = (time, item) => {
+      const date = formatDate(time);
+      let newData = [];
+      for(let i = 1; i <= getDayofMonth(date.month, date.year); i++) {
+        let arrApt = [];
+          let count = 0;
+          for(let j = 0; j < aptList.length; j++) {
+            const tmp = StringToDate(aptList[j].scheduleDate);
+            if(tmp.day === i && tmp.month === date.month && tmp.year === date.year)
+              arrApt.push(aptList[j].id)
+          }
+          let arrRec = [];
+          for(let j = 0; j < recList.length; j++) {
+            if(arrApt.includes(recList[j].appointmentListId))
+              arrRec.push(recList[j].id);
+          }
+          for(let j = 0; j < recDetList.length; j++) {
+            if(arrRec.includes(recDetList[j].appointmentRecordId)) {
+              if(recDetList[j].drugId == item.id) {
+                count = count + recDetList[j].count;
+              }
+            }
+          }
+          newData.push(count);
+      }
+      return newData;
+    }
+    const getDataForChartMonth = (date, item) => {
+      let tmp = chartData;
+      tmp.labels = getLabelForChartMonth(date);
+      const tmp2 = getDataNewForChartMonth(date, item);
+      tmp.datasets = [
+          {
+            label: 'Số lượng bán ra',
+              data: tmp2, 
+              backgroundColor: '#3983fa',
+              borderWidth: 1,
+              barThickness: 10,
+              borderRadius: 50,
+          },
+      ]
+      setChartData(tmp);
+  }
+  const getDataNewForChartYear = (time, item) => {
+    const date = formatDate(time);
+    let newData = [];
+    for(let i = 1; i <= 12; i++) {
+      let arrApt = [];
+        let count = 0;
+        for(let j = 0; j < aptList.length; j++) {
+          const tmp = StringToDate(aptList[j].scheduleDate);
+          if(tmp.month === i && tmp.year === date.year)
+            arrApt.push(aptList[j].id)
+        }
+        let arrRec = [];
+        for(let j = 0; j < recList.length; j++) {
+          if(arrApt.includes(recList[j].appointmentListId))
+            arrRec.push(recList[j].id);
+        }
+        for(let j = 0; j < recDetList.length; j++) {
+          if(arrRec.includes(recDetList[j].appointmentRecordId)) {
+            if(recDetList[j].drugId == item.id) {
+              count = count + recDetList[j].count;
+            }
+          }
+        }
+        newData.push(count);
+    }
+    return newData;
+  }
+  const getDataForChartYear = (date, item) => {
+    let tmp = chartData;
+    tmp.labels = [
+      "Thg 1",
+      "Thg 2",
+      "Thg 3",
+      "Thg 4",
+      "Thg 5",
+      "Thg 6",
+      "Thg 7",
+      "Thg 8",
+      "Thg 9",
+      "Thg 10",
+      "Thg 11",
+      "Thg 12",
+    ];
+    const tmp2 = getDataNewForChartYear(date, item);
+    tmp.datasets = [
+        {
+          label: 'Số lượng bán ra',
+            data: tmp2, 
+            backgroundColor: '#3983fa',
+            borderWidth: 1,
+            barThickness: 10,
+            borderRadius: 50,
+        },
+    ]
+    setChartData(tmp);
+}
     const [chartData, setChartData] = useState(
         {
             labels: [1,1,1,1,1,1,1], // Replace with your category labels
@@ -402,7 +554,6 @@ const drugList = ConvernToArray(drugs);
     const handleOpenTimeOption2 = (value) => {
         setIsOpenCalendar2(false);
         setIsOpenTimeOption2(value);
-        console.log(value);
     }
     const handlerSetNewTime2 = (value) => {
       setNewTime2(value);
@@ -499,8 +650,8 @@ const drugList = ConvernToArray(drugs);
     const reportCell2 = worksheet.getCell('A2');
     if(timeOption2 === 'Tháng')
         reportCell2.value = 'Tháng: ' + date.month + '/' + date.year;
-    else 
-        reportCell2.value = 'Năm: ' + date.year;
+    else if(timeOption2 == 'Năm') reportCell2.value = 'Năm: ' + date.year;
+    else reportCell2.value = 'Tuần: ' + date.start + '/' + date.ms + '/' + date.ys + " - " + date.end + '/' + date.me + '/' + date.ye;
     reportCell2.font = { bold: true };
     reportCell2.alignment = { vertical: 'middle', horizontal: 'center' };
 
@@ -564,12 +715,126 @@ const drugList = ConvernToArray(drugs);
       });
     let nameExport;
     if(timeOption2 == 'Tháng') nameExport  = 'Bao_Cao_Su_Dung_Thuoc_Thang_' + date.month + '/' + date.year;
-    else  nameExport  = 'Bao_Cao_Su_Dung_Thuoc_Nam_' + date.year;
+    else if(timeOption2 == 'Năm')nameExport  = 'Bao_Cao_Su_Dung_Thuoc_Nam_' + date.year;
+    else nameExport = 'Bao_Cao_Su_Dung_Thuoc_Tuan_' + date.start + '/' + date.ms + '_' + date.end + '/' + date.me + '/' + date.ye;
     workbook.xlsx.writeBuffer().then((buffer) => {
         saveAs(new Blob([buffer]), nameExport + '.xlsx');
     });
   }
 
+  const getRevenueOfMedicineWeek = (time, item) => {
+    let res = 0;
+    let arrRecDet = [];
+    const date = formatDate(time);
+    for(let i = 0; i < recDetList.length; i++) {
+      if(recDetList[i].drugId == item.id) {
+        arrRecDet.push(recDetList[i].appointmentRecordId);
+      }
+    }
+    let arrRec = [];
+    for(let i = 0; i < recList.length; i++) {
+      if(arrRecDet.includes(recList[i].id)) {
+        arrRec.push(recList[i].appointmentListId);
+      }
+    }
+    let arrApt = [];
+    if(date.ms == date.me) {
+      for(let j = 0; j < aptList.length; j++) {
+        if(arrRec.includes(aptList[j].id)) {
+          const tmp = StringToDate(aptList[j].scheduleDate);
+          if(tmp.day >= date.start && tmp.day <= date.end && tmp.month == date.month && tmp.year == date.year) {
+            arrApt.push(aptList[j].id);
+          }
+        }
+      }
+    }
+    else {
+      for(let j = 0; j < aptList.length; j++) {
+        if(arrRec.includes(aptList[j].id)) {
+          const tmp = StringToDate(aptList[j].scheduleDate);
+          if((tmp.day >= date.start && tmp.month == date.ms && tmp.year == date.ys) || 
+             (tmp.day <= date.end && tmp.month == date.me && tmp.year == date.ye)) {
+            arrApt.push(aptList[j].id);
+          }
+        }
+      }
+    }
+    for(let i = 0; i < billList.length; i++) {
+      if(arrApt.includes(billList[i].appointmentListId)) {
+        res += billList[i].drugExpense;
+      }
+    }
+    return res;
+  }
+  const getRevenueOfMedicineMonth = (time, item) => {
+    let res = 0;
+    let arrRecDet = [];
+    const date = formatDate(time);
+    for(let i = 0; i < recDetList.length; i++) {
+      if(recDetList[i].drugId == item.id) {
+        arrRecDet.push(recDetList[i].appointmentRecordId);
+      }
+    }
+    let arrRec = [];
+    for(let i = 0; i < recList.length; i++) {
+      if(arrRecDet.includes(recList[i].id)) {
+        arrRec.push(recList[i].appointmentListId);
+      }
+    }
+    let arrApt = [];
+    for(let j = 0; j < aptList.length; j++) {
+      if(arrRec.includes(aptList[j].id)) {
+        const tmp = StringToDate(aptList[j].scheduleDate);
+        if(tmp.month == date.month && tmp.year == date.year) {
+          arrApt.push(aptList[j].id);
+        }
+      }
+    }
+    for(let i = 0; i < billList.length; i++) {
+      if(arrApt.includes(billList[i].appointmentListId)) {
+        res += billList[i].drugExpense;
+      }
+    }
+    return res;
+  }
+  const getRevenueOfMedicineYear = (time, item) => {
+    let res = 0;
+    let arrRecDet = [];
+    const date = formatDate(time);
+    for(let i = 0; i < recDetList.length; i++) {
+      if(recDetList[i].drugId == item.id) {
+        arrRecDet.push(recDetList[i].appointmentRecordId);
+      }
+    }
+    let arrRec = [];
+    for(let i = 0; i < recList.length; i++) {
+      if(arrRecDet.includes(recList[i].id)) {
+        arrRec.push(recList[i].appointmentListId);
+      }
+    }
+    let arrApt = [];
+    for(let j = 0; j < aptList.length; j++) {
+      if(arrRec.includes(aptList[j].id)) {
+        const tmp = StringToDate(aptList[j].scheduleDate);
+        if(tmp.year == date.year) {
+          arrApt.push(aptList[j].id);
+        }
+      }
+    }
+    for(let i = 0; i < billList.length; i++) {
+      if(arrApt.includes(billList[i].appointmentListId)) {
+        res += billList[i].drugExpense;
+      }
+    }
+    console.log(res);
+    return res;
+  }
+  function formatMoney(number) {
+    const strNumber = String(number);
+    const parts = strNumber.split(/(?=(?:\d{3})+(?!\d))/);
+    const formattedNumber = parts.join('.');
+    return formattedNumber;
+  }
     return ( 
       
     <div className="d-flex flex-row w-100">
@@ -633,7 +898,7 @@ const drugList = ConvernToArray(drugs);
                 Đơn vị
               </div>
               <div className="text-start" style={{ width: "30%" }}>
-                Số lượng sử dụng
+                Doanh thu bán được
               </div>
               <div className="text-start" style={{ width: "19%" }}>
                 Số lần dùng
@@ -671,9 +936,9 @@ const drugList = ConvernToArray(drugs);
                             data-bs-toggle="dropdown"
                             aria-expanded="false"
                           >
-                            {timeOption2 === 'Tuần' && getCountInTimeWeek(valueTime2, drug)}
-                            {timeOption2 === 'Tháng' && getCountInTime(formatDate(valueTime2).month, formatDate(valueTime2).year, drug)}
-                            {timeOption2 === 'Năm' && getCountInTime(-1, formatDate(valueTime2).year, drug)}
+                            {timeOption2 === 'Tuần' && formatMoney(getRevenueOfMedicineWeek(valueTime2, drug))}
+                            {timeOption2 === 'Tháng' && formatMoney(getRevenueOfMedicineMonth(valueTime2, drug))}
+                            {timeOption2 === 'Năm' && formatMoney(getRevenueOfMedicineYear(valueTime2, drug))}
                           </div>
                           <div
                             className="text-start"
@@ -695,17 +960,6 @@ const drugList = ConvernToArray(drugs);
                                   setDetailItem(drug)
                                 } className='icon-view' icon={faEye} />
                           </div>
-                          {/* <ul className="dropdown-menu">
-                            <li className="dropdown-item">
-                              <span
-                                onClick={() =>
-                                  setDetailItem(drug)
-                                }
-                              >
-                                Xem chi tiết
-                              </span>
-                            </li>
-                          </ul> */}
                       </li>
                   );
                 })}
@@ -717,19 +971,68 @@ const drugList = ConvernToArray(drugs);
             <Card>
                 <div className='d-flex flex-column align-items-center h-100'>
                   <div className='detail-chart'>
-                  <div className='select-box-1' >
-                        <div className='combobox' onClick={() => handleOpenCalendar(!isOpenCalendar)}>
-                            <p>{displayTime(valueTime)}</p>
-                            <div className='icon'>
-                                <FontAwesomeIcon className='icon' icon={faCaretDown} />
-                            </div>
+                  <div className="option-time-chart">
+            <div className="d-flex justify-content-start">
+                    <div className="select-box-4">
+                      <div
+                        className="combobox-chart"
+                        onClick={() => handleOpenCalendar(!isOpenCalendar)}
+                      >
+                        <p>{displayTime3(valueTime)}</p>
+                        <div className="icon">
+                          <FontAwesomeIcon className="icon" icon={faCaretDown} />
                         </div>
-                        {isOpenCalendar &&
-                            <div className='calendar'>
-                                <SelectTime setNewTime={setNewTime} value={valueTime} timeOption={"Tuần"} handlerSetNewTime={handlerSetNewTime}></SelectTime>
-                            </div>
-                        }
+                      </div>
+                      {isOpenCalendar && (
+                        <div className="calendar">
+                          <SelectTime
+                            setNewTime={setNewTime}
+                            value={valueTime}
+                            timeOption={timeOption}
+                            handlerSetNewTime={handlerSetNewTime}
+                          ></SelectTime>
+                        </div>
+                      )}
                     </div>
+                    <div className="select-box-5" style={{ marginLeft: "10px" }}>
+                      <div
+                        className="combobox"
+                        onClick={() => handleOpenTimeOption(!isOpenTimeOption)}
+                      >
+                        <p>{timeOption}</p>
+                        <div className="icon">
+                          <FontAwesomeIcon className="icon" icon={faCaretDown} />
+                        </div>
+                      </div>
+                      {isOpenTimeOption  && (
+                        <div className="select-time">
+                          <div
+                            className="item"
+                            onClick={() => {
+                              handleSetTimeOption("Tuần");
+                              handleOpenTimeOption(false);
+                            }}
+                          >
+                            <p>Tuần</p>
+                          </div>
+                          <div
+                            className="item"
+                            onClick={() => {
+                              handleSetTimeOption("Tháng");
+                              handleOpenTimeOption(false);
+                            }}
+                          >
+                            <p>Tháng</p>
+                          </div>
+                          <div className='item' onClick={() => {handleSetTimeOption('Năm');  handleOpenTimeOption(false)}}>
+                                          <p>Năm</p>
+                                      </div>
+                        </div>
+                      )}
+                      
+                    </div>
+                  </div>
+          </div>
                       <Bar data={chartData} options={optionschart}></Bar>
                   </div>
                   <div className='detail-list'>

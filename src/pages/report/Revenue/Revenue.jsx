@@ -104,11 +104,18 @@ function Revenue() {
     else if (timeOption2 === "Tháng") getDataForChartMonth(value);
     else getDataForChartYear(value);
   };
+  const getFirstDayOfWeek = (date) => {
+    const startOfWeek = dayjs(date).startOf('week');
+    if (startOfWeek.day() === 0) {
+      return startOfWeek.add(1, 'day');
+    }
+    return startOfWeek;
+  }
   const getWeekStartAndEnd = (selectedDay) => {
-    const startOfWeek = selectedDay.startOf("week");
-    const endOfWeek = startOfWeek.add(6, "days");
+    const startOfWeek = getFirstDayOfWeek(selectedDay);
+    const endOfWeek = startOfWeek.add(6, 'days');
     return { start: startOfWeek, end: endOfWeek };
-  };
+};
   const [isOpenCalendar, setIsOpenCalendar] = React.useState(false);
   const handlerSetNewTime = (value) => {
     setNewTime(value);
@@ -154,9 +161,9 @@ function Revenue() {
     else if(timeOption2 === "Tháng") rememberMonth2 = valueTime2;
     else rememberYear2 = valueTime2;
     setTimeOption2(value);
-    if(value === "Tuần") setValueTime2(rememberWeek);
-    else if(value === "Tháng") setValueTime2(rememberMonth);
-    else setValueTime2(rememberYear);
+    if(value === "Tuần") setValueTime2(rememberWeek2);
+    else if(value === "Tháng") setValueTime2(rememberMonth2);
+    else setValueTime2(rememberYear2);
     if (value === "Tuần") getDataForChartWeek(valueTime2);
     else if (value === "Tháng") getDataForChartMonth(valueTime2);
     else getDataForChartYear(valueTime2)
@@ -272,6 +279,7 @@ function Revenue() {
   const getDataNewForChartWeek = (time) => {
     let newData1 = [];
     let newData2 = [];
+
     const date = formatDate(time);
     if (date.start < date.end) {
       for (let i = date.start; i <= date.end; i++) {
@@ -290,7 +298,7 @@ function Revenue() {
         }
         for (let j = 0; j < billList.length; j++) {
           if (arr.includes(billList[j].appointmentListId)) {
-            sum = sum + billList[j].drugExpense;
+            sum = sum + billList[j].drugExpense + billList[j].feeConsult;
             cnt++;
           }
         }
@@ -309,7 +317,7 @@ function Revenue() {
         }
         for (let j = 0; j < billList.length; j++) {
           if (arr.includes(billList[j].appointmentListId)) {
-            sum = sum + billList[j].drugExpense;
+            sum = sum + billList[j].drugExpense + billList[j].feeConsult
             cnt++;
           }
         }
@@ -328,7 +336,7 @@ function Revenue() {
         }
         for (let j = 0; j < billList.length; j++) {
           if (arr.includes(billList[j].appointmentListId)) {
-            sum = sum + billList[j].drugExpense;
+            sum = sum + billList[j].drugExpense + billList[j].feeConsult
             cnt++;
           }
         }
@@ -344,6 +352,7 @@ function Revenue() {
   const getDataNewForChartYear = (time) => {
     let newData1 = [];
     let newData2 = [];
+
     const date = formatDate(time);
     for (let i = 1; i <= 12; i++) {
       let arr = [];
@@ -357,7 +366,7 @@ function Revenue() {
       }
       for (let j = 0; j < billList.length; j++) {
         if (arr.includes(billList[j].appointmentListId)) {
-          sum = sum + billList[j].drugExpense;
+          sum = sum + billList[j].drugExpense + billList[j].feeConsult
           cnt++;
         }
       }
@@ -373,6 +382,7 @@ function Revenue() {
   const getDataNewForChartMonth = (time) => {
     let newData1 = [];
     let newData2 = [];
+
     const date = formatDate(time);
     for (let i = 1; i <= getDayofMonth(date.month, date.year); i++) {
       let arr = [];
@@ -386,7 +396,7 @@ function Revenue() {
       }
       for (let j = 0; j < billList.length; j++) {
         if (arr.includes(billList[j].appointmentListId)) {
-          sum = sum + billList[j].drugExpense;
+          sum = sum + billList[j].drugExpense + billList[j].feeConsult;
           cnt++;
         }
       }
@@ -499,6 +509,8 @@ function Revenue() {
       },
     },
   };
+
+  
   return (
     <div className="d-flex flex-row w-100">
       <div className="col-md-7">
@@ -587,10 +599,10 @@ function Revenue() {
           <Card>
           <div className="option-time-chart">
             <div className="d-flex justify-content-start">
-                    <div className="select-box-4">
+                    <div className="select-box-4" onClick={() => handleOpenCalendar2(!isOpenCalendar2)}>
                       <div
                         className="combobox-chart"
-                        onClick={() => handleOpenCalendar2(!isOpenCalendar2)}
+                        
                       >
                         <p>{displayTime2(valueTime2)}</p>
                         <div className="icon">

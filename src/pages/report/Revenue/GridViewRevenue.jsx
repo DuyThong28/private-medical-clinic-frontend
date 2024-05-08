@@ -176,7 +176,8 @@ function GridViewRevenue({
     const reportCell2 = worksheet.getCell("A2");
     if (timeOption === "Tháng")
       reportCell2.value = "Tháng: " + date.month + "/" + date.year;
-    else reportCell2.value = "Năm: " + date.year;
+    else if(timeOption == 'Năm')reportCell2.value = "Năm: " + date.year;
+    else reportCell2.value = 'Tuần: ' + date.start + '/' + date.ms + '/' + date.ys + " - " + date.end + '/' + date.me + '/' + date.ye;
     reportCell2.font = { bold: true };
     reportCell2.alignment = { vertical: "middle", horizontal: "center" };
 
@@ -220,6 +221,8 @@ function GridViewRevenue({
       let tmpTime = i + 1 + "/" + date.year;
       if (timeOption === "Tháng")
         tmpTime = displayTime(i + 1, date.month, date.year);
+      else if (timeOption == 'Tuần')
+        tmpTime = disTime[i];
       let tl;
       if (total === 0) tl = "0%";
       else tl = Math.floor((SumList[i] / total) * 10000) / 100 + "%";
@@ -269,7 +272,8 @@ function GridViewRevenue({
     let nameExport;
     if (timeOption == "Tháng")
       nameExport = "Bao_Cao_Doanh_Thu_Thang_" + date.month + "/" + date.year;
-    else nameExport = "Bao_Cao_Doanh_Thu_Nam_" + date.year;
+    else if (timeOption == "Năm") nameExport = "Bao_Cao_Doanh_Thu_Nam_" + date.year;
+    else nameExport = 'Bao_Cao_Su_Doanh_Thu_Tuan_' + date.start + '/' + date.ms + '_' + date.end + '/' + date.me + '/' + date.ye;
     workbook.xlsx.writeBuffer().then((buffer) => {
       saveAs(new Blob([buffer]), nameExport + ".xlsx");
     });
