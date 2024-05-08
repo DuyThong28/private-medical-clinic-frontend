@@ -54,6 +54,79 @@ function GridViewRevenue({
       count: newData2,
     };
   };
+  const getDataNewWeek= (date) => {
+    let newData1 = [];
+    let newData2 = [];
+    if(date.ms == date.me){
+      for (let i = date.start; i <= date.end; i++) {
+        disTime.push(i + '/' + date.month + '/' + date.year);
+        let arr = [];
+        let sum = 0;
+        let cnt = 0;
+        for (let j = 0; j < aptList.length; j++) {
+          const tmp = StringToDate(aptList[j].scheduleDate);
+          if (tmp.day === i && tmp.month === date.month && tmp.year === date.year) {
+            arr.push(aptList[j].id);
+          }
+        }
+        for (let j = 0; j < billList.length; j++) {
+          if (arr.includes(billList[j].appointmentListId)) {
+            sum = sum + billList[j].drugExpense;
+            cnt++;
+          }
+        }
+        newData1.push(sum);
+        newData2.push(cnt);
+      }
+    }
+    else {
+      for (let i = date.start; i <= getDayOfMonth(date.ms, date.ys); i++) {
+        disTime.push(i + '/' + date.ms + '/' + date.ys);
+        let arr = [];
+        let sum = 0;
+        let cnt = 0;
+        for (let j = 0; j < aptList.length; j++) {
+          const tmp = StringToDate(aptList[j].scheduleDate);
+          if (tmp.day === i && tmp.month === date.ms && tmp.year === date.ys) {
+            arr.push(aptList[j].id);
+          }
+        }
+        for (let j = 0; j < billList.length; j++) {
+          if (arr.includes(billList[j].appointmentListId)) {
+            sum = sum + billList[j].drugExpense;
+            cnt++;
+          }
+        }
+        newData1.push(sum);
+        newData2.push(cnt);
+      }
+      for (let i = 1; i <= date.end; i++) {
+        disTime.push(i + '/' + date.me + '/' + date.ye);
+        let arr = [];
+        let sum = 0;
+        let cnt = 0;
+        for (let j = 0; j < aptList.length; j++) {
+          const tmp = StringToDate(aptList[j].scheduleDate);
+          if (tmp.day === i && tmp.month === date.me && tmp.year === date.ye) {
+            arr.push(aptList[j].id);
+          }
+        }
+        for (let j = 0; j < billList.length; j++) {
+          if (arr.includes(billList[j].appointmentListId)) {
+            sum = sum + billList[j].drugExpense;
+            cnt++;
+          }
+        }
+        newData1.push(sum);
+        newData2.push(cnt);
+      }
+    }
+    
+    return {
+      sum: newData1,
+      count: newData2,
+    };
+  };
   const getDataNewYear = (year) => {
     let newData1 = [];
     let newData2 = [];
@@ -84,9 +157,11 @@ function GridViewRevenue({
   const displayTime = (day, month, year) => {
     return day + "/" + month + "/" + year;
   };
+  let disTime = [];
   let tmp = [];
   if (timeOption === "Tháng") tmp = getDataNew(date.month, date.year);
-  else tmp = getDataNewYear(date.year);
+  else if(timeOption === "Năm") tmp = getDataNewYear(date.year);
+  else tmp = getDataNewWeek(date);
   let SumList = tmp.sum;
   let CountList = tmp.count;
   const total = SumList.reduce((accumulator, currentValue) => {
@@ -221,7 +296,7 @@ function GridViewRevenue({
               STT
             </div>
             <div className="text-start" style={{ width: "25%" }}>
-              {timeOption === "Tháng" ? "Ngày" : "Tháng"}
+              {timeOption === "Năm" ? "Tháng" : "Ngày"}
             </div>
             <div className="text-start" style={{ width: "20%" }}>
               Số bệnh nhân
@@ -259,6 +334,7 @@ function GridViewRevenue({
                         {timeOption === "Tháng" &&
                           displayTime(index + 1, date.month, date.year)}
                         {timeOption === "Năm" && index + 1 + "/" + date.year}
+                        {timeOption === "Tuần" && disTime[index]}
                       </div>
                       <div
                         className="text-start"

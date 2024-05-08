@@ -90,3 +90,64 @@
     height: 100%;
     z-index: -99;
 }
+
+.select-box-4 {
+    position: relative;
+    display: flex;
+    align-items: center;
+    height: 30px;
+    width: 120px;
+    z-index: 1;
+    border: 1px solid blue;
+    border-radius: 3px;
+    .combobox {
+        height: 100%;
+        width: 100%;
+    }
+    p {
+        margin: 8px;
+        font-weight: 500;
+        font-size: 12px;
+    }
+    .icon {
+        position: absolute;
+        top: 4px;
+        right: 3px;
+        font-size: 12px;
+    }
+    .calendar {
+        position: absolute;
+        top: 40px;
+        left: -12px;
+    }
+}
+.select-box-5 {
+    position: relative;
+    display: flex;
+    align-items: center;
+    height: 30px;
+    width: 60px;
+    z-index: 1;
+    border: 1px solid blue;
+    border-radius: 3px;
+    .combobox {
+        height: 100%;
+        width: 100%;
+    }
+    p {
+        margin: 6px;
+        font-weight: 500;
+        font-size: 12px;
+    }
+    .icon {
+        position: absolute;
+        top: 4px;
+        right: 3px;
+        font-size: 12px;
+    }
+    .calendar {
+        position: absolute;
+        top: 40px;
+        left: -12px;
+    }
+}
