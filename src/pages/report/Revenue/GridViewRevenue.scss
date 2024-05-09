@@ -20,10 +20,8 @@
 
 .total-view {
     width: 100%;
-    height: 40px;
-    background-color: red;
+    height: 80px;
     flex-grow: 1; /* Chiếm hết không gian trống */
-    margin-top: 10px; /* Tạo khoảng cách giữa .total-view và TableBody */
 }
 
 .main-content {

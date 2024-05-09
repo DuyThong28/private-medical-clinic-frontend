@@ -69,7 +69,7 @@ function Revenue() {
       return fetchAllBills();
     },
   });
-  const bills = billsQuery.data;
+  const bills = billsQuery.data || [];
   const ConvernToArray = (obj) => {
     let arr = [];
     if (obj != null)
@@ -472,9 +472,7 @@ function Revenue() {
     setChartData(tmp);
   };
   React.useEffect(()=>{
-    if(!stopInitLoad){
-      console.log("ok")
-      if(aptList.length > 0)
+      if(billList.length > 0)
       {
         setChartData({
           labels: getLabelForChartWeek(valueTime), // Replace with your category labels
@@ -489,10 +487,8 @@ function Revenue() {
             },
           ],
         })
-        stopInitLoad = true;
-      }
     }
-  }, [bills, stopInitLoad])
+  }, [bills])
 
   // React.useEffect(()=>{
   //     if(aptList.length > 0)

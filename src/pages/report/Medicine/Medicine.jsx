@@ -88,7 +88,7 @@ function Medicine() {
       return fetchAllAppointmentList();
     }, 
   });
-  const appointment = appointmentQuery.data;
+  const appointment = appointmentQuery.data || []; 
   const billsQuery = useQuery({
     queryKey: ["billlist"],
     queryFn: () => {
@@ -517,7 +517,7 @@ useEffect(()=>{
         }
     );
     React.useEffect(()=>{
-      if(!stopInitLoad){
+      if(true){
         console.log("ok2")
         if(aptList.length > 0)
         {
@@ -536,7 +536,7 @@ useEffect(()=>{
           stopInitLoad = true;
         }
       }
-    }, [appointment,bills, record, recorddt , stopInitLoad])
+    }, [appointment, stopInitLoad])
 
     const optionschart = {
         title: {

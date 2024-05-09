@@ -317,7 +317,7 @@ function GridViewRevenue({
               {SumList &&
                 SumList.map((item, index) => {
                   return (
-                    CountList[index] > 0 && (<li
+                    CountList[index] >= 0 && (<li
                       className="dropdown-center list-group-item list-group-item-primary list-group-item-action w-100 h-80 d-flex flex-row"
                       key={index}
                     >
@@ -368,9 +368,20 @@ function GridViewRevenue({
                   );
                 })}
             </TableBody>
+            <div className="total-view">
+              <TableHeader>
+                <div className="text-start" style={{ width: "55%" }}>
+                  Tổng doanh thu
+                </div>
+                <div className="text-start" style={{ width: "25%" }}>
+                  {formatMoney(total)}
+                </div>
+              </TableHeader>
+            </div>
         </div>
+                
       </div>
-      <div className="total-view"></div>
+      
     </>
   );
 }
