@@ -86,7 +86,7 @@ function App() {
   const authRoutes = [{...allRouter[0],
     children:getRoute({children: allRouter[0].children,isAuth,permission})
   }]
-  console.log("this is route", authRoutes);
+  console.log("this is route", isAuth);
   const router = createBrowserRouter(authRoutes);
 
   return (
@@ -100,35 +100,37 @@ export default App;
 
 function getRoute({children,isAuth,permission}){
   const accessRoutes = children.map(route=>{
-    if(!route.isPrivate && !isAuth){
-      if(route?.children) {
-        return {
-          ...route,
-          children: getRoute({children: route.children, isAuth, permission})
-        };
-      }
-      return route;
-    } else if(route.isPrivate && isAuth){
-      if(route?.permission && permission.includes(route.permission)){
-        if(route?.children)
-          return {
-            ...route,
-            children: getRoute({children: route.children, isAuth, permission})
-          };
-        return route;
-      } else if (route?.permission && !permission.includes(route.permission)){
-        return null;
-      } else {
-        if(route?.children)
-          return {
-            ...route,
-            children: getRoute({children: route.children, isAuth, permission})
-          };
-        return route;
-      }
-    } else {
-      return null;
-    }
+    // if(!route.isPrivate && !isAuth){
+    //   if(route?.children) {
+    //     return {
+    //       ...route,
+    //       children: getRoute({children: route.children, isAuth, permission})
+    //     };
+    //   }
+    //   return route;
+    // } else if(route.isPrivate && isAuth){
+    //   if(route?.permission && permission.includes(route.permission)){
+    //     if(route?.children)
+    //       return {
+    //         ...route,
+    //         children: getRoute({children: route.children, isAuth, permission})
+    //       };
+    //     return route;
+    //   } else if (route?.permission && !permission.includes(route.permission)){
+    //     return null;
+    //   } else {
+    //     if(route?.children)
+    //       return {
+    //         ...route,
+    //         children: getRoute({children: route.children, isAuth, permission})
+    //       };
+    //     return route;
+    //   }
+    // } else {
+    //   return null;
+    // }
+
+    return route;
   });
   const nonNullRoutes = accessRoutes.filter(route=> route!==null);
   return nonNullRoutes;

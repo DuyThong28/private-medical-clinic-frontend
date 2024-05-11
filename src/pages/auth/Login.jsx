@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { redirect, useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { useRef, useState } from "react";
 import { Form } from "react-bootstrap";
@@ -27,7 +27,7 @@ function LoginPage() {
       const refreshToken = data.user.refreshToken;
       setAuth(jwtDecode(refreshToken));
       setValidated(false);
-      navigate("/home");
+      navigate("./home");
     },
     onError: (data) => {
       if (data.message !== "cancel-login") {
