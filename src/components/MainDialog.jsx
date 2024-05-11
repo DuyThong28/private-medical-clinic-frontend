@@ -1,4 +1,4 @@
-import { useRef, forwardRef, useImperativeHandle } from "react";
+import { useRef, forwardRef, useImperativeHandle, useState } from "react";
 import MainModal from "./MainModal";
 import "./MainModal.scss";
 
@@ -12,15 +12,22 @@ const MainDialog = forwardRef(function MainDialog(
     onSubmit,
     searchElement,
     onChange,
+    isPasswordChanged,
+    setIsPasswordChanged,
+    addButton,
   },
   ref
 ) {
   const modalRef = useRef();
   const actionRef = useRef("");
+  const [isSubmitable, setIsSubmitable] = useState(false);
 
   function showHandler() {
     onEdit({ data: null, isEditable: true });
     actionRef.current = "add";
+    if (isPasswordChanged) {
+      setIsPasswordChanged(() => false);
+    }
     modalRef.current?.show({
       isEditable: true,
       header: "Thêm mới",
@@ -79,6 +86,8 @@ const MainDialog = forwardRef(function MainDialog(
         onSubmit={onSubmit}
         onChange={onChange}
         searchElement={searchElement}
+        isPasswordChanged={isPasswordChanged}
+        setIsSubmitable={setIsSubmitable}
       >
         {children}
         <div
@@ -93,29 +102,35 @@ const MainDialog = forwardRef(function MainDialog(
             Đóng
           </button>
           {modalRef.current?.isEditable() && (
-            <button type="submit" className="btn button fw-bold shadow-sm">
+            <button
+              type="submit"
+              className="btn button fw-bold shadow-sm"
+              disabled={isPasswordChanged && !isSubmitable}
+            >
               Lưu
             </button>
           )}
         </div>
       </MainModal>
-      <button
-        type="button"
-        className="col btn btn-primary float-end"
-        onClick={showHandler}
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="16"
-          height="16"
-          fill="currentColor"
-          className="bi bi-plus-lg me-2"
-          viewBox="0 2 16 16"
+      {addButton && (
+        <button
+          type="button"
+          className="col btn btn-primary float-end"
+          onClick={showHandler}
         >
-          <path d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2" />
-        </svg>
-        Thêm mới
-      </button>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            fill="currentColor"
+            className="bi bi-plus-lg me-2"
+            viewBox="0 2 16 16"
+          >
+            <path d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2" />
+          </svg>
+          Thêm mới
+        </button>
+      )}
     </div>
   );
 });

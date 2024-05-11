@@ -5,6 +5,7 @@ import { queryClient } from "../App";
 import Form from "react-bootstrap/Form";
 import NotificationDialog from "./NotificationDialog";
 import "./MainModal.scss";
+import { sendUserInfo, sendUserInfoByUserId } from "../services/users";
 
 const icons = {
   add: (
@@ -47,11 +48,21 @@ const icons = {
 };
 
 const MainModal = forwardRef(function MainModal(
-  { children, addFn, keyQuery, onSubmit, searchElement, onChange },
+  {
+    children,
+    addFn,
+    keyQuery,
+    onSubmit,
+    searchElement,
+    onChange,
+    isPasswordChanged,
+    setIsSubmitable,
+  },
   ref
 ) {
   const [show, setShow] = useState(false);
   const [validated, setValidated] = useState(false);
+  const formRef = useRef();
   const notiDialogRef = useRef();
   const modalState = useRef({
     header: "",
@@ -71,11 +82,38 @@ const MainModal = forwardRef(function MainModal(
       });
       notiDialogRef.current.toastSuccess({ message: data.message });
       modalState.current.id = null;
+      if (data.sendUserInfo && data.sendUserInfo === true) {
+        sendUserInfo(data);
+      }
+      if (data.sendUserInfoByUserId && data.sendUserInfoByUserId === true) {
+        sendUserInfoByUserId(data);
+      }
     },
     onError: (data) => {
       notiDialogRef.current.toastError({ message: data.message });
     },
   });
+
+  function changeFormHandler() {
+    const form = formRef.current;
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData);
+    const retypepassword = data.retypepassword.trim();
+    const newpassword = data.newpassword.trim();
+    if (
+      retypepassword !== "" &&
+      newpassword !== "" &&
+      retypepassword === newpassword
+    ) {
+      setIsSubmitable(() => {
+        return true;
+      });
+    } else {
+      setIsSubmitable(() => {
+        return false;
+      });
+    }
+  }
 
   useImperativeHandle(
     ref,
@@ -155,7 +193,6 @@ const MainModal = forwardRef(function MainModal(
           style={{ height: "50px" }}
         >
           <div className="title">{modalState.current.header}</div>
-          {/* <Modal.Title></Modal.Title> */}
         </Modal.Header>
         <div tabIndex="-1" className="h-100">
           <div className={`h position-relative ${modalState.current.action}`}>
@@ -186,15 +223,28 @@ const MainModal = forwardRef(function MainModal(
             style={{ padding: "0 0.75rem 0.75rem 0.75rem" }}
           >
             {!modalState.current.id && searchElement}
-            <Form
-              onChange={onChange}
-              onSubmit={submitHandler}
-              noValidate
-              validated={validated}
-              className="h-100"
-            >
-              {children}
-            </Form>
+            {!isPasswordChanged ? (
+              <Form
+                onChange={onChange}
+                onSubmit={submitHandler}
+                noValidate
+                validated={validated}
+                className="h-100"
+              >
+                {children}
+              </Form>
+            ) : (
+              <Form
+                ref={formRef}
+                onChange={changeFormHandler}
+                onSubmit={submitHandler}
+                noValidate
+                validated={validated}
+                className="h-100"
+              >
+                {children}
+              </Form>
+            )}
           </div>
         </div>
       </Modal>

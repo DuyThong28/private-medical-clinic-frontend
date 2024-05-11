@@ -10,7 +10,7 @@ export async function createBill(data) {
 
   if (billId) {
     response = await fetch(`http://localhost:8080/api/v1/bills/${billId}`, {
-      Credentials: "include",
+      credentials: "include",
       method: "PUT",
       body: JSON.stringify(bill),
       headers: {

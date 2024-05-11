@@ -1,13 +1,7 @@
 import SideBar from "../components/SideBar";
-import { Navigate, Outlet } from "react-router";
+import { Outlet } from "react-router";
 
 function RootLayout() {
-  const isAuth = localStorage.getItem("refreshToken");
-
-  if (!isAuth) {
-    return <Navigate to="/" />;
-  }
-
   return (
     <>
       <div className="d-flex felx-row h-100">

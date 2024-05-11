@@ -1,18 +1,22 @@
-import loginImage from "../../assets/login-background.png";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
-import GoogleButton from "react-google-button";
-import { login } from "../../util/auth";
-import NotificationDialog from "../../components/NotificationDialog";
 import { useRef, useState } from "react";
-import PasswordInput from "../../components/PasswordInput";
 import { Form } from "react-bootstrap";
+import { jwtDecode } from "jwt-decode";
+import { login } from "../../services/auth";
+
+import loginImage from "../../assets/login-background.png";
+import GoogleButton from "react-google-button";
+import NotificationDialog from "../../components/NotificationDialog";
+import PasswordInput from "../../components/PasswordInput";
 import Card from "../../components/Card";
 import "./Login.scss";
+import useAuth from "../../hooks/useAuth";
 
 function LoginPage() {
-  const navigate = useNavigate();
+  const { setAuth } = useAuth();
   const notiDialogRef = useRef();
+  const navigate = useNavigate();
   const [validated, setValidated] = useState(false);
   localStorage.removeItem("email");
 
@@ -20,11 +24,10 @@ function LoginPage() {
     mutationKey: ["login"],
     mutationFn: login,
     onSuccess: (data) => {
-      notiDialogRef.current.toastSuccess({ message: data.message });
-      setTimeout(() => {
-        navigate("/systems/home");
-        setValidated(false);
-      }, 500);
+      const refreshToken = data.user.refreshToken;
+      setAuth(jwtDecode(refreshToken));
+      setValidated(false);
+      navigate("/home");
     },
     onError: (data) => {
       if (data.message !== "cancel-login") {
@@ -32,11 +35,6 @@ function LoginPage() {
       }
     },
   });
-
-  const isAuth = localStorage.getItem("refreshToken");
-  if (isAuth) {
-    return <Navigate to="/systems/home" />;
-  }
 
   async function localLoginHandler(event) {
     event.preventDefault();

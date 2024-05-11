@@ -6,8 +6,13 @@ import { Form } from "react-bootstrap";
 import Card from "../../components/Card";
 import "./Login.scss";
 import { useMutation } from "@tanstack/react-query";
-import { checkMail, checkOTP, resetPassword, sendOTP } from "../../util/auth";
-import { Navigate, redirect, useNavigate } from "react-router";
+import {
+  checkMail,
+  checkOTP,
+  resetPassword,
+  sendOTP,
+} from "../../services/auth";
+import { useNavigate } from "react-router";
 
 const resetStep = {
   CHECKMAIL: "check mail",
@@ -157,7 +162,7 @@ function ForgotPassword() {
                           <label>Xác Thực Mã OTP</label>
                         </div>
                       )}
-                        {resetState === resetStep.RESET && (
+                      {resetState === resetStep.RESET && (
                         <div className="col fw-bold fs-4 mb-4 text-center text-dark">
                           <label>Thiết Lập Mật Khẩu</label>
                         </div>

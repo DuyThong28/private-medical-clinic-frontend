@@ -17,9 +17,12 @@ import { fetchFeeConsult } from "../../services/argument";
 import NotificationDialog, {
   DialogAction,
 } from "../../components/NotificationDialog";
+import useAuth from "../../hooks/useAuth";
 
 function PatientsPage() {
   const searchRef = useRef();
+  const { auth } = useAuth();
+  const permission = auth?.permission || [];
   const notiDialogRef = useRef();
   const dialogRef = useRef();
   const [billState, setBillState] = useState({
@@ -65,7 +68,6 @@ function PatientsPage() {
   }, [billState]);
 
   const bills = billsQuery.data;
-  console.log("this is bill", bills);
 
   function searchHandler() {
     const formData = new FormData(searchRef.current);
@@ -98,7 +100,7 @@ function PatientsPage() {
       <InvoiceDetail ref={dialogRef} />
       <NotificationDialog ref={notiDialogRef} keyQuery={["bills"]} />
       <div className="h-100 w-100">
-        <Card>
+        <Card className="p-3">
           <div className="w-100 h-100 d-flex flex-column gap-3">
             <div className=" w-100  d-flex flex-row justify-content-around">
               <div className="col fw-bold fs-4 text-black">
@@ -162,41 +164,45 @@ function PatientsPage() {
                           )}
                         </div>
                         <div className="text-end" style={{ width: "10%" }}>
-                          <span
-                            className="p-2"
-                            onClick={() =>
-                              viewHandler({
-                                bill,
-                              })
-                            }
-                          >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="16"
-                              height="16"
-                              fill="#1B59F8"
-                              className="bi bi-eye-fill"
-                              viewBox="0 0 16 16"
+                          {permission?.includes("RInvoice") && (
+                            <span
+                              className="p-2"
+                              onClick={() =>
+                                viewHandler({
+                                  bill,
+                                })
+                              }
                             >
-                              <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0" />
-                              <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8m8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7" />
-                            </svg>
-                          </span>
-                          <span
-                            className="p-2"
-                            onClick={() => deleteBillHandler({ id: bill.id })}
-                          >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="16"
-                              height="16"
-                              fill="#1B59F8"
-                              className="bi bi-archive-fill"
-                              viewBox="0 0 16 16"
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="16"
+                                height="16"
+                                fill="#1B59F8"
+                                className="bi bi-eye-fill"
+                                viewBox="0 0 16 16"
+                              >
+                                <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0" />
+                                <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8m8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7" />
+                              </svg>
+                            </span>
+                          )}
+                          {permission?.includes("DInvoice") && (
+                            <span
+                              className="p-2"
+                              onClick={() => deleteBillHandler({ id: bill.id })}
                             >
-                              <path d="M12.643 15C13.979 15 15 13.845 15 12.5V5H1v7.5C1 13.845 2.021 15 3.357 15zM5.5 7h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1 0-1M.8 1a.8.8 0 0 0-.8.8V3a.8.8 0 0 0 .8.8h14.4A.8.8 0 0 0 16 3V1.8a.8.8 0 0 0-.8-.8z" />
-                            </svg>
-                          </span>
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="16"
+                                height="16"
+                                fill="#1B59F8"
+                                className="bi bi-archive-fill"
+                                viewBox="0 0 16 16"
+                              >
+                                <path d="M12.643 15C13.979 15 15 13.845 15 12.5V5H1v7.5C1 13.845 2.021 15 3.357 15zM5.5 7h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1 0-1M.8 1a.8.8 0 0 0-.8.8V3a.8.8 0 0 0 .8.8h14.4A.8.8 0 0 0 16 3V1.8a.8.8 0 0 0-.8-.8z" />
+                              </svg>
+                            </span>
+                          )}
                         </div>
                       </li>
                     );

@@ -20,9 +20,11 @@ import { queryClient } from "../../App";
 import NotificationDialog, {
   DialogAction,
 } from "../../components/NotificationDialog";
-import { message } from "antd";
+import useAuth from "../../hooks/useAuth";
 
 const InvoiceDetail = forwardRef(function InvoiceDetail({ children }, ref) {
+  const { auth } = useAuth();
+  const permission = auth?.permission || [];
   const modalRef = useRef();
   const notiDialogRef = useRef();
   modalRef.current?.isLarge();
@@ -102,7 +104,11 @@ const InvoiceDetail = forwardRef(function InvoiceDetail({ children }, ref) {
           return { ...resData };
         });
         setIsBill(false);
-        modalRef.current.show({ isEditable: true, header: "Thanh toán", action:"add" });
+        modalRef.current.show({
+          isEditable: true,
+          header: "Thanh toán",
+          action: "add",
+        });
       },
 
       async showDetail({ bill }) {
@@ -119,7 +125,11 @@ const InvoiceDetail = forwardRef(function InvoiceDetail({ children }, ref) {
             return { ...resData[0] };
           });
           setIsBill(true);
-          modalRef.current.show({ isEditable: false, header: "Hóa đơn", action:"view" });
+          modalRef.current.show({
+            isEditable: false,
+            header: "Hóa đơn",
+            action: "view",
+          });
         }
       },
     };
@@ -305,7 +315,7 @@ const InvoiceDetail = forwardRef(function InvoiceDetail({ children }, ref) {
                   </div>
                 </div>
               </div>
-              {!isBill && (
+              {!isBill && permission?.includes("CInvoice") && (
                 <div className="d-flex gap-3 mt-3 justify-content-end">
                   <button type="button" className="btn btn-secondary fw-bold">
                     In biên lai

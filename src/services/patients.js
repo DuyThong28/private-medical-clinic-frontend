@@ -169,7 +169,7 @@ export async function fetchPatientById({ id }) {
   });
   if (!response.ok) {
     if (!response.ok) {
-      throw new Error("can not fetch all patients");
+      throw new Error("can not fetch patient");
     }
   }
   const resData = await response.json();

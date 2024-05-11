@@ -18,8 +18,11 @@ import NotificationDialog, {
   DialogAction,
 } from "../../../components/NotificationDialog";
 import { formatNumber } from "../../../util/money";
+import useAuth from "../../../hooks/useAuth";
 
 function DrugTab() {
+  const { auth } = useAuth();
+  const permission = auth?.permission || [];
   const dialogRef = useRef();
   const notiDialogRef = useRef();
   const [dialogState, setDialogState] = useState({
@@ -81,13 +84,13 @@ function DrugTab() {
       action: DialogAction.DELETE,
       dispatchFn: () => deleteDrugById({ id }),
     });
-    notiDialogRef.current.showDialogWarning({message:"Xác nhận xóa thuốc?"});
+    notiDialogRef.current.showDialogWarning({ message: "Xác nhận xóa thuốc?" });
   }
 
   return (
     <div className="h-100 w-100">
       <NotificationDialog ref={notiDialogRef} keyQuery={["drugs"]} />
-      <Card>
+      <Card className="p-3">
         <div className="w-100 h-100 d-flex flex-column gap-3">
           <div className=" w-100  d-flex flex-row justify-content-around">
             <div className="col fw-bold fs-4 text-black">
@@ -127,6 +130,7 @@ function DrugTab() {
                   editFn={fetchDrugById}
                   onEdit={setData}
                   keyQuery={["drugs"]}
+                  addButton={permission?.includes("CDrug") ? true : false}
                 >
                   <div className="row gap-3">
                     <div className="col">
@@ -315,7 +319,7 @@ function DrugTab() {
                         data-bs-toggle="dropdown"
                         aria-expanded="false"
                       >
-                        <span
+                        {/* <span
                           className="p-2"
                           onClick={() =>
                             editDrugHandler({ id: drug.id, action: "view" })
@@ -332,40 +336,44 @@ function DrugTab() {
                             <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0" />
                             <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8m8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7" />
                           </svg>
-                        </span>
-                        <span
-                          className="p-2"
-                          onClick={() =>
-                            editDrugHandler({ id: drug.id, action: "edit" })
-                          }
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="16"
-                            height="16"
-                            fill="#1B59F8"
-                            className="bi bi-pencil-square"
-                            viewBox="0 0 16 16"
+                        </span> */}
+                        {permission?.includes("UDrug") && (
+                          <span
+                            className="p-2"
+                            onClick={() =>
+                              editDrugHandler({ id: drug.id, action: "edit" })
+                            }
                           >
-                            <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
-                            <path d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z" />
-                          </svg>
-                        </span>
-                        <span
-                          className="p-2"
-                          onClick={() => deleteDrugHandler(drug.id)}
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="16"
-                            height="16"
-                            fill="#1B59F8"
-                            className="bi bi-archive-fill"
-                            viewBox="0 0 16 16"
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="16"
+                              height="16"
+                              fill="#1B59F8"
+                              className="bi bi-pencil-square"
+                              viewBox="0 0 16 16"
+                            >
+                              <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
+                              <path d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z" />
+                            </svg>
+                          </span>
+                        )}
+                        {/* {permission?.includes("DDrug") && (
+                          <span
+                            className="p-2"
+                            onClick={() => deleteDrugHandler(drug.id)}
                           >
-                            <path d="M12.643 15C13.979 15 15 13.845 15 12.5V5H1v7.5C1 13.845 2.021 15 3.357 15zM5.5 7h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1 0-1M.8 1a.8.8 0 0 0-.8.8V3a.8.8 0 0 0 .8.8h14.4A.8.8 0 0 0 16 3V1.8a.8.8 0 0 0-.8-.8z" />
-                          </svg>
-                        </span>
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="16"
+                              height="16"
+                              fill="#1B59F8"
+                              className="bi bi-archive-fill"
+                              viewBox="0 0 16 16"
+                            >
+                              <path d="M12.643 15C13.979 15 15 13.845 15 12.5V5H1v7.5C1 13.845 2.021 15 3.357 15zM5.5 7h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1 0-1M.8 1a.8.8 0 0 0-.8.8V3a.8.8 0 0 0 .8.8h14.4A.8.8 0 0 0 16 3V1.8a.8.8 0 0 0-.8-.8z" />
+                            </svg>
+                          </span>
+                        )} */}
                       </div>
                     </li>
                   );

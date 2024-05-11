@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import Card from "../../components/Card";
 import { Form } from "react-bootstrap";
 import { useMutation } from "@tanstack/react-query";
-import { changePassword } from "../../util/auth";
+import { changePassword } from "../../services/auth";
 import PasswordInput from "../../components/PasswordInput";
 import NotificationDialog from "../../components/NotificationDialog";
 
@@ -48,7 +48,7 @@ function PasswordView() {
     if (
       dataState.currentpassword !== "" &&
       dataState.newpassword !== "" &&
-      dataState.currentpassword !== "" &&
+      dataState.retypepassword !== "" &&
       dataState.retypepassword === dataState.newpassword
     ) {
       setDataState((prevState) => {

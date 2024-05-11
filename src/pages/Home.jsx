@@ -4,7 +4,7 @@ import {
   faCaretLeft,
   faCaretRight,
 } from "@fortawesome/free-solid-svg-icons";
-import { useEffect, useRef, useState } from "react";
+import {  useRef, useState } from "react";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
 import { Bar } from "react-chartjs-2";
@@ -207,13 +207,13 @@ function HomePage() {
   const dataToday = (() => {
     let newPatient = 0;
     let oldPatient = 0;
-    for (const item of patientsToday) {
-      if( compareDate(new Date(item.patient.createdAt.slice(0,10)),new Date()) !== 0){
-        ++oldPatient
-      }else{
-        ++newPatient
-      }
-    }
+    // for (const item of patientsToday) {
+    //   if( compareDate(new Date(item.patient.createdAt.slice(0,10)),new Date()) !== 0){
+    //     ++oldPatient
+    //   }else{
+    //     ++newPatient
+    //   }
+    // }
     return {
       newPatient,
       oldPatient,
@@ -265,38 +265,38 @@ function HomePage() {
   const [dataMale, setDataMale] = useState([]);
   const [dataFemale, setDataFemale] = useState([]);
 
-  useEffect(() => {
-    const dataMale = [];
-    const dataFemale = [];
-    for (let i = 0; i < 7; ++i) {
-      const cloneDay = new Date(preRange.current.from);
-      cloneDay.setDate(cloneDay.getDate() + i);
-      const dayData = appointmentListPatientWeek.filter(
-        (item) =>
-          compareDate(
-            new Date(item?.appointmentList?.scheduleDate.slice(0, 10)),
-            cloneDay
-          ) === 0
-      );
-      let seenIds = {};
-      let finalDayData = [];
-      dayData.forEach((item) => {
-        let patientId = item.patient.id;
-        if (!seenIds[patientId]) {
-          seenIds[patientId] = true;
-          finalDayData.push(item);
-        }
-      });
-      dataMale.push(
-        finalDayData.filter((item) => item?.patient?.gender === "Nam").length
-      );
-      dataFemale.push(
-        finalDayData.filter((item) => item?.patient?.gender === "Nữ").length
-      );
-    }
-    setDataMale(dataMale);
-    setDataFemale(dataFemale);
-  }, [appointmentListPatientWeek]);
+  // useEffect(() => {
+  //   const dataMale = [];
+  //   const dataFemale = [];
+  //   for (let i = 0; i < 7; ++i) {
+  //     const cloneDay = new Date(preRange.current.from);
+  //     cloneDay.setDate(cloneDay.getDate() + i);
+  //     const dayData = appointmentListPatientWeek.filter(
+  //       (item) =>
+  //         compareDate(
+  //           new Date(item?.appointmentList?.scheduleDate.slice(0, 10)),
+  //           cloneDay
+  //         ) === 0
+  //     );
+  //     let seenIds = {};
+  //     let finalDayData = [];
+  //     dayData.forEach((item) => {
+  //       let patientId = item.patient.id;
+  //       if (!seenIds[patientId]) {
+  //         seenIds[patientId] = true;
+  //         finalDayData.push(item);
+  //       }
+  //     });
+  //     dataMale.push(
+  //       finalDayData.filter((item) => item?.patient?.gender === "Nam").length
+  //     );
+  //     dataFemale.push(
+  //       finalDayData.filter((item) => item?.patient?.gender === "Nữ").length
+  //     );
+  //   }
+  //   setDataMale(dataMale);
+  //   setDataFemale(dataFemale);
+  // }, [appointmentListPatientWeek]);
 
   const dataOfChart = {
     labels: ["Hai", "Ba", "Tư", "Năm", "Sáu", "Bảy", "CN"],
@@ -317,9 +317,9 @@ function HomePage() {
     ],
   };
 
-  useEffect(() => {
-    queryClient.invalidateQueries({ queryKey: ["appointmentListSelectedDay"] });
-  }, [selectedDay]);
+  // useEffect(() => {
+  //   queryClient.invalidateQueries({ queryKey: ["appointmentListSelectedDay"] });
+  // }, [selectedDay]);
 
   const handleSelectedWeek = (day) => {
     setRange(() => {
@@ -359,70 +359,70 @@ function HomePage() {
   console.log(appointmentRecordDetails);
 
   const handleTopDrug = () => {
-    const drugInfo = drugs.map((item) => {
-      if (preState.current.selectedOption) {
-        const items = appointmentRecordDetails.filter(
-          (appointment) =>
-            appointment?.drugId === item?.id &&
-            compareDate(
-              new Date(
-                appointment?.record.appointmentList.scheduleDate.slice(0, 10)
-              ),
-              preState.current.range.from
-            ) >= 0 &&
-            compareDate(
-              new Date(
-                appointment?.record.appointmentList.scheduleDate.slice(0, 10)
-              ),
-              preState.current.range.to
-            ) <= 0 && 
-            billList.find((bill)=>bill.appointmentListId === appointment.record.appointmentListId && 
-              bill.patientId === appointment.record.patientId
-            )
-        );
-        let soldout = 0;
-        for (const detail of items) {
-          soldout += detail?.count;
-        }
+    // const drugInfo = drugs.map((item) => {
+    //   if (preState.current.selectedOption) {
+    //     const items = appointmentRecordDetails.filter(
+    //       (appointment) =>
+    //         appointment?.drugId === item?.id &&
+    //         compareDate(
+    //           new Date(
+    //             appointment?.record.appointmentList.scheduleDate.slice(0, 10)
+    //           ),
+    //           preState.current.range.from
+    //         ) >= 0 &&
+    //         compareDate(
+    //           new Date(
+    //             appointment?.record.appointmentList.scheduleDate.slice(0, 10)
+    //           ),
+    //           preState.current.range.to
+    //         ) <= 0 && 
+    //         billList.find((bill)=>bill.appointmentListId === appointment.record.appointmentListId && 
+    //           bill.patientId === appointment.record.patientId
+    //         )
+    //     );
+    //     let soldout = 0;
+    //     for (const detail of items) {
+    //       soldout += detail?.count;
+    //     }
 
-        return {
-          ...item,
-          soldout,
-        };
-      } else {
-        const items = appointmentRecordDetails.filter(
-          (appointment) =>
-            appointment?.drugId === item?.id &&
-            new Date(
-              appointment?.record.appointmentList.scheduleDate.slice(0, 10)
-            ).getMonth() === preState.current.month &&
-            new Date(
-              appointment?.record.appointmentList.scheduleDate.slice(0, 10)
-            ).getFullYear() === preState.current.year && 
-            billList.find((bill)=>bill.appointmentListId === appointment.record.appointmentListId && 
-              bill.patientId === appointment.record.patientId
-            )
-        );
-        let soldout = 0;
-        for (const detail of items) {
-          soldout += detail?.count;
-        }
-        return {
-          ...item,
-          soldout,
-        };
-      }
-    });
+    //     return {
+    //       ...item,
+    //       soldout,
+    //     };
+    //   } else {
+    //     const items = appointmentRecordDetails.filter(
+    //       (appointment) =>
+    //         appointment?.drugId === item?.id &&
+    //         new Date(
+    //           appointment?.record.appointmentList.scheduleDate.slice(0, 10)
+    //         ).getMonth() === preState.current.month &&
+    //         new Date(
+    //           appointment?.record.appointmentList.scheduleDate.slice(0, 10)
+    //         ).getFullYear() === preState.current.year && 
+    //         billList.find((bill)=>bill.appointmentListId === appointment.record.appointmentListId && 
+    //           bill.patientId === appointment.record.patientId
+    //         )
+    //     );
+    //     let soldout = 0;
+    //     for (const detail of items) {
+    //       soldout += detail?.count;
+    //     }
+    //     return {
+    //       ...item,
+    //       soldout,
+    //     };
+    //   }
+    // });
 
-    drugInfo.sort((a, b) => b.soldout - a.soldout);
-    const topDrug = drugInfo.slice(0, 5);
-    const finalTopDrug = topDrug.filter((drug) => drug.soldout > 0);
-    setTopDrug(finalTopDrug);
+    // drugInfo.sort((a, b) => b.soldout - a.soldout);
+    // const topDrug = drugInfo.slice(0, 5);
+    // const finalTopDrug = topDrug.filter((drug) => drug.soldout > 0);
+    // setTopDrug(finalTopDrug);
   };
 
-  useEffect(() => {
-    handleTopDrug();
-  }, [appointmentRecordDetails]);
+  // useEffect(() => {
+  //   handleTopDrug();
+  // }, [appointmentRecordDetails]);
 
   const [month, setMonth] = useState({
     month: new Date().getMonth(),
@@ -699,7 +699,7 @@ function HomePage() {
           </div>
           <div style={{ display: "flex", alignItems: "center" }}>
             <h6 style={{ flex: 1, margin: 0 }}>Các ca khám sắp tới</h6>
-            <Link to="/systems/examinations">Xem tất cả</Link>
+            <Link to="/examinations">Xem tất cả</Link>
           </div>
           <div className="patients-list">
             {appointmentListUpcoming.length > 0 ? (

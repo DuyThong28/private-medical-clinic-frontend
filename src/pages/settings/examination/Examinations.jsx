@@ -23,6 +23,7 @@ import InvoiceDetail from "../../Invoice/InvoiceDetail";
 import NotificationDialog, {
   DialogAction,
 } from "../../../components/NotificationDialog";
+import useAuth from "../../../hooks/useAuth";
 
 function ExaminationsPage() {
   const navigate = useNavigate();
@@ -31,6 +32,8 @@ function ExaminationsPage() {
   const invoiceRef = useRef();
   const notiDialogRef = useRef();
   const dispatch = useDispatch();
+  const { auth } = useAuth();
+  const permission = auth?.permission || [];
   const [examState, setExamState] = useState({
     name: "",
     date: inputToDayFormat(),
@@ -83,7 +86,10 @@ function ExaminationsPage() {
 
   function acceptHandler(data) {
     dispatch(prescriptionAction.removeAll());
-    navigate(`${data.id}/prescription`);
+    if (permission?.includes("RDrug")) navigate(`${data.id}/prescription`);
+    else if (permission?.includes("RRecord"))
+      navigate(`${data.id}/examhistory`);
+    else navigate(`${data.id}`);
   }
 
   function payHandler({ id }) {
@@ -123,7 +129,7 @@ function ExaminationsPage() {
       <InvoiceDetail ref={invoiceRef} />
       <NotificationDialog ref={notiDialogRef} keyQuery={["appointmentList"]} />
       <div className="h-100 w-100">
-        <Card>
+        <Card className="p-3">
           <div className="w-100 h-100 d-flex flex-column gap-3">
             <ExaminationModal ref={modalRef} setSearchData={setSearchData} />
             <div className=" w-100 h-100 overflow-hidden d-flex flex-column gap-3">
@@ -252,54 +258,62 @@ function ExaminationsPage() {
                         </div>
                         {!appointmentListPatient.billId && (
                           <ul className="dropdown-menu">
-                            <li className="dropdown-item">
-                              {!appointmentListPatient.appointmentRecordId && (
-                                <span
-                                  onClick={() =>
-                                    acceptHandler(appointmentListPatient)
-                                  }
-                                >
-                                  Tiếp nhận
-                                </span>
-                              )}
-                            </li>
-                            {appointmentListPatient.appointmentRecordId && (
+                            {permission?.includes("CRecord") && (
                               <li className="dropdown-item">
-                                <span
-                                  onClick={() =>
-                                    payHandler({
-                                      id: appointmentListPatient.appointmentRecordId,
-                                    })
-                                  }
-                                >
-                                  Thanh toán
-                                </span>
+                                {!appointmentListPatient.appointmentRecordId && (
+                                  <span
+                                    onClick={() =>
+                                      acceptHandler(appointmentListPatient)
+                                    }
+                                  >
+                                    Tiếp nhận
+                                  </span>
+                                )}
                               </li>
                             )}
+
+                            {appointmentListPatient.appointmentRecordId &&
+                              permission?.includes("CInvoice") && (
+                                <li className="dropdown-item">
+                                  <span
+                                    onClick={() =>
+                                      payHandler({
+                                        id: appointmentListPatient.appointmentRecordId,
+                                      })
+                                    }
+                                  >
+                                    Thanh toán
+                                  </span>
+                                </li>
+                              )}
                             {!appointmentListPatient.appointmentRecordId && (
                               <>
-                                <li className="dropdown-item">
-                                  <span
-                                    onClick={() =>
-                                      editAppointmentHandler({
-                                        data: appointmentListPatient,
-                                      })
-                                    }
-                                  >
-                                    Cập nhật
-                                  </span>
-                                </li>
-                                <li className="dropdown-item">
-                                  <span
-                                    onClick={() =>
-                                      deleteAppointmentHandler({
-                                        id: appointmentListPatient.id,
-                                      })
-                                    }
-                                  >
-                                    Hủy
-                                  </span>
-                                </li>
+                                {permission?.includes("UAppointment") && (
+                                  <li className="dropdown-item">
+                                    <span
+                                      onClick={() =>
+                                        editAppointmentHandler({
+                                          data: appointmentListPatient,
+                                        })
+                                      }
+                                    >
+                                      Cập nhật
+                                    </span>
+                                  </li>
+                                )}
+                                {permission?.includes("DAppointment") && (
+                                  <li className="dropdown-item">
+                                    <span
+                                      onClick={() =>
+                                        deleteAppointmentHandler({
+                                          id: appointmentListPatient.id,
+                                        })
+                                      }
+                                    >
+                                      Hủy
+                                    </span>
+                                  </li>
+                                )}
                               </>
                             )}
                           </ul>
