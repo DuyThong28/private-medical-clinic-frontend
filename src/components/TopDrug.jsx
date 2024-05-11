@@ -69,39 +69,45 @@ function TopDrug() {
         setRange2(() => {
           return getWeek(day);
         });
+        setIsShowModal2(false);
       };
 
-      const preState = useRef(
-        (() => {
-          const month = new Date().getMonth();
-          const year = new Date().getFullYear();
-          const selectedOption = true;
-          return {
-            selectedOption,
-            month,
-            year,
-            range: getWeek(new Date()),
-          };
-        })()
-      );
+      // const preState = useRef(
+      //   (() => {
+      //     const month = new Date().getMonth();
+      //     const year = new Date().getFullYear();
+      //     const selectedOption = true;
+      //     return {
+      //       selectedOption,
+      //       month,
+      //       year,
+      //       range: getWeek(new Date()),
+      //     };
+      //   })()
+      // );
 
       const handleTopDrug = () => {
         const drugInfo = drugs.map((item) => {
-          if (preState.current.selectedOption) {
+          if (
+            // preState.current.selectedOption
+            selectedOption
+          ) {
             const items = appointmentRecordDetails.filter(
               (appointment) =>
                 appointment?.drugId === item?.id &&
                 compareDate(
                   new Date(
-                    appointment?.record.appointmentList.scheduleDate.slice(0, 10)
+                    appointment?.record.appointmentList.scheduleDate?.slice(0, 10)
                   ),
-                  preState.current.range.from
+                  // preState.current.range.from
+                  range2.from
                 ) >= 0 &&
                 compareDate(
                   new Date(
-                    appointment?.record.appointmentList.scheduleDate.slice(0, 10)
+                    appointment?.record.appointmentList.scheduleDate?.slice(0, 10)
                   ),
-                  preState.current.range.to
+                  // preState.current.range.to
+                  range2.to
                 ) <= 0 && 
                 billList.find((bill)=>bill.appointmentListId === appointment.record.appointmentListId && 
                   bill.patientId === appointment.record.patientId
@@ -121,11 +127,15 @@ function TopDrug() {
               (appointment) =>
                 appointment?.drugId === item?.id &&
                 new Date(
-                  appointment?.record.appointmentList.scheduleDate.slice(0, 10)
-                ).getMonth() === preState.current.month &&
+                  appointment?.record.appointmentList.scheduleDate?.slice(0, 10)
+                ).getMonth() === 
+                // preState.current.month &&
+                month.month &&
                 new Date(
-                  appointment?.record.appointmentList.scheduleDate.slice(0, 10)
-                ).getFullYear() === preState.current.year && 
+                  appointment?.record.appointmentList.scheduleDate?.slice(0, 10)
+                ).getFullYear() === 
+                // preState.current.year && 
+                month.year && 
                 billList.find((bill)=>bill.appointmentListId === appointment.record.appointmentListId && 
                   bill.patientId === appointment.record.patientId
                 )
@@ -167,27 +177,32 @@ function TopDrug() {
     
       const handleCloseModal = () => {
         setIsShowModal2(false);
-        setRange2(preState.current.range);
-        setOptions(preState.current.selectedOption);
-        setMonth({
-          month: preState.current.month,
-          year: preState.current.year,
-        });
-        setYear(preState.current.year);
+        // setRange2(preState.current.range);
+        // setOptions(preState.current.selectedOption);
+        // setMonth({
+        //   month: preState.current.month,
+        //   year: preState.current.year,
+        // });
+        // setYear(preState.current.year);
+        setYear(month.year);
       };
     
-      const handleConfirmSelection = () => {
-        setIsShowModal2(false);
-        if (selectedOption) {
-          preState.current.range = range2;
-        } else {
-          preState.current.month = month.month;
-          preState.current.year = month.year;
-          setYear(month.year);
-        }
-        preState.current.selectedOption = selectedOption;
+      // const handleConfirmSelection = () => {
+      //   setIsShowModal2(false);
+      //   if (selectedOption) {
+      //     preState.current.range = range2;
+      //   } else {
+      //     preState.current.month = month.month;
+      //     preState.current.year = month.year;
+      //     setYear(month.year);
+      //   }
+      //   preState.current.selectedOption = selectedOption;
+      //   handleTopDrug();
+      // };
+
+      useEffect(()=>{
         handleTopDrug();
-      };
+      },[month, range2, selectedOption])
 
     return ( 
         <div className="h-100 overview-topmedicine shadow rounded-2 p-3">
@@ -196,12 +211,12 @@ function TopDrug() {
               className="show-modal week-or-month-info"
               onClick={() => setIsShowModal2(true)}
             >
-              {preState.current.selectedOption
-                ? convertDate(preState.current.range.from) +
+              {selectedOption
+                ? convertDate(range2.from) +
                 " - " +
-                convertDate(preState.current.range.to.toString())
-                : `Tháng ${preState.current.month + 1} ${
-                  preState.current.year
+                convertDate(range2.to.toString())
+                : `Tháng ${month.month + 1} ${
+                  month.year
                 }`}
               <FontAwesomeIcon
                 className="weeks-icon"
@@ -267,6 +282,7 @@ function TopDrug() {
                             month: index,
                             year: year,
                           });
+                          setIsShowModal2(false)
                         }}
                         key={index}
                         className={
@@ -279,9 +295,9 @@ function TopDrug() {
                     </div>
                   </div>
                 )}
-                <button className="btn-modal" onClick={handleConfirmSelection}>
+                {/* <button className="btn-modal" onClick={handleConfirmSelection}>
                   Chọn
-                </button>
+                </button> */}
               </div>
             </div>
             <div className="table-top-drug">
@@ -299,7 +315,7 @@ function TopDrug() {
                     <p>{drug.count}</p>
                     <p>{drug.soldout}</p>
                   </div>
-                )) : <p style={{textAlign: "center", marginTop: "12px"}}>{`Không có thuốc bán ra trong ${preState.current.selectedOption ? 'tuần':'tháng'}`}</p>}
+                )) : <p style={{textAlign: "center", marginTop: "12px"}}>{`Không có thuốc bán ra trong ${selectedOption ? 'tuần':'tháng'}`}</p>}
               </div>
             </div>
           </div>

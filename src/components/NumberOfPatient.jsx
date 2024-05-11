@@ -39,7 +39,7 @@ ChartJS.register(
   
 
 function NumberOfPatient() {
-    const preRange = useRef(getWeek(new Date()));
+    // const preRange = useRef(getWeek(new Date()));
     const [range, setRange] = useState(() => getWeek(new Date()));
     const [isShowModal, setIsShowModal] = useState(false);
 
@@ -89,6 +89,8 @@ function NumberOfPatient() {
 
     const appointmentListPatientWeek = appointmentListPatientWeekQuery.data || [];
 
+    console.log(range,appointmentListPatientWeek);
+
     const [dataMale, setDataMale] = useState([]);
     const [dataFemale, setDataFemale] = useState([]);
 
@@ -96,7 +98,8 @@ function NumberOfPatient() {
         const dataMale = [];
         const dataFemale = [];
         for (let i = 0; i < 7; ++i) {
-            const cloneDay = new Date(preRange.current.from);
+            const cloneDay = new Date(range.from);
+            // new Date(preRange.current.from);
             cloneDay.setDate(cloneDay.getDate() + i);
             const dayData = appointmentListPatientWeek.filter(
                 (item) =>
@@ -165,7 +168,7 @@ function NumberOfPatient() {
             stacked: true,
           }
         },
-        responsive: true,
+        // responsive: true,
         plugins: {
           legend: {
             display: false,
@@ -177,17 +180,21 @@ function NumberOfPatient() {
         setRange(() => {
           return getWeek(day);
         });
+        setIsShowModal(!isShowModal);
       };
 
       const toggleModal = () => {
         setIsShowModal(!isShowModal);
       };
     
-      const handleShowChart = () => {
+      // const handleShowChart = () => {
+      //   queryClient.invalidateQueries({ queryKey: ["appointmentListWeek"] });
+      //   setIsShowModal(!isShowModal);
+      //   // preRange.current = range;
+      // };
+      useEffect(()=>{
         queryClient.invalidateQueries({ queryKey: ["appointmentListWeek"] });
-        setIsShowModal(!isShowModal);
-        preRange.current = range;
-      };
+      },[range])
 
     return ( 
         <div className="h-100 w-80 overview-patient-ofday shadow rounded-2 p-3 ">
@@ -210,9 +217,9 @@ function NumberOfPatient() {
             </div>
             <div className="weeks-selection">
               <label className="show-modal" onClick={toggleModal}>
-                {convertDate(preRange.current.from) +
+                {convertDate(range.from) +
                   " - " +
-                  convertDate(preRange.current.to.toString())}
+                  convertDate(range.to.toString())}
                 <FontAwesomeIcon
                   className="weeks-icon"
                   icon={faCaretDown}
@@ -228,10 +235,10 @@ function NumberOfPatient() {
                   className="modal-calendar-overlay"
                   onClick={() => {
                     toggleModal();
-                    setRange(preRange.current);
+                    // setRange(preRange.current);
                   }}
                   ></label>
-                <div className="modal-calendar-content">
+                {isShowModal && <div className="modal-calendar-content">
                   <DayPicker
                     locale={vi}
                     weekStartsOn={1}
@@ -241,10 +248,7 @@ function NumberOfPatient() {
                     mode="range"
                     showOutsideDays
                     />
-                  <button className="btn-modal" onClick={handleShowChart}>
-                    Chọn
-                  </button>
-                </div>
+                </div>}
               </div>
             </div>
           </div>

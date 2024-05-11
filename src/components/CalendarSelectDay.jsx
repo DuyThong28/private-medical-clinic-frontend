@@ -54,7 +54,7 @@ function CalendarSelectDay() {
         const finalData = data.filter(
           (item) =>
             compareDate(
-              new Date(item?.appointmentList.scheduleDate.slice(0, 10)),
+              new Date(item?.appointmentList.scheduleDate?.slice(0, 10)),
               selectedDay
             ) === 0
         );
@@ -77,7 +77,7 @@ function CalendarSelectDay() {
     return ( 
         <div id="calendar" className="shadow rounded-2 p-3 w-20">
             <h6 className="calendar-title">Lịch</h6>
-            <style>{css}</style>
+            {/* <style>{css}</style> */}
             <div className="calendar-container">
             <DayPicker
                 locale={vi}
@@ -94,7 +94,7 @@ function CalendarSelectDay() {
             </div>
             <div style={{ display: "flex", alignItems: "center" }}>
             <h6 style={{ flex: 1, margin: 0 }}>Các ca khám sắp tới</h6>
-            <Link to="/systems/examinations">Xem tất cả</Link>
+            <Link to="/systems/examinations" className="link-all">Xem tất cả</Link>
             </div>
             <div className="patients-list">
             {appointmentListUpcoming.length > 0 ? (
