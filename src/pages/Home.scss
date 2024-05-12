@@ -1,55 +1,8 @@
 .overview {
-    // padding: 40px 16px 0 0;
-    // width: calc(100% - 220px);
     height: auto;
     margin-left: 0;
-    // background: rgb(249, 249, 249);
     background: #E9ECEF;
-    // .pad-16{
-    //     padding: 0 16px;
-    // }
-    // .pad-16{
-    //     padding: 1rem;
-    // }
 }
-
-// .overview-greeting {
-//     background-color: #13a1df;
-//     color: #fff;
-//     height: 100px;
-//     border-radius: 12px;
-//     box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-//     display: flex;
-//     position: relative;
-//     justify-content:center;
-//     align-items: center;
-// }
-
-// .overview-greeting h1 {
-//     font-weight: 500;
-//     font-size: 2rem;
-//     max-height: 48px;
-//     // width: 100%;
-//     text-align: center;
-// }
-
-// .overview-greeting::after {
-//     content: '';
-//     border-bottom: 1px solid rgba(0, 0, 0, 0.2);
-//     position: absolute;
-//     bottom: -10px;
-//     right: 6px;
-//     width: calc(100% - 12px);
-// }
-
-// .overview-greeting img {
-//     width: 150px;
-//     object-fit: cover;
-//     position: absolute;
-//     bottom: 0;
-//     left: 30px;
-//     overflow: visible;
-// }
 
 .overview-number {
     // border-radius: 12px;
@@ -194,16 +147,18 @@
 
     .overview-patient-chart {
         width: 100%;
-        display: flex;
+        // display: flex;
         overflow: hidden;
-        padding-left: 50px;
         .overview-chart{
-            height: 150px !important;
-            width: 650px !important;
+            height: 100% !important;
+            width: 100% !important;
         }
         .chart-note {
-            margin: auto 0;
+            margin-top: 8px;
+            display: flex;
+            justify-content: center;
             p {
+                margin-bottom: 0;
                 padding-left: 48px;
                 font-size: 0.875rem;
                 font-weight: 500;
@@ -213,7 +168,7 @@
                     content: '';
                     width: 16px;
                     height: 16px;
-                    border-radius: 50%;
+                    // border-radius: 50%;
                     position: absolute;
                     left: 20px;
                     bottom: 4px;
@@ -222,13 +177,13 @@
 
             .male {
                 &::before {
-                    background-color: #89d0ef;
+                    background-color: #3a57e8;
                 }
             }
 
             .female {
                 &::before {
-                    background-color: #eb7474;
+                    background-color: #85f4fa;
                 }
             }
         }
@@ -255,7 +210,7 @@
     align-items: center;
     justify-content: center;
     flex-wrap: wrap;
-    height: 430px;
+    // height: 200px;
 }
 
 /* Top medicine */
@@ -282,7 +237,7 @@
     }
 
     .hg-lg{
-        height: 450px;
+        height: 400px;
     }
 
     .selected-option{
@@ -361,8 +316,8 @@
 
 .calendar-container .rdp {
     --rdp-cell-size: 34px;
-    --rdp-accent-color: #eb7474;
-    --rdp-background-color: #13a1df;
+    --rdp-accent-color: #3a57e8;
+    --rdp-background-color: #85f4fa;
 }
 
 .my-today {
@@ -435,4 +390,9 @@
         color: #fff;
         background-color: #13a1df;
     }
+}
+
+.link-all{
+    text-decoration: none;
+    font-weight: bold;
 }

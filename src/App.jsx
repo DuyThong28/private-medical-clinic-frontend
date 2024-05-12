@@ -86,7 +86,6 @@ function App() {
   const authRoutes = [{...allRouter[0],
     children:getRoute({children: allRouter[0].children,isAuth,permission})
   }]
-  console.log("this is route", isAuth);
   const router = createBrowserRouter(authRoutes);
 
   return (

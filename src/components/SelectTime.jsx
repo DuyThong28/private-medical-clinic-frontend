@@ -66,7 +66,6 @@ const CustomPickersDay = styled(PickersDay, {
 
 function SelectTime({setNewTime, value }) {
     const SelectMonth = (month) => {
-        // console.log('Year ' + month);
     }
     const [hoveredDay, setHoveredDay] = React.useState(null);
     
