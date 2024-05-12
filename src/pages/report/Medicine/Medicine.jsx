@@ -28,7 +28,7 @@ import { fetchAllDrugs, fetchDrugById,} from '../../../services/drugs'
 import { fetchAllUnit } from "../../../services/units";
 import Chart from 'chart.js/auto';
 import { Chart as ChartJS, CategoryScale, LinearScale, Title, Tooltip, Legend } from 'chart.js';
-import { Bar,Line } from 'react-chartjs-2';
+import { Bar,Doughnut } from 'react-chartjs-2';
 import { da } from 'date-fns/locale';
 ChartJS.register(CategoryScale, LinearScale, Title, Tooltip, Legend);
 
@@ -39,6 +39,7 @@ let rememberWeek2 = dayjs();
 let rememberMonth2 = dayjs();
 let rememberYear2 = dayjs();
 let stopInitLoad = false;
+let setFirstDrug = false;
 function Medicine() {
 
   const drugsQuery = useQuery({
@@ -48,7 +49,7 @@ function Medicine() {
     },
   });
 
-  const drugs = drugsQuery.data;
+  const drugs = drugsQuery.data || [];
 
   const [listState, setListState] = useState([]);
 
@@ -110,10 +111,12 @@ const recDetList = ConvernToArray(recorddt);
 const recList = ConvernToArray(record);
 const aptList = ConvernToArray(appointment);
 const drugList = ConvernToArray(drugs);
-const billList = ConvernToArray(bills);
+const billList = ConvernToArray(bills) || [];
 useEffect(()=>{
-  setSelectItem(drugList[0]);
-},[drugList])
+    console.log("Change?")
+    setSelectItem(drugList[0]);
+    getDataForChartWeek(valueTime, drugList[0]);
+},[drugs])
   function searchHandler(event) {
     const textSearch = event.target.value.toLowerCase().trim();
     const result = drugs.filter((drug) =>
@@ -124,15 +127,19 @@ useEffect(()=>{
 
     const [selectItem, setSelectItem] = useState(drugList[0]);
     const setDetailItem = (item) => {
-        getDataForChartWeek(valueTime, item);
         setSelectItem(item);
+        if(timeOption == "Tuần") getDataForChartWeek(valueTime, item);
+        else if(timeOption == "Tháng") getDataForChartMonth(valueTime, item);
+        else getDataForChartYear(valueTime, item);
     }
 
     // Select Time
     const [valueTime, setValueTime] = React.useState(dayjs());
     const setNewTime = (value) => {
         setValueTime(value);
-        getDataForChartWeek(value, selectItem);
+        if(timeOption == "Tuần") getDataForChartWeek(value, selectItem);
+        else if(timeOption == "Tháng") getDataForChartMonth(value, selectItem);
+        else getDataForChartYear(value, selectItem);
     }
     const getFirstDayOfWeek = (date) => {
       const startOfWeek = dayjs(date).startOf('week');
@@ -310,6 +317,7 @@ useEffect(()=>{
 
     const getDataNewForChartWeek = (time, item) => {
       const date = formatDate(time);
+      console.log("New data", date.start + " " + item?.drugName);
       let newData = [];
       if(date.start < date.end) {
         for(let i = date.start; i <= date.end; i++)
@@ -389,8 +397,11 @@ useEffect(()=>{
     }
     const getDataForChartWeek = (date, item) => {
         let tmp = chartData;
+        console.log("date", formatDate(date));
+        console.log("item", item?.drugName);
         tmp.labels = getLabelForChartWeek(date);
         const tmp2 = getDataNewForChartWeek(date, item);
+        console.log("getData", tmp2);
         tmp.datasets = [
             {
               label: 'Số lượng bán ra',
@@ -494,7 +505,7 @@ useEffect(()=>{
         {
           label: 'Số lượng bán ra',
             data: tmp2, 
-            backgroundColor: '#3983fa',
+            backgroundColor: '#3A57E8',
             borderWidth: 1,
             barThickness: 10,
             borderRadius: 50,
@@ -508,7 +519,7 @@ useEffect(()=>{
             datasets: [
                 {label: 'Số lượng bán ra',
                     data: [0,0,0,0,0,0,0], 
-                    backgroundColor: '#3983fa',
+                    backgroundColor: '#3A57E8',
                     borderWidth: 1,
                     barThickness: 25,
                     borderRadius: 2,
@@ -516,27 +527,16 @@ useEffect(()=>{
             ],
         }
     );
-    React.useEffect(()=>{
-      if(true){
-        console.log("ok2")
-        if(aptList.length > 0)
-        {
-          setChartData({
-            labels: getLabelForChartWeek(valueTime),
-            datasets: [
-                {label: 'Số lượng bán ra',
-                    data: getDataNewForChartWeek(valueTime,selectItem), 
-                    backgroundColor: '#3983fa',
-                    borderWidth: 1,
-                    barThickness: 10,
-                    borderRadius: 50,
-                },
-            ],
-          })
-          stopInitLoad = true;
-        }
-      }
-    }, [appointment, stopInitLoad])
+    // React.useEffect(()=>{
+    //     console.log("medicine", aptList.length);
+    //     console.log("item", selectItem);
+    //     if(aptList.length > 0 && selectItem!=null)
+    //     {
+    //       console.log("on", getLabelForChartWeek(valueTime));
+    //       getDataForChartWeek(valueTime, selectItem);
+    //       stopInitLoad = true;
+    //     }
+    // }, [appointment, stopInitLoad])
 
     const optionschart = {
         title: {
@@ -752,6 +752,9 @@ useEffect(()=>{
     const formattedNumber = parts.join('.');
     return formattedNumber;
   }
+
+  
+  console.log("Selected Item",selectItem);
     return ( 
       
     <div className="d-flex flex-row w-100">
@@ -827,14 +830,14 @@ useEffect(()=>{
                 listState.map((drug, index) => {
                   return (
                       <li
-                      className=" dropdown-center list-group-item list-group-item-primary list-group-item-action w-100 d-flex flex-row"
+                      className="list-group-item list-group-item-primary list-group-item-action w-100 d-flex flex-row"
                       key={index}
                     >
                           
                           <div
                             className="text-start"
                             style={{ width: "30%" }}
-                            data-bs-toggle="dropdown"
+                            data-bs-toggle=""
                             aria-expanded="false"
                           >
                             {drug?.drugName}
@@ -842,7 +845,7 @@ useEffect(()=>{
                           <div
                             className="text-start"
                             style={{ width: "20%" }}
-                            data-bs-toggle="dropdown"
+                            data-bs-toggle=""
                             aria-expanded="false"
                           >
                             {getUnitName({ id: drug?.unitId })}
@@ -850,7 +853,7 @@ useEffect(()=>{
                           <div
                             className="text-start"
                             style={{ width: "30%" }}
-                            data-bs-toggle="dropdown"
+                            data-bs-toggle=""
                             aria-expanded="false"
                           >
                             {timeOption2 === 'Tuần' && formatMoney(countDrugInRecord(formatDate(valueTime2)?.month, formatDate(valueTime2)?.year, drug) * drug?.price)}
@@ -860,7 +863,7 @@ useEffect(()=>{
                           <div
                             className="text-start"
                             style={{ width: "16%" }}
-                            data-bs-toggle="dropdown"
+                            data-bs-toggle=""
                             aria-expanded="false"
                           >
                               {timeOption2 === 'Tháng' && countDrugInRecord(formatDate(valueTime2)?.month, formatDate(valueTime2)?.year, drug)}
@@ -870,7 +873,7 @@ useEffect(()=>{
                           <div
                             className="text-end"
                             style={{ width: "4%" }}
-                            data-bs-toggle="dropdown"
+                            data-bs-toggle=""
                             aria-expanded="false"
                           >
                                 <FontAwesomeIcon onClick={() =>
@@ -885,92 +888,98 @@ useEffect(()=>{
             </Card>
         </div> 
         <div className="col-md-4">
-            <Card>
-                <div className='d-flex flex-column align-items-center h-100'>
-                  <div className='detail-chart'>
-                  <div className="option-time-chart">
-            <div className="d-flex justify-content-start">
-                    <div className="select-box-4">
-                      <div
-                        className="combobox-chart"
-                        onClick={() => handleOpenCalendar(!isOpenCalendar)}
-                      >
-                        <p>{displayTime3(valueTime)}</p>
-                        <div className="icon">
-                          <FontAwesomeIcon className="icon" icon={faCaretDown} />
-                        </div>
-                      </div>
-                      {isOpenCalendar && (
-                        <div className="calendar">
-                          <SelectTime
-                            setNewTime={setNewTime}
-                            value={valueTime}
-                            timeOption={timeOption}
-                            handlerSetNewTime={handlerSetNewTime}
-                          ></SelectTime>
-                        </div>
-                      )}
-                    </div>
-                    <div className="select-box-5" style={{ marginLeft: "10px" }}>
-                      <div
-                        className="combobox"
-                        onClick={() => handleOpenTimeOption(!isOpenTimeOption)}
-                      >
-                        <p>{timeOption}</p>
-                        <div className="icon">
-                          <FontAwesomeIcon className="icon" icon={faCaretDown} />
-                        </div>
-                      </div>
-                      {isOpenTimeOption  && (
-                        <div className="select-time">
-                          <div
-                            className="item"
-                            onClick={() => {
-                              handleSetTimeOption("Tuần");
-                              handleOpenTimeOption(false);
-                            }}
-                          >
-                            <p>Tuần</p>
+                  <div className="row h-100">
+                    <div className="row-md-2">
+                      <Card>
+                        <div className='detail-chart'>
+                        <div className="option-time-chart">
+                  <div className="d-flex justify-content-start">
+                          <div className="select-box-4">
+                            <div
+                              className="combobox-chart"
+                              onClick={() => handleOpenCalendar(!isOpenCalendar)}
+                            >
+                              <p>{displayTime3(valueTime)}</p>
+                              <div className="icon">
+                                <FontAwesomeIcon className="icon" icon={faCaretDown} />
+                              </div>
+                            </div>
+                            {isOpenCalendar && (
+                              <div className="calendar">
+                                <SelectTime
+                                  setNewTime={setNewTime}
+                                  value={valueTime}
+                                  timeOption={timeOption}
+                                  handlerSetNewTime={handlerSetNewTime}
+                                ></SelectTime>
+                              </div>
+                            )}
                           </div>
-                          <div
-                            className="item"
-                            onClick={() => {
-                              handleSetTimeOption("Tháng");
-                              handleOpenTimeOption(false);
-                            }}
-                          >
-                            <p>Tháng</p>
+                          <div className="select-box-5" style={{ marginLeft: "10px" }}>
+                            <div
+                              className="combobox"
+                              onClick={() => handleOpenTimeOption(!isOpenTimeOption)}
+                            >
+                              <p>{timeOption}</p>
+                              <div className="icon">
+                                <FontAwesomeIcon className="icon" icon={faCaretDown} />
+                              </div>
+                            </div>
+                            {isOpenTimeOption  && (
+                              <div className="select-time">
+                                <div
+                                  className="item"
+                                  onClick={() => {
+                                    handleSetTimeOption("Tuần");
+                                    handleOpenTimeOption(false);
+                                  }}
+                                >
+                                  <p>Tuần</p>
+                                </div>
+                                <div
+                                  className="item"
+                                  onClick={() => {
+                                    handleSetTimeOption("Tháng");
+                                    handleOpenTimeOption(false);
+                                  }}
+                                >
+                                  <p>Tháng</p>
+                                </div>
+                                <div className='item' onClick={() => {handleSetTimeOption('Năm');  handleOpenTimeOption(false)}}>
+                                                <p>Năm</p>
+                                            </div>
+                              </div>
+                            )}
+                            
                           </div>
-                          <div className='item' onClick={() => {handleSetTimeOption('Năm');  handleOpenTimeOption(false)}}>
-                                          <p>Năm</p>
-                                      </div>
                         </div>
-                      )}
-                      
-                    </div>
-                  </div>
-          </div>
-                      <Bar data={chartData} options={optionschart}></Bar>
-                  </div>
-                  <div className='detail-list'>
-                  <div className='detail-item'>
-                      <p>Tên thuốc: {selectItem?.drugName}</p>
-                    </div>
-                    <div className='detail-item'>
-                      <p>Đơn vị: {getUnitName({ id: selectItem?.unitId })}</p>
-                    </div>
-                    <div className='detail-item'>
-                      <p>Giá bán: {selectItem?.price}</p>
-                    </div>
-                    <div className='detail-item'>
-                      <p>Số lượng tồn kho: {selectItem?.count}</p>
-                    </div>
-                    <div className='detail-item'>
-                      <p>Hoạt chất: {selectItem?.note}</p>
-                    </div>
-                  </div>
                 </div>
-            </Card>
+                            <Bar data={chartData} options={optionschart}></Bar>
+                        </div>
+                      </Card>
+                    </div>
+                    <div className="row-md-10">
+                      <Card>
+                        <div className='detail-list'>
+                        <div className='detail-item'>
+                            <p>Tên thuốc: {selectItem?.drugName}</p>
+                          </div>
+                          <div className='detail-item'>
+                            <p>Đơn vị: {getUnitName({ id: selectItem?.unitId })}</p>
+                          </div>
+                          <div className='detail-item'>
+                            <p>Giá bán: {selectItem?.price}</p>
+                          </div>
+                          <div className='detail-item'>
+                            <p>Số lượng tồn kho: {selectItem?.count}</p>
+                          </div>
+                          <div className='detail-item'>
+                            <p>Hoạt chất: {selectItem?.note}</p>
+                          </div>
+                        </div>
+                      </Card>
+                    </div>
+                  </div>
         </div>
     </div>
     

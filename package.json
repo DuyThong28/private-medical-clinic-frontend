@@ -29,6 +29,7 @@
     "axios": "^1.6.8",
     "bootstrap": "^5.3.3",
     "chart.js": "^4.4.2",
+    "chartjs-plugin-annotation": "^3.0.1",
     "classnames": "^2.5.1",
     "date-fns": "^3.6.0",
     "dayjs": "^1.11.10",

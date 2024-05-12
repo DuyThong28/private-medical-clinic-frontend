@@ -12,8 +12,10 @@ import { fetchAllPatients } from "../../../services/patients";
 import { fetchAllAppointmentList } from "../../../services/appointmentList";
 import { fetchAllBills } from "../../../services/bill";
 
-import { Bar, Line } from "react-chartjs-2";
+import { Bar, Doughnut } from "react-chartjs-2";
+import ChartAnnotation from 'chartjs-plugin-annotation';
 import SelectTime from "../../../components/SelectTime";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   Chart as ChartJS,
@@ -37,6 +39,7 @@ ChartJS.register(
   Tooltip,
   Legend
 );
+
 
 let rememberWeek = dayjs();
 let rememberMonth = dayjs();
@@ -80,7 +83,7 @@ function Revenue() {
   };
 
   const aptList = ConvernToArray(appointmentLists);
-  const billList = ConvernToArray(bills);
+  const billList = ConvernToArray(bills) || [];
   const patientList = ConvernToArray(patients);
 
   const StringToDate = (str) => {
@@ -101,9 +104,9 @@ function Revenue() {
   const [valueTime2, setValueTime2] = React.useState(dayjs());
   const setNewTime2 = (value) => {
     setValueTime2(value);
-    if (timeOption2 === "Tuần") getDataForChartWeek(value);
-    else if (timeOption2 === "Tháng") getDataForChartMonth(value);
-    else getDataForChartYear(value);
+    if (timeOption2 === "Tuần") {getDataForChartWeek(value); setNewDataForDonutChart(value, "Week");}
+    else if (timeOption2 === "Tháng") {getDataForChartMonth(value); setNewDataForDonutChart(value, "Month")}
+    else {getDataForChartYear(value); setNewDataForDonutChart(value, "Year");}
   };
   const getFirstDayOfWeek = (date) => {
     const startOfWeek = dayjs(date).startOf('week');
@@ -165,9 +168,9 @@ function Revenue() {
     if(value === "Tuần") setValueTime2(rememberWeek2);
     else if(value === "Tháng") setValueTime2(rememberMonth2);
     else setValueTime2(rememberYear2);
-    if (value === "Tuần") getDataForChartWeek(valueTime2);
-    else if (value === "Tháng") getDataForChartMonth(valueTime2);
-    else getDataForChartYear(valueTime2)
+    if (value === "Tuần") {getDataForChartWeek(rememberWeek2); setNewDataForDonutChart(rememberWeek2, "Week");}
+    else if (value === "Tháng") {getDataForChartMonth(rememberMonth2); setNewDataForDonutChart(rememberMonth2, "Month");}
+    else {getDataForChartYear(rememberYear2); setNewDataForDonutChart(rememberYear2, "Month");}
   };
   
   const formatDate = (date) => {
@@ -418,7 +421,7 @@ function Revenue() {
       {
         label: "Doanh thu",
         data: tmp2.count, // Replace with your variable 2 data
-        backgroundColor: "#3983fa",
+        backgroundColor: "#3A57E8",
         borderWidth: 1,
         barThickness: 10,
         borderRadius: 50,
@@ -434,7 +437,7 @@ function Revenue() {
       {
         label: "Doanh thu",
         data: tmp2.count, // Replace with your variable 2 data
-        backgroundColor: "#3983fa",
+        backgroundColor: "#3A57E8",
         borderWidth: 1,
         barThickness: 10,
         borderRadius: 50,
@@ -445,25 +448,25 @@ function Revenue() {
   const getDataForChartYear = (date) => {
     let tmp = chartData;
     tmp.labels = [
-      "Thg 1",
-      "Thg 2",
-      "Thg 3",
-      "Thg 4",
-      "Thg 5",
-      "Thg 6",
-      "Thg 7",
-      "Thg 8",
-      "Thg 9",
-      "Thg 10",
-      "Thg 11",
-      "Thg 12",
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "7", 
+      "8",
+      "9",
+      "10",
+      "11",
+      "12",
     ];
     const tmp2 = getDataNewForChartYear(date);
     tmp.datasets = [
       {
         label: "Doanh thu",
         data: tmp2.count, // Replace with your variable 2 data
-        backgroundColor: "#3983fa",
+        backgroundColor: "#3A57E8",
         borderWidth: 1,
         barThickness: 10,
         borderRadius: 50,
@@ -472,22 +475,20 @@ function Revenue() {
     setChartData(tmp);
   };
   React.useEffect(()=>{
-      if(billList.length > 0)
-      {
-        setChartData({
-          labels: getLabelForChartWeek(valueTime), // Replace with your category labels
-          datasets: [
-            {
-              label: "Doanh thu",
-              data: getDataNewForChartWeek(valueTime).count, // Replace with your variable 2 data
-              backgroundColor: "#3983fa",
-              borderWidth: 1,
-              barThickness: 10,
-              borderRadius: 50,
-            },
-          ],
-        })
-    }
+        // setChartData({
+        //   labels: getLabelForChartWeek(valueTime), // Replace with your category labels
+        //   datasets: [
+        //     {
+        //       label: "Doanh thu",
+        //       data: getDataNewForChartWeek(valueTime).count, // Replace with your variable 2 data
+        //       backgroundColor: "#3A57E8",
+        //       borderWidth: 1,
+        //       barThickness: 10,
+        //       borderRadius: 50,
+        //     },
+        //   ],
+        // })
+        setNewDataForDonutChart(valueTime2, "Week");
   }, [bills])
 
   // React.useEffect(()=>{
@@ -549,8 +550,142 @@ function Revenue() {
       },
     },
   };
+  function formatMoney(number) {
+    const strNumber = String(number);
+    const parts = strNumber.split(/(?=(?:\d{3})+(?!\d))/);
+    const formattedNumber = parts.join('.');
+    return formattedNumber;
+  }
 
-
+  // DONUT CHART CHART -----------
+  const data = {
+    labels: ['Tiền khám', 'Tiền thuốc'],
+    datasets: [
+      {
+        label: "Doanh thu",
+        data: [20, 10],
+        backgroundColor: [
+          'rgba(58, 87, 232, 0.2)',
+          'rgba(133, 244, 250, 0.2)',
+        ],
+        borderColor: [
+          'rgba(58, 87, 232, 1)',
+          'rgba(133, 244, 250, 1)',
+        ],
+        borderWidth: 1,
+      },
+    ],
+  };
+  const [donutText, setDonutText] = useState("Tổng tiền");
+  const [donutCost, setDonutCost] = useState(0);
+  const [dataDonut, setDataDonut] = useState(
+    {
+      labels: ['Tiền khám', 'Tiền thuốc'],
+      datasets: [
+        {
+          label: "Doanh thu",
+          data: [20, 10],
+          backgroundColor: [
+            'rgba(133, 244, 250, 0.2)',
+            'rgba(58, 87, 232, 0.2)',
+          ],
+          borderColor: [
+            'rgba(133, 244, 250, 1)',
+            'rgba(58, 87, 232, 1)',
+          ],
+          borderWidth: 1,
+        },
+      ],
+    }
+  );
+  
+  const optionsDn = {
+    plugins: {
+      legend: {
+        display: false, // Ẩn chú thích màu
+      },
+    },
+    responsive: true,
+    onClick: (event, elements) => {
+      if (elements.length) {
+        const clickedElementIndex = elements[0].index;
+        const label = dataDonut.labels[clickedElementIndex];
+        const value = dataDonut.datasets[0].data[clickedElementIndex];
+        setDonutText(label);
+        setDonutCost(value);
+      }
+    }
+  };
+  // GET DATA FOR DOUGHNUT CHART
+  const setNewDataForDonutChart = (time, option) => {
+    console.log(bills);
+    const newData = getDataForDonutChart(time, option);
+    setDonutText("Tổng tiền");
+    setDonutCost(newData.sumDrug + newData.sumFee);
+    setDataDonut(
+      {
+        labels: ['Tiền khám', 'Tiền thuốc'],
+        datasets: [
+          {
+            label: "Doanh thu",
+            data: [newData.sumFee, newData.sumDrug],
+            backgroundColor: [
+              'rgba(133, 244, 250, 0.2)',
+              'rgba(58, 87, 232, 0.2)',
+            ],
+            borderColor: [
+              'rgba(133, 244, 250, 1)',
+              'rgba(58, 87, 232, 1)',
+            ],
+            borderWidth: 1,
+          },
+        ],
+      }
+    );
+  }
+  const getDataForDonutChart = (time, option) => {
+    let arr = [];
+    let sumFee = 0;
+    let sumDrug = 0;
+    const date = formatDate(time);
+    if(option == "Month") {
+      const cntDay = getDayofMonth(date.month, date.year)
+      for(let i = 0; i < aptList.length; i++) {
+        const tmp = StringToDate(aptList[i].scheduleDate);
+        if(1 <= tmp.day && tmp.day <= cntDay && tmp.month == date.month && tmp.year == date.year) {
+          arr.push(aptList[i].id);
+        }
+      }
+    }
+    else if(option == "Year") {
+      for(let i = 0; i < aptList.length; i++) {
+        const tmp = StringToDate(aptList[i].scheduleDate);
+        if(1 <= tmp.month && tmp.month <= 12 && tmp.year == date.year) {
+          arr.push(aptList[i].id);
+        }
+      }
+    }
+    else {
+      for(let i = 0; i < aptList.length; i++) {
+        const tmp = StringToDate(aptList[i].scheduleDate);
+        if((date.ms == date.me && date.start <= tmp.day && tmp.day <= date.end && tmp.month == date.month && tmp.year == date.year) ||
+           (date.ms != date.me && ((date.start <= tmp.day && tmp.month == date.ms && tmp.year == date.ys)|| 
+                                   (tmp.day <= date.end && tmp.month == date.me && tmp.year == date.ye)))) {
+          arr.push(aptList[i].id);
+        }
+      }
+    }
+    for (let j = 0; j < billList.length; j++) {
+      if (arr.includes(billList[j].appointmentListId)) {
+        sumFee = sumFee + billList[j].feeConsult;
+        sumDrug = sumDrug + billList[j].drugExpense;
+      }
+    }
+    return {
+      sumFee: sumFee,
+      sumDrug: sumDrug,
+    };
+  };
   return (
     <div className="d-flex flex-row w-100">
       <div className="col-md-7">
@@ -637,69 +772,83 @@ function Revenue() {
       </div>
       <div className="col-md-5">
           <Card>
-          <div className="option-time-chart">
-            <div className="d-flex justify-content-start">
-                    <div className="select-box-4" onClick={() => handleOpenCalendar2(!isOpenCalendar2)}>
-                      <div
-                        className="combobox-chart"
-                        
-                      >
-                        <p>{displayTime2(valueTime2)}</p>
-                        <div className="icon">
-                          <FontAwesomeIcon className="icon" icon={faCaretDown} />
+          <div className="container-chart">
+            <div className="chartbar-area">
+              <div className="option-time-chart">
+                <div className="d-flex justify-content-start">
+                        <div className="select-box-4" >
+                          <div
+                            className="combobox-chart"
+                            onClick={() => handleOpenCalendar2(!isOpenCalendar2)}
+                          >
+                            <p>{displayTime2(valueTime2)}</p>
+                            <div className="icon">
+                              <FontAwesomeIcon className="icon" icon={faCaretDown} />
+                            </div>
+                          </div>
+                          {isOpenCalendar2 && (
+                            <div className="calendar">
+                              <SelectTime
+                                setNewTime={setNewTime2}
+                                value={valueTime2}
+                                timeOption={timeOption2}
+                                handlerSetNewTime={handlerSetNewTime2}
+                              ></SelectTime>
+                            </div>
+                          )}
+                        </div>
+                        <div className="select-box-5" style={{ marginLeft: "10px" }}>
+                          <div
+                            className="combobox"
+                            onClick={() => handleOpenTimeOption2(!isOpenTimeOption2)}
+                          >
+                            <p>{timeOption2}</p>
+                            <div className="icon">
+                              <FontAwesomeIcon className="icon" icon={faCaretDown} />
+                            </div>
+                          </div>
+                          {isOpenTimeOption2  && (
+                            <div className="select-time">
+                              <div
+                                className="item"
+                                onClick={() => {
+                                  handleSetTimeOption2("Tuần");
+                                  handleOpenTimeOption2(false);
+                                }}
+                              >
+                                <p>Tuần</p>
+                              </div>
+                              <div
+                                className="item"
+                                onClick={() => {
+                                  handleSetTimeOption2("Tháng");
+                                  handleOpenTimeOption2(false);
+                                }}
+                              >
+                                <p>Tháng</p>
+                              </div>
+                              <div className='item' onClick={() => {handleSetTimeOption2('Năm');  handleOpenTimeOption2(false)}}>
+                                              <p>Năm</p>
+                                          </div>
+                            </div>
+                          )}
+                          
                         </div>
                       </div>
-                      {isOpenCalendar2 && (
-                        <div className="calendar">
-                          <SelectTime
-                            setNewTime={setNewTime2}
-                            value={valueTime2}
-                            timeOption={timeOption2}
-                            handlerSetNewTime={handlerSetNewTime2}
-                          ></SelectTime>
-                        </div>
-                      )}
-                    </div>
-                    <div className="select-box-5" style={{ marginLeft: "10px" }}>
-                      <div
-                        className="combobox"
-                        onClick={() => handleOpenTimeOption2(!isOpenTimeOption2)}
-                      >
-                        <p>{timeOption2}</p>
-                        <div className="icon">
-                          <FontAwesomeIcon className="icon" icon={faCaretDown} />
-                        </div>
-                      </div>
-                      {isOpenTimeOption2  && (
-                        <div className="select-time">
-                          <div
-                            className="item"
-                            onClick={() => {
-                              handleSetTimeOption2("Tuần");
-                              handleOpenTimeOption2(false);
-                            }}
-                          >
-                            <p>Tuần</p>
-                          </div>
-                          <div
-                            className="item"
-                            onClick={() => {
-                              handleSetTimeOption2("Tháng");
-                              handleOpenTimeOption2(false);
-                            }}
-                          >
-                            <p>Tháng</p>
-                          </div>
-                          <div className='item' onClick={() => {handleSetTimeOption2('Năm');  handleOpenTimeOption2(false)}}>
-                                          <p>Năm</p>
-                                      </div>
-                        </div>
-                      )}
-                      
-                    </div>
+              </div>
+                <Bar data={chartData} options={optionschart} />
+            </div>
+              <div className="chartdonut-area">
+                <div className="Spacer"></div>
+                <div className="donut-chart">
+                  <Doughnut data={dataDonut} options={optionsDn}></Doughnut>
+                  <div className="Text-doughnut">
+                      <p>{donutText}</p>
+                      <p>{formatMoney(donutCost)}</p>
                   </div>
+                </div>
+              </div>
           </div>
-            <Bar data={chartData} options={optionschart} />
           </Card>
       </div>
     </div>

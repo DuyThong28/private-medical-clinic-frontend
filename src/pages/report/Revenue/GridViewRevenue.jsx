@@ -42,7 +42,7 @@ function GridViewRevenue({
       }
       for (let j = 0; j < billList.length; j++) {
         if (arr.includes(billList[j].appointmentListId)) {
-          sum = sum + billList[j].drugExpense;
+          sum = sum + billList[j].drugExpense + billList[j].feeConsult;
           cnt++;
         }
       }
@@ -71,7 +71,7 @@ function GridViewRevenue({
         }
         for (let j = 0; j < billList.length; j++) {
           if (arr.includes(billList[j].appointmentListId)) {
-            sum = sum + billList[j].drugExpense;
+            sum = sum + billList[j].drugExpense + billList[j].feeConsult;
             cnt++;
           }
         }
@@ -93,7 +93,7 @@ function GridViewRevenue({
         }
         for (let j = 0; j < billList.length; j++) {
           if (arr.includes(billList[j].appointmentListId)) {
-            sum = sum + billList[j].drugExpense;
+            sum = sum + billList[j].drugExpense+ billList[j].feeConsult;
             cnt++;
           }
         }
@@ -113,7 +113,7 @@ function GridViewRevenue({
         }
         for (let j = 0; j < billList.length; j++) {
           if (arr.includes(billList[j].appointmentListId)) {
-            sum = sum + billList[j].drugExpense;
+            sum = sum + billList[j].drugExpense+ billList[j].feeConsult;
             cnt++;
           }
         }
@@ -142,7 +142,7 @@ function GridViewRevenue({
       }
       for (let j = 0; j < billList.length; j++) {
         if (arr.includes(billList[j].appointmentListId)) {
-          sum = sum + billList[j].drugExpense;
+          sum = sum + billList[j].drugExpense+ billList[j].feeConsult;
           cnt++;
         }
       }
@@ -317,7 +317,7 @@ function GridViewRevenue({
               {SumList &&
                 SumList.map((item, index) => {
                   return (
-                    CountList[index] >= 0 && (<li
+                    CountList[index] > 0 && (<li
                       className="dropdown-center list-group-item list-group-item-primary list-group-item-action w-100 h-80 d-flex flex-row"
                       key={index}
                     >
