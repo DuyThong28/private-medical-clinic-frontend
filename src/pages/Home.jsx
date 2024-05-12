@@ -258,7 +258,7 @@ function HomePage() {
   
   const appointmentRecordDetails = appointmentRecordDetailsQuery.data || [];
   const drugs = drugsQuery.data || [];
-  const billList = billsQuery.data || []
+  const billList = billsQuery.data || [];
 
   const [topDrug, setTopDrug] = useState([]);
 
