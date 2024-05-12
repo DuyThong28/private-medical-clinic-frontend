@@ -29,8 +29,16 @@ import { fetchAllUnit } from "../../../services/units";
 import Chart from 'chart.js/auto';
 import { Chart as ChartJS, CategoryScale, LinearScale, Title, Tooltip, Legend } from 'chart.js';
 import { Bar,Line } from 'react-chartjs-2';
+import { da } from 'date-fns/locale';
 ChartJS.register(CategoryScale, LinearScale, Title, Tooltip, Legend);
 
+let rememberWeek = dayjs();
+let rememberMonth = dayjs();
+let rememberYear = dayjs();
+let rememberWeek2 = dayjs();
+let rememberMonth2 = dayjs();
+let rememberYear2 = dayjs();
+let stopInitLoad = false;
 function Medicine() {
 
   const drugsQuery = useQuery({
@@ -80,7 +88,15 @@ function Medicine() {
       return fetchAllAppointmentList();
     }, 
   });
-  const appointment = appointmentQuery.data;
+  const appointment = appointmentQuery.data || []; 
+  const billsQuery = useQuery({
+    queryKey: ["billlist"],
+    queryFn: () => {
+      return fetchAllBills();
+    },
+  });
+  const bills = billsQuery.data;
+  
   const ConvernToArray = (obj) => {
     let arr = []
     if(obj != null) 
@@ -94,7 +110,10 @@ const recDetList = ConvernToArray(recorddt);
 const recList = ConvernToArray(record);
 const aptList = ConvernToArray(appointment);
 const drugList = ConvernToArray(drugs);
-
+const billList = ConvernToArray(bills);
+useEffect(()=>{
+  setSelectItem(drugList[0]);
+},[drugList])
   function searchHandler(event) {
     const textSearch = event.target.value.toLowerCase().trim();
     const result = drugs.filter((drug) =>
@@ -103,7 +122,7 @@ const drugList = ConvernToArray(drugs);
     setListState(() => result);
   }
 
-    const [selectItem, setSelectItem] = useState({});
+    const [selectItem, setSelectItem] = useState(drugList[0]);
     const setDetailItem = (item) => {
         getDataForChartWeek(valueTime, item);
         setSelectItem(item);
@@ -115,16 +134,41 @@ const drugList = ConvernToArray(drugs);
         setValueTime(value);
         getDataForChartWeek(value, selectItem);
     }
+    const getFirstDayOfWeek = (date) => {
+      const startOfWeek = dayjs(date).startOf('week');
+      if (startOfWeek.day() === 0) {
+        return startOfWeek.add(1, 'day');
+      }
+      return startOfWeek;
+    }
     const getWeekStartAndEnd = (selectedDay) => {
-        const startOfWeek = selectedDay.startOf('week');
-        const endOfWeek = startOfWeek.add(6, 'days');
-        return { start: startOfWeek, end: endOfWeek };
-    };
+      const startOfWeek = getFirstDayOfWeek(selectedDay);
+      const endOfWeek = startOfWeek.add(6, 'days');
+      return { start: startOfWeek, end: endOfWeek };
+  };
     const [isOpenCalendar, setIsOpenCalendar] = React.useState(false);
     const handleOpenCalendar = (value) => {
         setIsOpenCalendar(value);
+        setIsOpenTimeOption(false);
     }
-
+    const [timeOption, setTimeOption] = React.useState("Tuần");
+    const handleSetTimeOption = (value) => {
+      if(timeOption === "Tuần") rememberWeek = valueTime;
+      else if(timeOption === "Tháng") rememberMonth = valueTime;
+      else rememberYear = valueTime;
+      setTimeOption(value);
+      if(value === "Tuần") setValueTime(rememberWeek);
+      else if(value === "Tháng") setValueTime(rememberMonth);
+      else setValueTime(rememberYear);
+      if (value === "Tuần") getDataForChartWeek(rememberWeek, selectItem);
+      else if (value === "Tháng") getDataForChartMonth(rememberMonth, selectItem);
+      else getDataForChartYear(rememberYear, selectItem)
+    };
+    const [isOpenTimeOption, setIsOpenTimeOption] = React.useState(false);
+  const handleOpenTimeOption = (value) => {
+    setIsOpenCalendar(false);
+    setIsOpenTimeOption(value);
+  };
     const countDrugInRecord = (month, year, item) => {
       let arrApt = [];
           let count = 0;
@@ -138,11 +182,45 @@ const drugList = ConvernToArray(drugs);
             if(arrApt.includes(recList[j].appointmentListId))
               arrRec.push(recList[j].id);
           }
+          for(let j = 0; j < recDetList.length; j++) {
+            if(arrRec.includes(recDetList[j].appointmentRecordId)) {
+              if(recDetList[j].drugId === item.id) {
+                count+=recDetList[j].count;
+              }
+            }
+          }
+          return count;
+    }
+    
+    const countDrugInRecordWeek = (time, item) => {
+      let arrApt = [];
+      let count = 0;
+      const date = formatDate(time);
+          if(date.ms != date.ms){
+            for(let j = 0; j < aptList.length; j++) {
+              const tmp = StringToDate(aptList[j].scheduleDate);
+              if((tmp.month === date.ms && tmp.year === date.ys && tmp.day >= date.start) ||
+                (tmp.month === date.me && tmp.year === date.ye && tmp.day <= date.end))
+              arrApt.push(aptList[j].id)
+            }
+          }
+          else {
+            for(let j = 0; j < aptList.length; j++) {
+              const tmp = StringToDate(aptList[j].scheduleDate);
+              if(tmp.month === date.month && tmp.year === date.year && tmp.day >= date.start && tmp.day <= date.end)
+                arrApt.push(aptList[j].id)
+            }
+          }
+          let arrRec = [];
+          for(let j = 0; j < recList.length; j++) {
+            if(arrApt.includes(recList[j].appointmentListId))
+              arrRec.push(recList[j].id);
+          }
 
           for(let j = 0; j < recDetList.length; j++) {
             if(arrRec.includes(recDetList[j].appointmentRecordId)) {
               if(recDetList[j].drugId === item.id) {
-                count++;
+                count+=recDetList[j].count;
               }
             }
           }
@@ -164,8 +242,18 @@ const drugList = ConvernToArray(drugs);
     }
     const displayTime = (date) => {
         const time = formatDate(date);
-            return time.start + '/' + time.ms + '/' + time.ys + ' - ' + time.end + '/' + time.me + '/' + time.ye;
+            return time.start + '/' + time.ms + ' - ' + time.end + '/' + time.me + '/' + time.ye;
     }
+    const displayTime3 = (date) => {
+      const time = formatDate(date);
+      if(timeOption == "Tuần") return displayTime(date);
+      if(timeOption == 'Tháng') {
+              return 'Thg ' + time.month + ' ' + time.year;
+      }
+      if(timeOption == 'Năm') {
+          return time.year; 
+      }
+  }
     const isLeapYear = (year) => {
         if (year % 4 !== 0) {
           return false;
@@ -211,6 +299,15 @@ const drugList = ConvernToArray(drugs);
         return arr;
     }
     
+    const getLabelForChartMonth = (time) => {
+      let arr = [];
+      const date = formatDate(time);
+      for(let i = 1; i <= getDayofMonth(date.month, date.year); i++) {
+        arr.push(i + '/' + date.month);
+      }
+      return arr;
+  }
+
     const getDataNewForChartWeek = (time, item) => {
       const date = formatDate(time);
       let newData = [];
@@ -231,7 +328,7 @@ const drugList = ConvernToArray(drugs);
           }
           for(let j = 0; j < recDetList.length; j++) {
             if(arrRec.includes(recDetList[j].appointmentRecordId)) {
-              if(recDetList[j].drugId === item.id) {
+              if(recDetList[j]?.drugId == item?.id) {
                 count = count + recDetList[j].count;
               }
             }
@@ -257,7 +354,7 @@ const drugList = ConvernToArray(drugs);
 
           for(let j = 0; j < recDetList.length; j++) {
             if(arrRec.includes(recDetList[j].appointmentRecordId)) {
-              if(recDetList[j].drugId === item.id) {
+              if(recDetList[j].drugId == item?.id) {
                 count = count + recDetList[j].count;
               }
             }
@@ -280,7 +377,7 @@ const drugList = ConvernToArray(drugs);
           }
           for(let j = 0; j < recDetList.length; j++) {
             if(arrRec.includes(recDetList[j].appointmentRecordId)) {
-              if(recDetList[j].drugId === item.id) {
+              if(recDetList[j].drugId == item.id) {
                 count = count + recDetList[j].count;
               }
             }
@@ -298,21 +395,120 @@ const drugList = ConvernToArray(drugs);
             {
               label: 'Số lượng bán ra',
                 data: tmp2, 
-                backgroundColor: 'red',
+                backgroundColor: '#3983fa',
                 borderWidth: 1,
-                barThickness: 30,
-                borderRadius: 2,
+                barThickness: 10,
+                borderRadius: 50,
             },
         ]
         setChartData(tmp);
     }
+    const getDataNewForChartMonth = (time, item) => {
+      const date = formatDate(time);
+      let newData = [];
+      for(let i = 1; i <= getDayofMonth(date.month, date.year); i++) {
+        let arrApt = [];
+          let count = 0;
+          for(let j = 0; j < aptList.length; j++) {
+            const tmp = StringToDate(aptList[j].scheduleDate);
+            if(tmp.day === i && tmp.month === date.month && tmp.year === date.year)
+              arrApt.push(aptList[j].id)
+          }
+          let arrRec = [];
+          for(let j = 0; j < recList.length; j++) {
+            if(arrApt.includes(recList[j].appointmentListId))
+              arrRec.push(recList[j].id);
+          }
+          for(let j = 0; j < recDetList.length; j++) {
+            if(arrRec.includes(recDetList[j].appointmentRecordId)) {
+              if(recDetList[j].drugId == item.id) {
+                count = count + recDetList[j].count;
+              }
+            }
+          }
+          newData.push(count);
+      }
+      return newData;
+    }
+    const getDataForChartMonth = (date, item) => {
+      let tmp = chartData;
+      tmp.labels = getLabelForChartMonth(date);
+      const tmp2 = getDataNewForChartMonth(date, item);
+      tmp.datasets = [
+          {
+            label: 'Số lượng bán ra',
+              data: tmp2, 
+              backgroundColor: '#3983fa',
+              borderWidth: 1,
+              barThickness: 10,
+              borderRadius: 50,
+          },
+      ]
+      setChartData(tmp);
+  }
+  const getDataNewForChartYear = (time, item) => {
+    const date = formatDate(time);
+    let newData = [];
+    for(let i = 1; i <= 12; i++) {
+      let arrApt = [];
+        let count = 0;
+        for(let j = 0; j < aptList.length; j++) {
+          const tmp = StringToDate(aptList[j].scheduleDate);
+          if(tmp.month === i && tmp.year === date.year)
+            arrApt.push(aptList[j].id)
+        }
+        let arrRec = [];
+        for(let j = 0; j < recList.length; j++) {
+          if(arrApt.includes(recList[j].appointmentListId))
+            arrRec.push(recList[j].id);
+        }
+        for(let j = 0; j < recDetList.length; j++) {
+          if(arrRec.includes(recDetList[j].appointmentRecordId)) {
+            if(recDetList[j].drugId == item.id) {
+              count = count + recDetList[j].count;
+            }
+          }
+        }
+        newData.push(count);
+    }
+    return newData;
+  }
+  const getDataForChartYear = (date, item) => {
+    let tmp = chartData;
+    tmp.labels = [
+      "Thg 1",
+      "Thg 2",
+      "Thg 3",
+      "Thg 4",
+      "Thg 5",
+      "Thg 6",
+      "Thg 7",
+      "Thg 8",
+      "Thg 9",
+      "Thg 10",
+      "Thg 11",
+      "Thg 12",
+    ];
+    const tmp2 = getDataNewForChartYear(date, item);
+    tmp.datasets = [
+        {
+          label: 'Số lượng bán ra',
+            data: tmp2, 
+            backgroundColor: '#3983fa',
+            borderWidth: 1,
+            barThickness: 10,
+            borderRadius: 50,
+        },
+    ]
+    setChartData(tmp);
+}
     const [chartData, setChartData] = useState(
         {
             labels: [1,1,1,1,1,1,1], // Replace with your category labels
             datasets: [
                 {label: 'Số lượng bán ra',
-                    data: [0,0,0,0,0,0,0], // Replace with your variable 2 data
-                    backgroundColor: 'red',
+                    data: [0,0,0,0,0,0,0], 
+                    backgroundColor: '#3983fa',
                     borderWidth: 1,
                     barThickness: 25,
                     borderRadius: 2,
@@ -320,22 +516,45 @@ const drugList = ConvernToArray(drugs);
             ],
         }
     );
+    React.useEffect(()=>{
+      if(true){
+        console.log("ok2")
+        if(aptList.length > 0)
+        {
+          setChartData({
+            labels: getLabelForChartWeek(valueTime),
+            datasets: [
+                {label: 'Số lượng bán ra',
+                    data: getDataNewForChartWeek(valueTime,selectItem), 
+                    backgroundColor: '#3983fa',
+                    borderWidth: 1,
+                    barThickness: 10,
+                    borderRadius: 50,
+                },
+            ],
+          })
+          stopInitLoad = true;
+        }
+      }
+    }, [appointment, stopInitLoad])
 
     const optionschart = {
         title: {
-            display: true,
-            text: 'Biểu đồ doanh thu 2 cột'
+            display: false,
           },
         scales: {
             y: {
                 ticks: {
                     maxTicksLimit: 5,
+                    callback: function(value, index, values) {
+                      return Number.isInteger(value) ? value : '';
+                  }
                 },
             },
         },
         plugins: {
             legend: {
-                display: true, // Ẩn chú thích màu
+                display: false, // Ẩn chú thích màu
             },
         },
         elements: {
@@ -359,12 +578,27 @@ const drugList = ConvernToArray(drugs);
         setIsOpenCalendar2(false);
         setIsOpenTimeOption2(value);
     }
+    const handlerSetNewTime2 = (value) => {
+      setNewTime2(value);
+      setIsOpenCalendar2(false);
+    }
+    const handlerSetNewTime = (value) => {
+      setNewTime(value);
+      setIsOpenCalendar(false);
+    }
     const [timeOption2, setTimeOption2] = React.useState('Tháng');
     const handleSetTimeOption2 = (value) => {
-        setTimeOption2(value);
+      if(timeOption2 === "Tuần") rememberWeek2 = valueTime2;
+      else if(timeOption2 === "Tháng") rememberMonth2 = valueTime2;
+      else rememberYear2 = valueTime2;
+      setTimeOption2(value);
+      if(value === "Tuần") setValueTime2(rememberWeek2);
+      else if(value === "Tháng") setValueTime2(rememberMonth2);
+      else setValueTime2(rememberYear2);
     }
     const displayTime2 = (date) => {
       const time = formatDate(date);
+      if(timeOption2 == "Tuần") return displayTime(date);
       if(timeOption2 == 'Tháng') {
               return 'Thg ' + time.month + ' ' + time.year;
       }
@@ -395,6 +629,41 @@ const drugList = ConvernToArray(drugs);
           }
           return count;
   }
+  const getCountInTimeWeek = (time, item) => {
+    let arrApt = [];
+    let count = 0;
+    const date = formatDate(time);
+    if(date.ms != date.ms){
+      for(let j = 0; j < aptList.length; j++) {
+        const tmp = StringToDate(aptList[j].scheduleDate);
+        if((tmp.month === date.ms && tmp.year === date.ys && tmp.day >= date.start) ||
+          (tmp.month === date.me && tmp.year === date.ye && tmp.day <= date.end))
+        arrApt.push(aptList[j].id)
+      }
+    }
+    else {
+      for(let j = 0; j < aptList.length; j++) {
+        const tmp = StringToDate(aptList[j].scheduleDate);
+        if(tmp.month === date.month && tmp.year === date.year && tmp.day >= date.start && tmp.day <= date.end)
+          arrApt.push(aptList[j].id)
+      }
+    }
+    
+    let arrRec = [];
+    for(let j = 0; j < recList.length; j++) {
+      if(arrApt.includes(recList[j].appointmentListId))
+        arrRec.push(recList[j].id);
+    }
+
+    for(let j = 0; j < recDetList.length; j++) {
+      if(arrRec.includes(recDetList[j].appointmentRecordId)) {
+        if(recDetList[j].drugId === item.id) {
+          count = count + recDetList[j].count;
+        }
+      }
+    }
+    return count;
+}
   const handleExportReport = () =>{
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet('Bảng Báo Cáo');
@@ -404,18 +673,31 @@ const drugList = ConvernToArray(drugs);
     const reportCell2 = worksheet.getCell('A2');
     if(timeOption2 === 'Tháng')
         reportCell2.value = 'Tháng: ' + date.month + '/' + date.year;
-    else 
-        reportCell2.value = 'Năm: ' + date.year;
+    else if(timeOption2 == 'Năm') reportCell2.value = 'Năm: ' + date.year;
+    else reportCell2.value = 'Tuần: ' + date.start + '/' + date.ms + '/' + date.ys + " - " + date.end + '/' + date.me + '/' + date.ye;
     reportCell2.font = { bold: true };
     reportCell2.alignment = { vertical: 'middle', horizontal: 'center' };
 
-    worksheet.getRow(3).values = ['STT', 'Thuốc', 'Đơn vị tính', 'Số lượng', 'Số lần dùng'];
+    worksheet.getRow(3).values = ['STT', 'Thuốc', 'Đơn vị tính', 'Số lượng tồn kho', 'Số lần dùng'];
+    const headerRow = worksheet.getRow(3);
+    headerRow.values = ['STT', 'Thuốc', 'Đơn vị tính', 'Số lượng tồn kho', 'Số lần dùng'];
+    headerRow.eachCell((cell) => {
+    cell.font = { bold: true }; // Bold font
+    cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFCCEEFF' } }; // Light blue background
+    cell.alignment = { horizontal: "left" }; // Left alignment
+    cell.border = {
+      top: { style: 'thin', color: { argb: 'FF000000' } },
+      left: { style: 'thin', color: { argb: 'FF000000' } },
+      right: { style: 'thin', color: { argb: 'FF000000' } },
+      bottom: { style: 'thin', color: { argb: 'FF000000' } },
+    };
+    });
     worksheet.columns = [
         { header: 'STT', key: 'STT', width: 5 },
         { header: 'Thuốc', key: 'thuoc', width: 20 },
         { header: 'Đơn vị tính', key: 'donVi', width: 15 },
-        { header: 'Số lượng', key: 'soLuong', width: 15 },
-        { header: 'Số lần dùng', key: 'soLD', width: 10 },
+        { header: 'Số lượng tồn kho', key: 'soLuong', width: 18 },
+        { header: 'Số lần dùng', key: 'soLD', width: 15 },
     ];
     worksheet.mergeCells('A1:E1');
     const reportCell = worksheet.getCell('A1');
@@ -427,10 +709,12 @@ const drugList = ConvernToArray(drugs);
     for (let i = 0; i < drugList.length; i++) {
       let sl;
       if(timeOption2 === 'Tháng') sl = getCountInTime(formatDate(valueTime2).month, formatDate(valueTime2).year, drugList[i]);
-      else sl = getCountInTime(-1, formatDate(valueTime2).year, drugList[i])
+      else if(timeOption2 === 'Năm') sl = getCountInTime(-1, formatDate(valueTime2).year, drugList[i])
+      else sl = getCountInTimeWeek(valueTime2, drugList[i])
       let sld;
       if(timeOption2 === 'Tháng') sld = countDrugInRecord(date.month, date.year, drugList[i]);
-      else sld = countDrugInRecord(-1, date.year, drugList[i])
+      else if(timeOption2 === 'Năm') sld = countDrugInRecord(-1, date.year, drugList[i]);
+      else sld = countDrugInRecordWeek(valueTime2, drugList[i]);
         data.push({
             STT: i+1,
             thuoc: drugList[i].drugName,
@@ -444,16 +728,30 @@ const drugList = ConvernToArray(drugs);
         rowObject.values = row;
         rowObject.eachCell((cell) => {
           cell.alignment = { horizontal: 'left' };
+          cell.border = {
+            top: { style: 'thin', color: { argb: 'FF000000' } },
+            left: { style: 'thin', color: { argb: 'FF000000' } },
+            right: { style: 'thin', color: { argb: 'FF000000' } },
+            bottom: { style: 'thin', color: { argb: 'FF000000' } },
+          };
         });
       });
     let nameExport;
     if(timeOption2 == 'Tháng') nameExport  = 'Bao_Cao_Su_Dung_Thuoc_Thang_' + date.month + '/' + date.year;
-    else  nameExport  = 'Bao_Cao_Su_Dung_Thuoc_Nam_' + date.year;
+    else if(timeOption2 == 'Năm')nameExport  = 'Bao_Cao_Su_Dung_Thuoc_Nam_' + date.year;
+    else nameExport = 'Bao_Cao_Su_Dung_Thuoc_Tuan_' + date.start + '/' + date.ms + '_' + date.end + '/' + date.me + '/' + date.ye;
     workbook.xlsx.writeBuffer().then((buffer) => {
         saveAs(new Blob([buffer]), nameExport + '.xlsx');
     });
   }
 
+  
+  function formatMoney(number) {
+    const strNumber = String(number);
+    const parts = strNumber.split(/(?=(?:\d{3})+(?!\d))/);
+    const formattedNumber = parts.join('.');
+    return formattedNumber;
+  }
     return ( 
       
     <div className="d-flex flex-row w-100">
@@ -472,7 +770,7 @@ const drugList = ConvernToArray(drugs);
                           </div>
                           {isOpenCalendar2 &&
                               <div className='calendar'>
-                                  <SelectTime setNewTime={setNewTime2} value={valueTime2}></SelectTime>
+                                  <SelectTime setNewTime={setNewTime2} value={valueTime2} timeOption={timeOption2} handlerSetNewTime={handlerSetNewTime2}></SelectTime>
                               </div>
                           }
                       </div>
@@ -486,9 +784,9 @@ const drugList = ConvernToArray(drugs);
                           
                           {isOpenTimeOption2 &&
                               <div className='select-time' >
-                                  {/* <div className='item' onClick={() => {handleSetTimeOption('Tuần');  handleOpenTimeOption(false)}}>
+                                  <div className='item' onClick={() => {handleSetTimeOption2('Tuần');  handleOpenTimeOption2(false)}}>
                                       <p>Tuần</p>
-                                  </div> */}
+                                  </div>
                                   <div className='item' onClick={() => {handleSetTimeOption2('Tháng');  handleOpenTimeOption2(false)}}>
                                       <p>Tháng</p>
                                   </div>
@@ -510,19 +808,16 @@ const drugList = ConvernToArray(drugs);
                 </div>
             </div>
             <TableHeader>
-              <div className="text-start" style={{ width: "23%" }}>
+              <div className="text-start" style={{ width: "30%" }}>
                 Tên
               </div>
-              <div className="text-start" style={{ width: "15%" }}>
+              <div className="text-start" style={{ width: "20%" }}>
                 Đơn vị
               </div>
-              <div className="text-start" style={{ width: "23%" }}>
-                Số lượng dùng
+              <div className="text-start" style={{ width: "30%" }}>
+                Doanh thu bán được
               </div>
-              <div className="text-start" style={{ width: "20%" }}>
-                Giá
-              </div>
-              <div className="text-start" style={{ width: "14%" }}>
+              <div className="text-start" style={{ width: "19%" }}>
                 Số lần dùng
               </div>
               <div className="text-start" style={{ width: "1%" }}></div>
@@ -538,28 +833,11 @@ const drugList = ConvernToArray(drugs);
                           
                           <div
                             className="text-start"
-                            style={{ width: "23%" }}
+                            style={{ width: "30%" }}
                             data-bs-toggle="dropdown"
                             aria-expanded="false"
                           >
-                            {drug.drugName}
-                          </div>
-                          <div
-                            className="text-start"
-                            style={{ width: "15%" }}
-                            data-bs-toggle="dropdown"
-                            aria-expanded="false"
-                          >
-                            {getUnitName({ id: drug.unitId })}
-                          </div>
-                          <div
-                            className="text-start"
-                            style={{ width: "23%" }}
-                            data-bs-toggle="dropdown"
-                            aria-expanded="false"
-                          >
-                            {timeOption2 === 'Tháng' && getCountInTime(formatDate(valueTime2).month, formatDate(valueTime2).year, drug)}
-                            {timeOption2 === 'Năm' && getCountInTime(-1, formatDate(valueTime2).year, drug)}
+                            {drug?.drugName}
                           </div>
                           <div
                             className="text-start"
@@ -567,15 +845,27 @@ const drugList = ConvernToArray(drugs);
                             data-bs-toggle="dropdown"
                             aria-expanded="false"
                           >
-                            {drug.price}
+                            {getUnitName({ id: drug?.unitId })}
                           </div>
                           <div
                             className="text-start"
-                            style={{ width: "15%" }}
+                            style={{ width: "30%" }}
                             data-bs-toggle="dropdown"
                             aria-expanded="false"
                           >
-                              {timeOption2 === 'Tháng' ? countDrugInRecord(formatDate(valueTime2).month, formatDate(valueTime2).year, drug) : countDrugInRecord(-1, formatDate(valueTime2).year, drug)}
+                            {timeOption2 === 'Tuần' && formatMoney(countDrugInRecord(formatDate(valueTime2)?.month, formatDate(valueTime2)?.year, drug) * drug?.price)}
+                            {timeOption2 === 'Tháng' && formatMoney(countDrugInRecordWeek(valueTime2,drug) * drug?.price)}
+                            {timeOption2 === 'Năm' && formatMoney(countDrugInRecord(-1, formatDate(valueTime2)?.year, drug) * drug?.price)}
+                          </div>
+                          <div
+                            className="text-start"
+                            style={{ width: "16%" }}
+                            data-bs-toggle="dropdown"
+                            aria-expanded="false"
+                          >
+                              {timeOption2 === 'Tháng' && countDrugInRecord(formatDate(valueTime2)?.month, formatDate(valueTime2)?.year, drug)}
+                              {timeOption2 === 'Năm' && countDrugInRecord(-1, formatDate(valueTime2)?.year, drug)}
+                              {timeOption2 === 'Tuần' && countDrugInRecordWeek(valueTime2?.drug)}
                           </div>
                           <div
                             className="text-end"
@@ -587,17 +877,6 @@ const drugList = ConvernToArray(drugs);
                                   setDetailItem(drug)
                                 } className='icon-view' icon={faEye} />
                           </div>
-                          {/* <ul className="dropdown-menu">
-                            <li className="dropdown-item">
-                              <span
-                                onClick={() =>
-                                  setDetailItem(drug)
-                                }
-                              >
-                                Xem chi tiết
-                              </span>
-                            </li>
-                          </ul> */}
                       </li>
                   );
                 })}
@@ -608,39 +887,86 @@ const drugList = ConvernToArray(drugs);
         <div className="col-md-4">
             <Card>
                 <div className='d-flex flex-column align-items-center h-100'>
-                  <div className="detail-header">
-                    <p>{selectItem.drugName || "Tên thuốc"}</p>
-                  </div>
-                  
                   <div className='detail-chart'>
-                  <div className='select-box-1' >
-                        <div className='combobox' onClick={() => handleOpenCalendar(!isOpenCalendar)}>
-                            <p>{displayTime(valueTime)}</p>
-                            <div className='icon'>
-                                <FontAwesomeIcon className='icon' icon={faCaretDown} />
-                            </div>
+                  <div className="option-time-chart">
+            <div className="d-flex justify-content-start">
+                    <div className="select-box-4">
+                      <div
+                        className="combobox-chart"
+                        onClick={() => handleOpenCalendar(!isOpenCalendar)}
+                      >
+                        <p>{displayTime3(valueTime)}</p>
+                        <div className="icon">
+                          <FontAwesomeIcon className="icon" icon={faCaretDown} />
                         </div>
-                        {isOpenCalendar &&
-                            <div className='calendar'>
-                                <SelectTime setNewTime={setNewTime} value={valueTime}></SelectTime>
-                            </div>
-                        }
+                      </div>
+                      {isOpenCalendar && (
+                        <div className="calendar">
+                          <SelectTime
+                            setNewTime={setNewTime}
+                            value={valueTime}
+                            timeOption={timeOption}
+                            handlerSetNewTime={handlerSetNewTime}
+                          ></SelectTime>
+                        </div>
+                      )}
                     </div>
+                    <div className="select-box-5" style={{ marginLeft: "10px" }}>
+                      <div
+                        className="combobox"
+                        onClick={() => handleOpenTimeOption(!isOpenTimeOption)}
+                      >
+                        <p>{timeOption}</p>
+                        <div className="icon">
+                          <FontAwesomeIcon className="icon" icon={faCaretDown} />
+                        </div>
+                      </div>
+                      {isOpenTimeOption  && (
+                        <div className="select-time">
+                          <div
+                            className="item"
+                            onClick={() => {
+                              handleSetTimeOption("Tuần");
+                              handleOpenTimeOption(false);
+                            }}
+                          >
+                            <p>Tuần</p>
+                          </div>
+                          <div
+                            className="item"
+                            onClick={() => {
+                              handleSetTimeOption("Tháng");
+                              handleOpenTimeOption(false);
+                            }}
+                          >
+                            <p>Tháng</p>
+                          </div>
+                          <div className='item' onClick={() => {handleSetTimeOption('Năm');  handleOpenTimeOption(false)}}>
+                                          <p>Năm</p>
+                                      </div>
+                        </div>
+                      )}
+                      
+                    </div>
+                  </div>
+          </div>
                       <Bar data={chartData} options={optionschart}></Bar>
                   </div>
+                  <div className='detail-list'>
                   <div className='detail-item'>
-                    <p>Đơn vị: {getUnitName({ id: selectItem.unitId })}</p>
-                  </div>
-                  <div className='detail-item'>
-                    <p>Giá bán: {selectItem.price}</p>
-                  </div>
-                  <div className='detail-item'>
-                    <p>Số lượng tồn kho: {selectItem.count}</p>
-                  </div>
-                  <div className='detail-item'>
-                    <p>Ghi chú:</p>
-                    <div className='note-content'>
-                        <p>{selectItem.note}</p>
+                      <p>Tên thuốc: {selectItem?.drugName}</p>
+                    </div>
+                    <div className='detail-item'>
+                      <p>Đơn vị: {getUnitName({ id: selectItem?.unitId })}</p>
+                    </div>
+                    <div className='detail-item'>
+                      <p>Giá bán: {selectItem?.price}</p>
+                    </div>
+                    <div className='detail-item'>
+                      <p>Số lượng tồn kho: {selectItem?.count}</p>
+                    </div>
+                    <div className='detail-item'>
+                      <p>Hoạt chất: {selectItem?.note}</p>
                     </div>
                   </div>
                 </div>

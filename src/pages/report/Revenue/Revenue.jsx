@@ -38,6 +38,14 @@ ChartJS.register(
   Legend
 );
 
+let rememberWeek = dayjs();
+let rememberMonth = dayjs();
+let rememberYear = dayjs();
+let rememberWeek2 = dayjs();
+let rememberMonth2 = dayjs();
+let rememberYear2 = dayjs();
+let stopInitLoad = false;
+
 function Revenue() {
   const patientsQuery = useQuery({
     queryKey: ["patientlist"],
@@ -61,7 +69,7 @@ function Revenue() {
       return fetchAllBills();
     },
   });
-  const bills = billsQuery.data;
+  const bills = billsQuery.data || [];
   const ConvernToArray = (obj) => {
     let arr = [];
     if (obj != null)
@@ -89,37 +97,79 @@ function Revenue() {
   const [valueTime, setValueTime] = React.useState(dayjs());
   const setNewTime = (value) => {
     setValueTime(value);
-    if (timeOption === "Tuần") getDataForChartWeek(value);
-    else if (timeOption === "Tháng") getDataForChartMonth(value);
   };
+  const [valueTime2, setValueTime2] = React.useState(dayjs());
+  const setNewTime2 = (value) => {
+    setValueTime2(value);
+    if (timeOption2 === "Tuần") getDataForChartWeek(value);
+    else if (timeOption2 === "Tháng") getDataForChartMonth(value);
+    else getDataForChartYear(value);
+  };
+  const getFirstDayOfWeek = (date) => {
+    const startOfWeek = dayjs(date).startOf('week');
+    if (startOfWeek.day() === 0) {
+      return startOfWeek.add(1, 'day');
+    }
+    return startOfWeek;
+  }
   const getWeekStartAndEnd = (selectedDay) => {
-    const startOfWeek = selectedDay.startOf("week");
-    const endOfWeek = startOfWeek.add(6, "days");
+    const startOfWeek = getFirstDayOfWeek(selectedDay);
+    const endOfWeek = startOfWeek.add(6, 'days');
     return { start: startOfWeek, end: endOfWeek };
-  };
+};
   const [isOpenCalendar, setIsOpenCalendar] = React.useState(false);
+  const handlerSetNewTime = (value) => {
+    setNewTime(value);
+    setIsOpenCalendar(false);
+  }
   const handleOpenCalendar = (value) => {
     setIsOpenCalendar(value);
     setIsOpenTimeOption(false);
+  };
+  const [isOpenCalendar2, setIsOpenCalendar2] = React.useState(false);
+  const handlerSetNewTime2 = (value) => {
+    setNewTime2(value);
+    setIsOpenCalendar2(false);
+  }
+  const handleOpenCalendar2 = (value) => {
+    setIsOpenCalendar2(value);
+    setIsOpenTimeOption2(false);
+  };
+  const [isOpenTimeOption2, setIsOpenTimeOption2] = React.useState(false);
+  const handleOpenTimeOption2 = (value) => {
+    setIsOpenCalendar2(false);
+    setIsOpenTimeOption2(value);
   };
   const [isOpenTimeOption, setIsOpenTimeOption] = React.useState(false);
   const handleOpenTimeOption = (value) => {
     setIsOpenCalendar(false);
     setIsOpenTimeOption(value);
   };
-  const [timeOption, setTimeOption] = React.useState("Tuần");
-  const handleSetTimeOption = (value, sV) => {
+  const [timeOption, setTimeOption] = React.useState("Tuần");  
+  const handleSetTimeOption = (value) => {
+    if(timeOption === "Tuần") rememberWeek = valueTime;
+    else if(timeOption === "Tháng") rememberMonth = valueTime;
+    else rememberYear = valueTime;
     setTimeOption(value);
-    if (sV === 1) return;
-    if (value === "Tuần") getDataForChartWeek(valueTime);
-    else if (value === "Tháng") getDataForChartMonth(valueTime);
+    if(value === "Tuần") setValueTime(rememberWeek);
+    else if(value === "Tháng") setValueTime(rememberMonth);
+    else setValueTime(rememberYear);
   };
-  const [selectView, setSelectView] = useState(0);
-  const handleSetSelectView = (value) => {
-    setSelectView(value);
-    if (value == 1) handleSetTimeOption("Tháng", 1);
-    else handleSetTimeOption("Tuần", 0);
+
+  const [timeOption2, setTimeOption2] = React.useState("Tuần");
+  const handleSetTimeOption2 = (value) => {
+    if(timeOption2 === "Tuần") rememberWeek2 = valueTime2;
+    else if(timeOption2 === "Tháng") rememberMonth2 = valueTime2;
+    else rememberYear2 = valueTime2;
+    setTimeOption2(value);
+    if(value === "Tuần") setValueTime2(rememberWeek2);
+    else if(value === "Tháng") setValueTime2(rememberMonth2);
+    else setValueTime2(rememberYear2);
+    if (value === "Tuần") getDataForChartWeek(valueTime2);
+    else if (value === "Tháng") getDataForChartMonth(valueTime2);
+    else getDataForChartYear(valueTime2)
   };
+  
   const formatDate = (date) => {
     const day = getWeekStartAndEnd(date);
     return {
@@ -133,6 +183,29 @@ function Revenue() {
       year: date.year(),
     };
   };
+  const displayTime2 = (date) => {
+    const time = formatDate(date);
+    if (timeOption2 == "Tuần") {
+      return (
+        time.start +
+        "/" +
+        time.ms +
+        " - " +
+        time.end +
+        "/" +
+        time.me +
+        "/" +
+        time.ye
+      );
+    }
+    if (timeOption2 == "Tháng") {
+      
+      return "Thg " + time.month + " " + time.year;
+    }
+    if (timeOption2 == "Năm") {
+      return time.year;
+    }
+  };
   const displayTime = (date) => {
     const time = formatDate(date);
     if (timeOption == "Tuần") {
@@ -140,8 +213,6 @@ function Revenue() {
         time.start +
         "/" +
         time.ms +
-        "/" +
-        time.ys +
         " - " +
         time.end +
         "/" +
@@ -151,8 +222,8 @@ function Revenue() {
       );
     }
     if (timeOption == "Tháng") {
-      if (selectView == 0) return time.year;
-      else return "Thg " + time.month + " " + time.year;
+      
+      return "Thg " + time.month + " " + time.year;
     }
     if (timeOption == "Năm") {
       return time.year;
@@ -197,10 +268,19 @@ function Revenue() {
     }
     return arr;
   };
+  const getLabelForChartMonth = (time) => {
+    let arr = [];
+    const date = formatDate(time);
+    for(let i = 1; i <= getDayofMonth(date.month, date.year); i++) {
+      arr.push(i);
+    }
+    return arr;
+  };
 
   const getDataNewForChartWeek = (time) => {
     let newData1 = [];
     let newData2 = [];
+
     const date = formatDate(time);
     if (date.start < date.end) {
       for (let i = date.start; i <= date.end; i++) {
@@ -219,7 +299,7 @@ function Revenue() {
         }
         for (let j = 0; j < billList.length; j++) {
           if (arr.includes(billList[j].appointmentListId)) {
-            sum = sum + billList[j].drugExpense;
+            sum = sum + billList[j].drugExpense + billList[j].feeConsult;
             cnt++;
           }
         }
@@ -238,7 +318,7 @@ function Revenue() {
         }
         for (let j = 0; j < billList.length; j++) {
           if (arr.includes(billList[j].appointmentListId)) {
-            sum = sum + billList[j].drugExpense;
+            sum = sum + billList[j].drugExpense + billList[j].feeConsult
             cnt++;
           }
         }
@@ -257,7 +337,7 @@ function Revenue() {
         }
         for (let j = 0; j < billList.length; j++) {
           if (arr.includes(billList[j].appointmentListId)) {
-            sum = sum + billList[j].drugExpense;
+            sum = sum + billList[j].drugExpense + billList[j].feeConsult
             cnt++;
           }
         }
@@ -270,9 +350,10 @@ function Revenue() {
       count: newData1,
     };
   };
-  const getDataNewForChartMonth = (time) => {
+  const getDataNewForChartYear = (time) => {
     let newData1 = [];
     let newData2 = [];
+
     const date = formatDate(time);
     for (let i = 1; i <= 12; i++) {
       let arr = [];
@@ -286,7 +367,37 @@ function Revenue() {
       }
       for (let j = 0; j < billList.length; j++) {
         if (arr.includes(billList[j].appointmentListId)) {
-          sum = sum + billList[j].drugExpense;
+          sum = sum + billList[j].drugExpense + billList[j].feeConsult
+          cnt++;
+        }
+      }
+      newData1.push(sum);
+      newData2.push(cnt);
+    }
+
+    return {
+      sum: newData2,
+      count: newData1,
+    };
+  };
+  const getDataNewForChartMonth = (time) => {
+    let newData1 = [];
+    let newData2 = [];
+
+    const date = formatDate(time);
+    for (let i = 1; i <= getDayofMonth(date.month, date.year); i++) {
+      let arr = [];
+      let sum = 0;
+      let cnt = 0;
+      for (let j = 0; j < aptList.length; j++) {
+        const tmp = StringToDate(aptList[j].scheduleDate);
+        if (tmp.day === i && tmp.month == date.month && tmp.year === date.year) {
+          arr.push(aptList[j].id);
+        }
+      }
+      for (let j = 0; j < billList.length; j++) {
+        if (arr.includes(billList[j].appointmentListId)) {
+          sum = sum + billList[j].drugExpense + billList[j].feeConsult;
           cnt++;
         }
       }
@@ -307,15 +418,31 @@ function Revenue() {
       {
         label: "Doanh thu",
         data: tmp2.count, // Replace with your variable 2 data
-        backgroundColor: "red",
+        backgroundColor: "#3983fa",
         borderWidth: 1,
-        barThickness: 30,
-        borderRadius: 2,
+        barThickness: 10,
+        borderRadius: 50,
       },
     ];
     setChartData(tmp);
   };
   const getDataForChartMonth = (date) => {
+    let tmp = chartData;
+    tmp.labels = getLabelForChartMonth(date);
+    const tmp2 = getDataNewForChartMonth(date);
+    tmp.datasets = [
+      {
+        label: "Doanh thu",
+        data: tmp2.count, // Replace with your variable 2 data
+        backgroundColor: "#3983fa",
+        borderWidth: 1,
+        barThickness: 10,
+        borderRadius: 50,
+      },
+    ];
+    setChartData(tmp);
+  };
+  const getDataForChartYear = (date) => {
     let tmp = chartData;
     tmp.labels = [
       "Thg 1",
@@ -331,48 +458,89 @@ function Revenue() {
       "Thg 11",
       "Thg 12",
     ];
-    const tmp2 = getDataNewForChartMonth(date);
+    const tmp2 = getDataNewForChartYear(date);
     tmp.datasets = [
       {
         label: "Doanh thu",
         data: tmp2.count, // Replace with your variable 2 data
-        backgroundColor: "red",
+        backgroundColor: "#3983fa",
         borderWidth: 1,
-        barThickness: 30,
-        borderRadius: 2,
+        barThickness: 10,
+        borderRadius: 50,
       },
     ];
     setChartData(tmp);
   };
+  React.useEffect(()=>{
+      if(billList.length > 0)
+      {
+        setChartData({
+          labels: getLabelForChartWeek(valueTime), // Replace with your category labels
+          datasets: [
+            {
+              label: "Doanh thu",
+              data: getDataNewForChartWeek(valueTime).count, // Replace with your variable 2 data
+              backgroundColor: "#3983fa",
+              borderWidth: 1,
+              barThickness: 10,
+              borderRadius: 50,
+            },
+          ],
+        })
+    }
+  }, [bills])
+
+  // React.useEffect(()=>{
+  //     if(aptList.length > 0)
+  //     {
+  //       setChartData({
+  //         labels: getLabelForChartWeek(valueTime), // Replace with your category labels
+  //         datasets: [
+  //           {
+  //             label: "Doanh thu",
+  //             data: getDataNewForChartWeek(valueTime).count, // Replace with your variable 2 data
+  //             backgroundColor: "#3983fa",
+  //             borderWidth: 1,
+  //             barThickness: 10,
+  //             borderRadius: 50,
+  //           },
+  //         ],
+  //       })
+  //       stopInitLoad = true;
+  //     }
+  // }, [aptList])
+  
   const [chartData, setChartData] = useState({
     labels: getLabelForChartWeek(valueTime), // Replace with your category labels
     datasets: [
       {
         label: "Doanh thu",
         data: getDataNewForChartWeek(valueTime).count, // Replace with your variable 2 data
-        backgroundColor: "red",
+        backgroundColor: "#3983fa",
         borderWidth: 1,
-        barThickness: 30,
-        borderRadius: 2,
+        barThickness: 10,
+        borderRadius: 50,
       },
     ],
   });
 
   const optionschart = {
     title: {
-      display: true,
-      text: "Biểu đồ doanh thu 2 cột",
+      display: false,
     },
     scales: {
       y: {
         ticks: {
           maxTicksLimit: 5,
+          callback: function(value, index, values) {
+            return Number.isInteger(value) ? value : '';
+          }
         },
       },
     },
     plugins: {
       legend: {
-        display: true, // Ẩn chú thích màu
+        display: false, // Ẩn chú thích màu
       },
     },
     elements: {
@@ -382,122 +550,159 @@ function Revenue() {
     },
   };
 
+
   return (
-    <Card>
-      <div className=" w-100 h-100 overflow-hidden">
-        <div className="position-relative">
-          <div className="row">
-            <div className="d-flex col-md-6 justify-content-start">
-              <div className="select-box-3">
-                <div
-                  className="combobox"
-                  onClick={() => handleOpenCalendar(!isOpenCalendar)}
-                >
-                  <p>{displayTime(valueTime)}</p>
-                  <div className="icon">
-                    <FontAwesomeIcon className="icon" icon={faCaretDown} />
+    <div className="d-flex flex-row w-100">
+      <div className="col-md-7">
+        <Card>
+          <div className=" w-100 h-100 overflow-hidden">
+            <div className="position-relative">
+              <div className="row">
+                <div className="d-flex col-md-6 justify-content-start">
+                  <div className="select-box-3">
+                    <div
+                      className="combobox"
+                      onClick={() => handleOpenCalendar(!isOpenCalendar)}
+                    >
+                      <p>{displayTime(valueTime)}</p>
+                      <div className="icon">
+                        <FontAwesomeIcon className="icon" icon={faCaretDown} />
+                      </div>
+                    </div>
+                    {isOpenCalendar && (
+                      <div className="calendar">
+                        <SelectTime
+                          setNewTime={setNewTime}
+                          value={valueTime}
+                          timeOption={timeOption}
+                          handlerSetNewTime={handlerSetNewTime}
+                        ></SelectTime>
+                      </div>
+                    )}
+                  </div>
+                  <div className="select-box-2" style={{ marginLeft: "10px" }}>
+                    <div
+                      className="combobox"
+                      onClick={() => handleOpenTimeOption(!isOpenTimeOption)}
+                    >
+                      <p>{timeOption}</p>
+                      <div className="icon">
+                        <FontAwesomeIcon className="icon" icon={faCaretDown} />
+                      </div>
+                    </div>
+                    {isOpenTimeOption  && (
+                      <div className="select-time">
+                        <div
+                          className="item"
+                          onClick={() => {
+                            handleSetTimeOption("Tuần");
+                            handleOpenTimeOption(false);
+                          }}
+                        >
+                          <p>Tuần</p>
+                        </div>
+                        <div
+                          className="item"
+                          onClick={() => {
+                            handleSetTimeOption("Tháng");
+                            handleOpenTimeOption(false);
+                          }}
+                        >
+                          <p>Tháng</p>
+                        </div>
+                        <div className='item' onClick={() => {handleSetTimeOption('Năm');  handleOpenTimeOption(false)}}>
+                                        <p>Năm</p>
+                                    </div>
+                      </div>
+                    )}
+                    
                   </div>
                 </div>
-                {isOpenCalendar && (
-                  <div className="calendar">
-                    <SelectTime
-                      setNewTime={setNewTime}
-                      value={valueTime}
-                    ></SelectTime>
-                  </div>
-                )}
-              </div>
-              <div className="select-box-2" style={{ marginLeft: "10px" }}>
-                <div
-                  className="combobox"
-                  onClick={() => handleOpenTimeOption(!isOpenTimeOption)}
-                >
-                  <p>{timeOption}</p>
-                  <div className="icon">
-                    <FontAwesomeIcon className="icon" icon={faCaretDown} />
-                  </div>
-                </div>
-                {isOpenTimeOption && selectView == 0 && (
-                  <div className="select-time">
-                    <div
-                      className="item"
-                      onClick={() => {
-                        handleSetTimeOption("Tuần", selectView);
-                        handleOpenTimeOption(false);
-                      }}
-                    >
-                      <p>Tuần</p>
-                    </div>
-                    <div
-                      className="item"
-                      onClick={() => {
-                        handleSetTimeOption("Tháng", selectView);
-                        handleOpenTimeOption(false);
-                      }}
-                    >
-                      <p>Tháng</p>
-                    </div>
-                    {/* <div className='item' onClick={() => {handleSetTimeOption('Năm');  handleOpenTimeOption(false)}}>
-                                    <p>Năm</p>
-                                </div> */}
-                  </div>
-                )}
-                {isOpenTimeOption && selectView == 1 && (
-                  <div className="select-time">
-                    {/* <div className='item' onClick={() => {handleSetTimeOption('Tuần');  handleOpenTimeOption(false)}}>
-                                    <p>Tuần</p>
-                                </div> */}
-                    <div
-                      className="item"
-                      onClick={() => {
-                        handleSetTimeOption("Tháng", selectView);
-                        handleOpenTimeOption(false);
-                      }}
-                    >
-                      <p>Tháng</p>
-                    </div>
-                    <div
-                      className="item"
-                      onClick={() => {
-                        handleSetTimeOption("Năm", selectView);
-                        handleOpenTimeOption(false);
-                      }}
-                    >
-                      <p>Năm</p>
-                    </div>
-                  </div>
-                )}
               </div>
             </div>
-            <div className="d-flex col-md-6 justify-content-end">
-              <FontAwesomeIcon
-                onClick={() => handleSetSelectView(0)}
-                className="icon"
-                icon={faChartSimple}
-              />
-              <FontAwesomeIcon
-                onClick={() => handleSetSelectView(1)}
-                className="icon"
-                icon={faBorderAll}
-              />
+    
+            <div className="chart h-100">
+              
+              
+                <GridViewRevenue
+                  date={formatDate(valueTime)}
+                  getDayOfMonth={getDayofMonth}
+                  aptList={aptList}
+                  billList={billList}
+                  timeOption={timeOption}
+                ></GridViewRevenue>
             </div>
           </div>
-        </div>
-
-        <div className="chart h-100">
-          {selectView === 0 && <Bar data={chartData} options={optionschart} />}
-          {selectView === 1 && (
-            <GridViewRevenue
-              date={formatDate(valueTime)}
-              getDayOfMonth={getDayofMonth}
-              aptList={aptList}
-              billList={billList}
-              timeOption={timeOption}
-            ></GridViewRevenue>
-          )}
-        </div>
+        </Card>
       </div>
-    </Card>
+      <div className="col-md-5">
+          <Card>
+          <div className="option-time-chart">
+            <div className="d-flex justify-content-start">
+                    <div className="select-box-4" onClick={() => handleOpenCalendar2(!isOpenCalendar2)}>
+                      <div
+                        className="combobox-chart"
+                        
+                      >
+                        <p>{displayTime2(valueTime2)}</p>
+                        <div className="icon">
+                          <FontAwesomeIcon className="icon" icon={faCaretDown} />
+                        </div>
+                      </div>
+                      {isOpenCalendar2 && (
+                        <div className="calendar">
+                          <SelectTime
+                            setNewTime={setNewTime2}
+                            value={valueTime2}
+                            timeOption={timeOption2}
+                            handlerSetNewTime={handlerSetNewTime2}
+                          ></SelectTime>
+                        </div>
+                      )}
+                    </div>
+                    <div className="select-box-5" style={{ marginLeft: "10px" }}>
+                      <div
+                        className="combobox"
+                        onClick={() => handleOpenTimeOption2(!isOpenTimeOption2)}
+                      >
+                        <p>{timeOption2}</p>
+                        <div className="icon">
+                          <FontAwesomeIcon className="icon" icon={faCaretDown} />
+                        </div>
+                      </div>
+                      {isOpenTimeOption2  && (
+                        <div className="select-time">
+                          <div
+                            className="item"
+                            onClick={() => {
+                              handleSetTimeOption2("Tuần");
+                              handleOpenTimeOption2(false);
+                            }}
+                          >
+                            <p>Tuần</p>
+                          </div>
+                          <div
+                            className="item"
+                            onClick={() => {
+                              handleSetTimeOption2("Tháng");
+                              handleOpenTimeOption2(false);
+                            }}
+                          >
+                            <p>Tháng</p>
+                          </div>
+                          <div className='item' onClick={() => {handleSetTimeOption2('Năm');  handleOpenTimeOption2(false)}}>
+                                          <p>Năm</p>
+                                      </div>
+                        </div>
+                      )}
+                      
+                    </div>
+                  </div>
+          </div>
+            <Bar data={chartData} options={optionschart} />
+          </Card>
+      </div>
+    </div>
   );
 }
 

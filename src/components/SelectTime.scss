@@ -7,6 +7,23 @@
 }
 .container {
     display: flex;
-    height: 500px;
+    height: 300px;
     flex-direction: row;
+}
+
+.month-calendar {
+    height: 300px;
+    max-height: 300px;
+    width: 320px;
+    border: 1px solid blue;
+    border-radius: 5px;
+    background-color: white;
+}
+
+.year-calendar {
+    height: 300px;
+    width: 320px;
+    border: 1px solid blue;
+    border-radius: 5px;
+    background-color: white;
 }

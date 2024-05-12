@@ -86,6 +86,7 @@ export async function fetchAppointmentRecordByPatientId({ patientId }) {
 }
 
 export async function fetchAppointmentRecordByBill({ bill }) {
+  console.log("bill api", bill);
   const patientId = bill.patientId;
   const appointmentListId = bill.appointmentListId;
 

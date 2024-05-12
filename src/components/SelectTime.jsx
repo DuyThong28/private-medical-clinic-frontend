@@ -9,6 +9,10 @@ import { styled } from '@mui/material/styles';
 import { MonthCalendar } from '@mui/x-date-pickers/MonthCalendar';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import { PickersDay } from '@mui/x-date-pickers/PickersDay';
+import { viVN } from '@mui/x-date-pickers/locales';
+import { deDE } from '@mui/x-date-pickers/locales';
+import { vi as viLa } from "date-fns/locale";
+import "dayjs/locale/vi"
 import './SelectTime.scss'
 dayjs.extend(isBetweenPlugin);
 
@@ -29,11 +33,11 @@ const CustomPickersDay = styled(PickersDay, {
         backgroundColor: theme.palette.primary[theme.palette.mode],
       },
     }),
-    ...(day.day() === 0 && {
+    ...(day.day() === 1 && {
       borderTopLeftRadius: '50%',
       borderBottomLeftRadius: '50%',
     }),
-    ...(day.day() === 6 && {
+    ...(day.day() === 0 && {
       borderTopRightRadius: '50%',
       borderBottomRightRadius: '50%',
     }),
@@ -64,25 +68,23 @@ const CustomPickersDay = styled(PickersDay, {
   }
   
 
-function SelectTime({setNewTime, value }) {
+function SelectTime({setNewTime, value, timeOption,handlerSetNewTime }) {
     const SelectMonth = (month) => {
     }
     const [hoveredDay, setHoveredDay] = React.useState(null);
     
     
     return ( 
-    <LocalizationProvider className='container' dateAdapter={AdapterDayjs}>
+    <LocalizationProvider className='container' dateAdapter={AdapterDayjs} adapterLocale="vi">
       <DemoContainer components={['YearCalendar', 'MonthCalendar']}>
         <div className='container'>
             
-            <DemoItem>
+            {timeOption === "Tuần" && <DemoItem>
             <div className='year-calendar'>
                 <DateCalendar
                 style={{ width: 300, height: 300 }}
                     value={value}
-                    onChange={(newValue) => setNewTime(newValue)}
-                    onYearChange={(newValue) => setNewTime(newValue)}
-                    onMonthChange={(newValue) => setNewTime(newValue)}
+                    onChange={(newValue) => handlerSetNewTime(newValue)}
                     showDaysOutsideCurrentMonth
                     slots={{ day: Day }}
                     slotProps={{
@@ -96,7 +98,37 @@ function SelectTime({setNewTime, value }) {
                     }}
                     />
             </div>
-            </DemoItem>
+            </DemoItem>}
+              {timeOption === "Tháng" && 
+              <div className='month-calendar'>
+                <DemoItem>
+                  {/* <MonthCalendar
+                    defaultValue={value}
+                    onChange={(newValue) => handlerSetNewTime(newValue)}
+                  /> */}
+                  <DateCalendar
+                    defaultValue={value}
+                    views={['month','year']}
+                    openTo="month"
+                    onMonthChange={(newValue) => handlerSetNewTime(newValue)}
+                  />
+                </DemoItem>
+              </div>}
+              {timeOption === "Năm" && 
+              <div className='year-calendar'>
+                <DemoItem>
+                  {/* <YearCalendar
+                    defaultValue={value}
+                    onChange={(newValue) => handlerSetNewTime(newValue)}
+                  /> */}
+                  <DateCalendar
+                    defaultValue={value}
+                    views={['year']}
+                    openTo="year"
+                    onChange={(newValue) => handlerSetNewTime(newValue)}
+                  />
+                </DemoItem>
+              </div>}
         </div>
       </DemoContainer>
     </LocalizationProvider>
