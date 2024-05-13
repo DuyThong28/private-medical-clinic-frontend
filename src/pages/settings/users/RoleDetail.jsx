@@ -18,6 +18,7 @@ function RoleDetail() {
     data: null,
     isEditable: false,
     isSubmitable: false,
+    isActive: false,
   });
 
   const allFeatures = {
@@ -32,14 +33,12 @@ function RoleDetail() {
     Patient: [
       "RPatient",
       "CPatient",
-      "DPatient",
       "UPatient",
       "RRecord",
-      "DRecord",
     ],
-    Invoice: ["RInvoice", "DInvoice"],
+    Invoice: ["RInvoice"],
     Report: ["RReport"],
-    User: ["RUser", "CUser", "UUser", "DUser", "UUserGroup", "RUserGroup"],
+    User: ["RUser", "CUser", "UUser", "DUser", "UUserGroup", "RUserGroup",  "CUserGroup",  "DUserGroup",],
     Medicine: ["RDrug", "CDrug", "DDrug", "UDrug"],
     Principle: ["RArgument", "UArgument"],
   };
@@ -65,6 +64,11 @@ function RoleDetail() {
         return {
           ...prevState,
           data: roleQuery.data?.groupUser.groupName,
+          isActive:
+            roleQuery.data?.groupUser.id !== 1 &&
+            roleQuery.data?.groupUser.isActive === 1
+              ? true
+              : false,
           isSubmitable: true,
         };
       } else {
@@ -72,6 +76,7 @@ function RoleDetail() {
           ...prevState,
           data: "",
           isSubmitable: false,
+          isActive: true,
           isEditable: true,
         };
       }
@@ -265,37 +270,41 @@ function RoleDetail() {
                   required
                 />
               </div>
-              {dataState.isEditable ? (
-                <div className="d-flex gap-3 mt-3 justify-content-center">
-                  <button
-                    type="button"
-                    className="btn btn-outline-secondary shadow-sm"
-                    style={{ minWidth: "100px" }}
-                    onClick={cancelHandler}
-                  >
-                    hủy
-                  </button>
-                  <button
-                    type="button"
-                    className="btn btn-primary  shadow-sm"
-                    style={{ minWidth: "100px" }}
-                    onClick={submitHandler}
-                    disabled={!dataState.isSubmitable}
-                  >
-                    Lưu
-                  </button>
-                </div>
+              {dataState.isActive ? (
+                dataState.isEditable ? (
+                  <div className="d-flex gap-3 mt-3 justify-content-center">
+                    <button
+                      type="button"
+                      className="btn btn-outline-secondary shadow-sm"
+                      style={{ minWidth: "100px" }}
+                      onClick={cancelHandler}
+                    >
+                      hủy
+                    </button>
+                    <button
+                      type="button"
+                      className="btn btn-primary  shadow-sm"
+                      style={{ minWidth: "100px" }}
+                      onClick={submitHandler}
+                      disabled={!dataState.isSubmitable}
+                    >
+                      Lưu
+                    </button>
+                  </div>
+                ) : (
+                  <div className="d-flex gap-3 mt-3 justify-content-center">
+                    <button
+                      type="button"
+                      className="btn btn-primary  shadow-sm"
+                      style={{ minWidth: "100px" }}
+                      onClick={updateHandler}
+                    >
+                      Chỉnh sửa
+                    </button>
+                  </div>
+                )
               ) : (
-                <div className="d-flex gap-3 mt-3 justify-content-center">
-                  <button
-                    type="button"
-                    className="btn btn-primary  shadow-sm"
-                    style={{ minWidth: "100px" }}
-                    onClick={updateHandler}
-                  >
-                    Chỉnh sửa
-                  </button>
-                </div>
+                <></>
               )}
             </div>
           </Form>

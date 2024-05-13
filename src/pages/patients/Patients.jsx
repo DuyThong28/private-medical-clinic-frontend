@@ -65,15 +65,15 @@ function PatientsPage() {
     await dialogRef.current.edit({ id, action });
   }
 
-  async function deletePatientHandler({ id }) {
-    notiDialogRef.current.setDialogData({
-      action: DialogAction.DELETE,
-      dispatchFn: () => deletePatientById({ id }),
-    });
-    notiDialogRef.current.showDialogWarning({
-      message: "Xác nhận xóa bệnh nhân?",
-    });
-  }
+  // async function deletePatientHandler({ id }) {
+  //   notiDialogRef.current.setDialogData({
+  //     action: DialogAction.DELETE,
+  //     dispatchFn: () => deletePatientById({ id }),
+  //   });
+  //   notiDialogRef.current.showDialogWarning({
+  //     message: "Xác nhận xóa bệnh nhân?",
+  //   });
+  // }
 
   return (
     <div className="h-100 w-100">
@@ -291,7 +291,7 @@ function PatientsPage() {
               <div className="text-start" style={{ width: "15%" }}>
                 Địa chỉ
               </div>
-              <div className="text-center" style={{ width: "10%" }}>
+              <div className="text-end" style={{ width: "10%" }}>
                 Thao tác
               </div>
               <div className="text-end" style={{ width: "1%" }}></div>

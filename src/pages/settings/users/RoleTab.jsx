@@ -10,28 +10,72 @@ import NotificationDialog, {
 import { deleteGroupById, fetchAllGroups } from "../../../services/group";
 import { useNavigate } from "react-router";
 import useAuth from "../../../hooks/useAuth";
+import { queryClient } from "../../../App";
 
 function RoleTab() {
   const notiDialogRef = useRef();
   const navigate = useNavigate();
   const { auth } = useAuth();
   const permission = auth?.permission || [];
-  const [listState, setListState] = useState([]);
+  const formRef = useRef();
+  const [searchState, setSearchState] = useState("1");
 
   const groupQuery = useQuery({
     queryKey: ["groups"],
-    queryFn: fetchAllGroups,
+    queryFn: async () => {
+      const data = await fetchAllGroups();
+
+      const searchData = data.filter((item) =>
+        checkSearchState({ state: searchState, role: item })
+      );
+
+      return searchData;
+    },
   });
+
+  function checkSearchState({ state, role }) {
+    if (state === "1") {
+      return role.isActive === 1 ? true : false;
+    } else if (state === "2") {
+      return role.isActive === 0 ? true : false;
+    } else {
+      return true;
+    }
+  }
 
   const groups = groupQuery.data;
 
   useEffect(() => {
-    setListState(() => groups);
-  }, [groups]);
+    queryClient.invalidateQueries({
+      queryKey: ["groups"],
+    });
+  }, [searchState]);
 
   function viewGroupHandler({ id }) {
     if (id) navigate(`${id}`);
     else navigate("new");
+  }
+
+  function deactiveateGroupHandler({ id, isActive }) {
+    notiDialogRef.current.setDialogData({
+      action: DialogAction.DELETE,
+      dispatchFn: () => deleteGroupById({ id }),
+    });
+    if (isActive === 1)
+      notiDialogRef.current.showDialogWarning({
+        message: "Xác nhận lưu trữ vai trò?",
+      });
+    else
+      notiDialogRef.current.showDialogWarning({
+        message: "Xác nhận kích hoạt vai trò?",
+      });
+  }
+
+  function changeFormHandler() {
+    const formData = new FormData(formRef.current);
+    const searchData = Object.fromEntries(formData);
+    const state = searchData.state;
+    setSearchState(state);
   }
 
   return (
@@ -43,40 +87,60 @@ function RoleTab() {
             <div className="col fw-bold fs-4 text-black">
               <label>Quản lý vai trò</label>
             </div>
-            <button
-              type="button"
-              className="btn btn-primary float-end"
-              onClick={viewGroupHandler}
+            <form
+              className="d-flex flex-row gap-3 float-end"
+              onChange={changeFormHandler}
+              ref={formRef}
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                fill="currentColor"
-                className="bi bi-plus-lg me-2"
-                viewBox="0 2 16 16"
-              >
-                <path d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2" />
-              </svg>
-              Thêm mới
-            </button>
+              <div className="col" style={{ width: "fit-content" }}>
+                <div className="col input-group flex-nowrap">
+                  <select className="form-select" name="state" defaultValue={1}>
+                    <option value="1">Hoạt động</option>
+                    <option value="2">Ngưng hoạt động</option>
+                    <option value="3">Tất cả</option>
+                  </select>
+                </div>
+              </div>
+              <div>
+                <button
+                  type="button"
+                  className="col btn btn-primary float-end"
+                  onClick={viewGroupHandler}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    fill="currentColor"
+                    className="bi bi-plus-lg me-2"
+                    viewBox="0 2 16 16"
+                  >
+                    <path d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2" />
+                  </svg>
+                  Thêm mới
+                </button>
+              </div>
+            </form>
           </div>
           <div className=" w-100 h-100 overflow-hidden d-flex flex-column gap-3">
             <TableHeader>
               <div className="text-start" style={{ width: "5%" }}>
                 STT
               </div>
-              <div className="text-start" style={{ width: "84%" }}>
+              <div className="text-start" style={{ width: "24%" }}>
                 Vai trò
               </div>
-              <div className="text-start" style={{ width: "10%" }}>
+              <div className="text-start" style={{ width: "60%" }}>
+                Trạng thái
+              </div>
+              <div className="text-end" style={{ width: "10%" }}>
                 Thao tác
               </div>
-              <div className="text-start" style={{ width: "1%" }}></div>
+              <div className="text-end" style={{ width: "1%" }}></div>
             </TableHeader>
             <TableBody>
-              {listState &&
-                listState.map((group, index) => {
+              {groups &&
+                groups.map((group, index) => {
                   return (
                     <li
                       className=" dropdown-center list-group-item list-group-item-primary list-group-item-action w-100 d-flex flex-row"
@@ -92,15 +156,22 @@ function RoleTab() {
                       </div>
                       <div
                         className="text-start"
-                        style={{ width: "85%" }}
+                        style={{ width: "25%" }}
                         data-bs-toggle="dropdown"
                         aria-expanded="false"
                       >
                         {group.groupName}
                       </div>
-
                       <div
                         className="text-start"
+                        style={{ width: "60%" }}
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false"
+                      >
+                        {group.isActive === 1 ? "Hoạt động" : "Ngưng hoạt động"}
+                      </div>
+                      <div
+                        className="text-end"
                         style={{ width: "10%" }}
                         data-bs-toggle="dropdown"
                         aria-expanded="false"
@@ -123,12 +194,15 @@ function RoleTab() {
                             </svg>
                           </span>
                         )}
-                        {/* {permission?.includes("DUserGroup") &&
+                        {permission?.includes("DUserGroup") &&
                           group.id !== 1 && (
                             <span
                               className="p-2"
                               onClick={() =>
-                                deleteGroupHandler({ id: group.id })
+                                deactiveateGroupHandler({
+                                  id: group.id,
+                                  isActive: group.isActive,
+                                })
                               }
                             >
                               <svg
@@ -142,7 +216,7 @@ function RoleTab() {
                                 <path d="M12.643 15C13.979 15 15 13.845 15 12.5V5H1v7.5C1 13.845 2.021 15 3.357 15zM5.5 7h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1 0-1M.8 1a.8.8 0 0 0-.8.8V3a.8.8 0 0 0 .8.8h14.4A.8.8 0 0 0 16 3V1.8a.8.8 0 0 0-.8-.8z" />
                               </svg>
                             </span>
-                          )} */}
+                          )}
                       </div>
                     </li>
                   );

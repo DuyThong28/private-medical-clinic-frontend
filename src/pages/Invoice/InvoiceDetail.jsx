@@ -15,7 +15,7 @@ import MainModal from "../../components/MainModal";
 import Form from "react-bootstrap/Form";
 import { fetchAllDisease } from "../../services/diseases";
 import { fetchFeeConsult } from "../../services/argument";
-import { createBill } from "../../services/bill";
+import { createBill, fetchBillById } from "../../services/bill";
 import { queryClient } from "../../App";
 import NotificationDialog, {
   DialogAction,
@@ -112,19 +112,26 @@ const InvoiceDetail = forwardRef(function InvoiceDetail({ children }, ref) {
       },
 
       async showDetail({ bill }) {
-        setDialogState((prevState) => {
-          return {
-            ...prevState,
-            drugExpense: 0,
-          };
-        });
+        // setDialogState((prevState) => {
+        //   return {
+        //     ...prevState,
+        //     drugExpense: 0,
+        //   };
+        // });
 
         const resData = await fetchAppointmentRecordByBill({ bill });
-        console.log("resData", resData);
+        const billData = await fetchBillById({ id: bill.id });
         if (resData && resData[0]) {
           setAppointmentRecordData(() => {
             return { ...resData[0] };
           });
+
+          setDialogState({
+            feeconsult: billData.feeConsult,
+            drugExpense: billData.drugExpense,
+            isEditable: false,
+          });
+
           setIsBill(true);
           modalRef.current.show({
             isEditable: false,
@@ -142,6 +149,7 @@ const InvoiceDetail = forwardRef(function InvoiceDetail({ children }, ref) {
         patientId: appointmentRecordData?.patientId,
         appointmentListId: appointmentRecordData?.appointmentListId,
         drugExpense: dialogState?.drugExpense,
+        feeConsult: dialogState?.feeconsult,
       });
     }
 
@@ -318,9 +326,9 @@ const InvoiceDetail = forwardRef(function InvoiceDetail({ children }, ref) {
               </div>
               {!isBill && permission?.includes("CInvoice") && (
                 <div className="d-flex gap-3 mt-3 justify-content-end">
-                  <button type="button" className="btn btn-secondary fw-bold">
+                  {/* <button type="button" className="btn btn-secondary fw-bold">
                     In biên lai
-                  </button>
+                  </button> */}
 
                   <button
                     type="button"

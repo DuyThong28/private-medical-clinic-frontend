@@ -81,7 +81,6 @@ export default function PatientDetail() {
                 />
               </div>
             </div>
-            <div className="col"></div>
           </div>
         )}
 

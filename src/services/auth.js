@@ -22,20 +22,54 @@ export async function login(userData) {
     }
   } else {
     //login with google
-    response = await fetch("http://localhost:8080/api/v1/auth/success");
+    response = await fetch("http://localhost:8080/api/v1/auth/success", {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        authorization: `Bearer`,
+      },
+    });
     if (!response.ok) {
-      const error = new Error("cancel-login");
+      const error = new Error("Đăng nhập thất bại");
       error.code = response.status;
       error.info = await response.json();
       throw error;
     }
   }
 
-  const headers = response.headers;
-  headers.forEach((value, name) => {
-    console.log(`${name}: ${value}`);
+  // const headers = response.headers;
+  // headers.forEach((value, name) => {
+  //   console.log(`${name}: ${value}`);
+  // });
+  // console.log(headers.get("Content-Type"));
+  const resData = await response.json();
+  const refreshToken = resData.user.refreshToken;
+  Cookies.set("refreshToken", refreshToken);
+
+  resData.message = "Đăng nhập thành công";
+  return resData;
+}
+
+export async function loginWithGoogle() {
+  const response = await fetch("http://localhost:8080/api/v1/auth/success", {
+    method: "GET",
+    credentials: "include",
+    headers: {
+      authorization: `Bearer`,
+    },
   });
-  console.log(headers.get("Content-Type"));
+  if (!response.ok) {
+    const error = new Error("Đăng nhập thất bại");
+    error.code = response.status;
+    error.info = await response.json();
+    throw error;
+  }
+
+  // const headers = response.headers;
+  // headers.forEach((value, name) => {
+  //   console.log(`${name}: ${value}`);
+  // });
+  // console.log(headers.get("Content-Type"));
   const resData = await response.json();
   const refreshToken = resData.user.refreshToken;
   Cookies.set("refreshToken", refreshToken);

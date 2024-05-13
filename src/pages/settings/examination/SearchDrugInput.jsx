@@ -23,7 +23,11 @@ export default function SearchDrugInput() {
 
   const drugsQuery = useQuery({
     queryKey: ["drugs"],
-    queryFn: fetchAllDrugs,
+    queryFn: async () => {
+      const data = await fetchAllDrugs();
+      const activeDrugs = data.filter((item) => item.isActive === 1);
+      return activeDrugs;
+    },
   });
 
   const drugState = drugsQuery.data;

@@ -60,15 +60,15 @@ function UnitsTab() {
     dialogRef.current.edit({ action, data: unit });
   }
 
-  async function deleteUnitHandnler(id) {
-    notiDialogRef.current.setDialogData({
-      action: DialogAction.DELETE,
-      dispatchFn: () => deleteUnit({ id }),
-    });
-    notiDialogRef.current.showDialogWarning({
-      message: "Xác nhận xóa đơn vị?",
-    });
-  }
+  // async function deleteUnitHandnler(id) {
+  //   notiDialogRef.current.setDialogData({
+  //     action: DialogAction.DELETE,
+  //     dispatchFn: () => deleteUnit({ id }),
+  //   });
+  //   notiDialogRef.current.showDialogWarning({
+  //     message: "Xác nhận xóa đơn vị?",
+  //   });
+  // }
 
   return (
     <div className="h-100 w-100">
@@ -143,7 +143,7 @@ function UnitsTab() {
               <div className="text-start" style={{ width: "84%" }}>
                 Đơn vị
               </div>
-              <div className="text-start" style={{ width: "10%" }}>
+              <div className="text-end" style={{ width: "10%" }}>
                 Thao tác
               </div>
               <div className="text-start" style={{ width: "1%" }}></div>
@@ -174,7 +174,7 @@ function UnitsTab() {
                       </div>
 
                       <div
-                        className="text-start"
+                        className="text-end"
                         style={{ width: "10%" }}
                         data-bs-toggle="dropdown"
                         aria-expanded="false"

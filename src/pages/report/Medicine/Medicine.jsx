@@ -759,8 +759,7 @@ useEffect(()=>{
       
     <div className="d-flex flex-row w-100">
         <div className="col-md-8">
-        
-            <Card>
+            <Card  className="p-3">
             <div className=" w-100 h-100 overflow-hidden d-flex flex-column gap-3">
             <div className='row'>
               <div className="d-flex col-md-6 justify-content-start">
@@ -890,7 +889,7 @@ useEffect(()=>{
         <div className="col-md-4">
                   <div className="row h-100">
                     <div className="row-md-2">
-                      <Card>
+                      <Card  style={{ padding: "1rem 1rem 1rem 0rem" }}>
                         <div className='detail-chart'>
                         <div className="option-time-chart">
                   <div className="d-flex justify-content-start">
@@ -959,7 +958,7 @@ useEffect(()=>{
                       </Card>
                     </div>
                     <div className="row-md-10">
-                      <Card>
+                      <Card  style={{ padding: "0rem 1rem 1rem 0rem" }}>
                         <div className='detail-list'>
                         <div className='detail-item'>
                             <p>Tên thuốc: {selectItem?.drugName}</p>

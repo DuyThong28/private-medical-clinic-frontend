@@ -13,7 +13,6 @@ import { fetchAllAppointmentListById } from "../../services/appointmentList";
 import { convertDate, compareDates, inputToDayFormat } from "../../util/date";
 import { formatNumber } from "../../util/money";
 import { queryClient } from "../../App";
-import { fetchFeeConsult } from "../../services/argument";
 import NotificationDialog, {
   DialogAction,
 } from "../../components/NotificationDialog";
@@ -29,19 +28,10 @@ function PatientsPage() {
     date: inputToDayFormat(),
   });
 
-  const feeConsultQuery = useQuery({
-    queryKey: ["feeconsult"],
-    queryFn: async () => {
-      const res = (await fetchFeeConsult()) ?? 0;
-      return res;
-    },
-  });
-
   const billsQuery = useQuery({
     queryKey: ["bills"],
     queryFn: async () => {
       const data = await fetchAllBills();
-      console.log("data", data);
       const finalData = await Promise.all(
         data.map(async (item) => {
           const patient = await fetchPatientById({ id: item.patientId });
@@ -79,7 +69,6 @@ function PatientsPage() {
   }
 
   function viewHandler({ bill }) {
-    console.log("this is bill", bill);
     dialogRef.current.showDetail({ bill });
   }
 
@@ -161,7 +150,7 @@ function PatientsPage() {
                         </div>
                         <div className="text-start" style={{ width: "30%" }}>
                           {formatNumber(
-                            bill.drugExpense + feeConsultQuery.data
+                            bill.drugExpense + bill.feeConsult
                           )}
                         </div>
                         <div className="text-end" style={{ width: "10%" }}>

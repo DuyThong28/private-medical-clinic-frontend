@@ -140,10 +140,10 @@ function DiseasesTab() {
               <div className="text-start" style={{ width: "84%" }}>
                 Mô tả
               </div>
-              <div className="text-start" style={{ width: "10%" }}>
+              <div className="text-end" style={{ width: "10%" }}>
                 Thao tác
               </div>
-              <div className="text-start" style={{ width: "1%" }}></div>
+              <div className="text-end" style={{ width: "1%" }}></div>
             </TableHeader>
             <TableBody>
               {listState &&
@@ -171,7 +171,7 @@ function DiseasesTab() {
                       </div>
 
                       <div
-                        className="text-start"
+                        className="text-end"
                         style={{ width: "10%" }}
                         data-bs-toggle="dropdown"
                         aria-expanded="false"

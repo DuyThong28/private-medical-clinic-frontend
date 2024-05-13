@@ -27,12 +27,10 @@ function LoginPage() {
       const refreshToken = data.user.refreshToken;
       setAuth(jwtDecode(refreshToken));
       setValidated(false);
-      navigate("./home");
+      window.open("http://localhost:3000/home", "_self");
     },
     onError: (data) => {
-      if (data.message !== "cancel-login") {
-        notiDialogRef.current.toastError({ message: data.message });
-      }
+      notiDialogRef.current.toastError({ message: data.message });
     },
   });
 
@@ -57,21 +55,7 @@ function LoginPage() {
   }
 
   async function loginWithGoogleHandler() {
-    const newWindow = openCenteredWindow(
-      "http://localhost:8080/api/v1/auth/google",
-      500,
-      550
-    );
-    mutate();
-
-    // if (newWindow) {
-    //   const timer = setInterval(() => {
-    //     if (newWindow.closed) {
-    //       mutate();
-    //       if (timer) clearInterval(timer);
-    //     }
-    //   });
-    // }
+    window.open("http://localhost:8080/api/v1/auth/google", "_self");
   }
 
   function navigateToForgotPassHandler() {

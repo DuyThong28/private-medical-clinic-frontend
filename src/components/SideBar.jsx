@@ -17,7 +17,7 @@ function SideBar() {
   const logoutMutate = useMutation({
     mutationFn: logout,
     onSuccess: () => {
-      navigate("/");
+      window.open("http://localhost:3000/", "_self");
     },
   });
 

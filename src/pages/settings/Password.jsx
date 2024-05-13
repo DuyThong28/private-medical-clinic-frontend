@@ -5,6 +5,7 @@ import { useMutation } from "@tanstack/react-query";
 import { changePassword } from "../../services/auth";
 import PasswordInput from "../../components/PasswordInput";
 import NotificationDialog from "../../components/NotificationDialog";
+import useAuth from "../../hooks/useAuth";
 
 function PasswordView() {
   const [dataState, setDataState] = useState({
@@ -14,11 +15,9 @@ function PasswordView() {
     isEditable: false,
     isSubmitable: false,
   });
-
+  const { auth } = useAuth();
   const [validated, setValidated] = useState(false);
-  const user = localStorage.getItem("user");
   const notiDialogRef = useRef();
-  const userData = JSON.parse(user);
 
   const changePasswordMutate = useMutation({
     mutationFn: changePassword,
@@ -97,7 +96,7 @@ function PasswordView() {
     const currentPassword = data.currentpassword;
     const newPassword = data.newpassword;
     const confirmPassword = data.retypepassword;
-    const id = userData.id;
+    const id = auth.id;
     changePasswordMutate.mutate({
       id,
       confirmPassword,
