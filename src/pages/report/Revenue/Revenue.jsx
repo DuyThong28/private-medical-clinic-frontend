@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useRef, useEffect } from 'react';
 import { useQuery } from "@tanstack/react-query";
 
 import { useState, useLayoutEffect } from "react";
@@ -604,8 +605,8 @@ function Revenue() {
       },
     ],
   };
-  const [donutText, setDonutText] = useState("Tổng tiền");
-  const [donutCost, setDonutCost] = useState(0);
+  
+  const [isSetAvailable, setIsSetAvailable] = useState(true);
   const [dataDonut, setDataDonut] = useState(
     {
       labels: ['Tiền khám', 'Tiền thuốc'],
@@ -626,45 +627,76 @@ function Revenue() {
       ],
     }
   );
+  const [donutText, setDonutText] = useState("Tổng tiền");
+  const [donutCost, setDonutCost] = useState(dataDonut.datasets[0].data[0] + dataDonut.datasets[0].data[1]);
+  const [donutColor, setDonutColor] = useState('#555555');
   
   const optionsDn = {
     plugins: {
+      tooltip: {
+        enabled: false, // Tắt tooltip
+      },
       legend: {
         display: false, // Ẩn chú thích màu
       },
-      tooltips: {
-        enabled: false, // Tắt tooltip
-    }
     },
     responsive: true,
-    onClick: (event, elements) => {
-      if (elements.length) {
-        const clickedElementIndex = elements[0].index;
-        const label = dataDonut.labels[clickedElementIndex];
-        const value = dataDonut.datasets[0].data[clickedElementIndex];
+    onHover: (event, elements) => {
+      if (elements.length&& isSetAvailable) {
+        const hoveredElementIndex = elements[0].index;
+        const label = dataDonut.labels[hoveredElementIndex];
+        const value = dataDonut.datasets[0].data[hoveredElementIndex];
         setDonutText(label);
         setDonutCost(value);
+        if(hoveredElementIndex == 0) setDonutColor("#85f4fa");
+        else setDonutColor("#3a57e8");
+      } else {
+        setDonutColor("#555555");
+        setDonutText("Tổng tiền");
+        setDonutCost(dataDonut.datasets[0].data[0] + dataDonut.datasets[0].data[1]);
       }
     },
-    onHover: (event, elements) => {
-      if (elements.length) {
-        const clickedElementIndex = elements[0].index;
-        const label = dataDonut.labels[clickedElementIndex];
-        const value = dataDonut.datasets[0].data[clickedElementIndex];
-        setDonutText(label);
-        setDonutCost(value);
-      } else {
-          setDonutText('Tong');
-          setDonutCost('120000');
-      }
-  },
   };
+  const chartRef = useRef(null);
+  useEffect(() => {
+    const chartInstance = chartRef.current;
+    if (chartInstance) {
+      const canvas = chartInstance.canvas;
+      const handleMouseOut = () => {
+        setIsSetAvailable(false);
+        setDonutColor("#555555");
+        setDonutText("Tổng tiền");
+        setDonutCost(dataDonut.datasets[0].data[0] + dataDonut.datasets[0].data[1]);
+      };
+      
+
+      canvas.addEventListener('mouseout', handleMouseOut);
+
+      return () => {
+        canvas.removeEventListener('mouseout', handleMouseOut);
+      };
+    }
+  }, [chartRef]);
+  useEffect(() => {
+    const chartInstance = chartRef.current;
+    if (chartInstance) {
+      const canvas = chartInstance.canvas;
+      const handleMouseOver = () => {
+        setIsSetAvailable(true);
+      };
+      canvas.addEventListener('mouseover', handleMouseOver);
+      return () => {
+        canvas.removeEventListener('mouseover', handleMouseOver);
+      };
+    }
+  }, [chartRef]);
+  
   // GET DATA FOR DOUGHNUT CHART
   const setNewDataForDonutChart = (time, option) => {
-    console.log(bills);
     const newData = getDataForDonutChart(time, option);
     setDonutText("Tổng tiền");
     setDonutCost(newData.sumDrug + newData.sumFee);
+    setDonutColor("#555555");
     setDataDonut(
       {
         labels: ['Tiền khám', 'Tiền thuốc'],
@@ -734,11 +766,9 @@ function Revenue() {
   const [selectedBill, setSelectedBill] = useState({});
   const [isOpenBillDetail, setIsOpenBillDetail] = useState(false);
   const handleSetSelectedBill = (newValue) => {
-    console.log("...");
     setSelectedBill(newValue);
     setIsOpenBillDetail(true);
   }
-
   return (
     <div className="d-flex flex-row w-100 maincontainer">
       {isOpenBillDetail && <div className="bill-detail">
@@ -901,10 +931,10 @@ function Revenue() {
                 <div className="Spacer"></div>
                 <div className="donut-chart">
                   <div className="Chart">
-                    <Doughnut className="Donut" data={dataDonut} options={optionsDn}></Doughnut>
+                    <Doughnut  ref={chartRef} className="Donut" data={dataDonut} options={optionsDn}></Doughnut>
                     <div className="Text-doughnut">
-                        <p>{donutText}</p>
-                        <p>{formatMoney(donutCost)}</p>
+                        <p >{donutText}</p>
+                        <p >{formatMoney(donutCost)}</p>
                     </div>
                   </div>
                 </div>
