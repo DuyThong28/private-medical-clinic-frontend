@@ -73,8 +73,8 @@ function UsagesTab() {
   return (
     <div className="h-100 w-100">
       <NotificationDialog ref={notiDialogRef} keyQuery={["usages"]} />
-      <Card className="p-3"  >
-        <div className="w-100 h-100 d-flex flex-column ">
+      <Card className="p-3">
+        <div className="w-100 h-100 d-flex flex-column gap-3">
           <div className=" w-100  d-flex flex-row justify-content-around">
             <div className="col fw-bold fs-4 text-black">
               <label>Cách dùng</label>

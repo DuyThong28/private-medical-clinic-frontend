@@ -305,7 +305,7 @@ useEffect(()=>{
       let arr = [];
       const date = formatDate(time);
       for(let i = 1; i <= getDayofMonth(date.month, date.year); i++) {
-        arr.push(i + '/' + date.month);
+        arr.push(i);
       }
       return arr;
   }
@@ -482,18 +482,18 @@ useEffect(()=>{
   const getDataForChartYear = (date, item) => {
     let tmp = chartData;
     tmp.labels = [
-      "Thg 1",
-      "Thg 2",
-      "Thg 3",
-      "Thg 4",
-      "Thg 5",
-      "Thg 6",
-      "Thg 7",
-      "Thg 8",
-      "Thg 9",
-      "Thg 10",
-      "Thg 11",
-      "Thg 12",
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "7", 
+      "8",
+      "9",
+      "10",
+      "11",
+      "12",
     ];
     const tmp2 = getDataNewForChartYear(date, item);
     tmp.datasets = [
@@ -536,7 +536,7 @@ useEffect(()=>{
     //     }
     // }, [appointment, stopInitLoad])
 
-    const optionschart = {
+    const optionschart1 = {
         title: {
             display: false,
           },
@@ -560,6 +560,36 @@ useEffect(()=>{
                 barThickness: 50, // Độ dày của cột màu
             },
         },
+    };
+    const optionschart = {
+      title: {
+        display: false,
+      },
+      scales: {
+        x: {
+          ticks: {
+            maxTicksLimit: 16,
+          },
+        },
+        y: {
+          ticks: {
+              maxTicksLimit: 5,
+              callback: function(value, index, values) {
+                return Number.isInteger(value) ? value : '';
+            }
+          },
+       },
+      },
+      plugins: {
+        legend: {
+          display: false, // Ẩn chú thích màu
+        },
+      },
+      elements: {
+        bar: {
+          barThickness: 50, // Độ dày của cột màu
+        },
+      },
     };
     /// Main Select Time:
     const [valueTime2, setValueTime2] = React.useState(dayjs());
