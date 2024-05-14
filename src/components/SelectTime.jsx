@@ -9,9 +9,6 @@ import { styled } from '@mui/material/styles';
 import { MonthCalendar } from '@mui/x-date-pickers/MonthCalendar';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import { PickersDay } from '@mui/x-date-pickers/PickersDay';
-import { viVN } from '@mui/x-date-pickers/locales';
-import { deDE } from '@mui/x-date-pickers/locales';
-import { vi as viLa } from "date-fns/locale";
 import "dayjs/locale/vi"
 import './SelectTime.scss'
 dayjs.extend(isBetweenPlugin);
