@@ -522,6 +522,9 @@ useEffect(()=>{
             ],
         }
     );
+    useEffect(() => {
+
+    }, [chartData])
     // React.useEffect(()=>{
     //     console.log("medicine", appointment.length);
     //     console.log("item", selectItem);
@@ -748,7 +751,7 @@ useEffect(()=>{
     return formattedNumber;
   }
 
-  console.log("tmp outside", chartData);
+  console.log("tmp outside", chartData.datasets[0].data);
   
     return ( 
       
@@ -951,6 +954,7 @@ useEffect(()=>{
                         </div>
                 </div>
                             <Bar data={chartData} options={optionschart}></Bar>
+                            <p>{chartData.datasets[0].data[1]}</p>
                         </div>
                       </Card>
                     </div>

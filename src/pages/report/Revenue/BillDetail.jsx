@@ -11,12 +11,12 @@ import { fetchFeeConsult } from "../../../services/argument";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
 
-function BillDetail({timeoption, date, billList, aptList, setIsOpenBillDetail}) {
+function BillDetail({timeoption, date, bills, appointmentLists, setIsOpenBillDetail}) {
     let option;
     if(timeoption == "Năm") option = "Tháng";
     else option = "Ngày";
     const getAptById = (id) => {
-        return aptList.find(item => item.id == id);
+        return appointmentLists.find(item => item.id == id);
     }
     const StringToDate = (str) => {
         if (str != null) {
@@ -39,13 +39,13 @@ function BillDetail({timeoption, date, billList, aptList, setIsOpenBillDetail}) 
         }
         return false;
     };
-    const filterBillList = () => {
-        const tmp = aptList.filter(item => checkDate(item.scheduleDate));
+    const filterbills = () => {
+        const tmp = appointmentLists.filter(item => checkDate(item.scheduleDate));
         const tmpId = tmp.map(item => item.id)
-        return billList.filter(item => tmpId.includes(item.appointmentListId));
+        return bills.filter(item => tmpId.includes(item.appointmentListId));
     }
-    filterBillList();
-    const newBill = filterBillList();
+    filterbills();
+    const newBill = filterbills();
     const displayDate = (str) => {
         if(str == null) return null;
         const date = StringToDate(str);
@@ -64,6 +64,7 @@ function BillDetail({timeoption, date, billList, aptList, setIsOpenBillDetail}) 
                     </button>
                 </div>
             </div>
+            <div className="linee"></div>
             <div className="body">
             <div className=" w-100 h-100 overflow-hidden d-flex flex-column gap-3">
               <TableHeader>
