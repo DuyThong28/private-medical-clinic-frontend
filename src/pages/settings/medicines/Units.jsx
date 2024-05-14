@@ -73,7 +73,7 @@ function UnitsTab() {
   return (
     <div className="h-100 w-100">
       <NotificationDialog ref={notiDialogRef} keyQuery={["units"]} />
-      <Card className="p-3">
+      <Card className="p-3"  >
         <div className="w-100 h-100 d-flex flex-column gap-3">
           <div className=" w-100  d-flex flex-row justify-content-around">
             <div className="col fw-bold fs-4 text-black">
@@ -135,7 +135,7 @@ function UnitsTab() {
             </div>
           </div>
 
-          <div className=" w-100 h-100 overflow-hidden d-flex flex-column gap-3">
+          <div className=" w-100 h-100 overflow-hidden d-flex flex-column">
             <TableHeader>
               <div className="text-start" style={{ width: "5%" }}>
                 STT
@@ -208,7 +208,7 @@ function UnitsTab() {
                               xmlns="http://www.w3.org/2000/svg"
                               width="16"
                               height="16"
-                              fill="#1B59F8"
+                              fill="#646565"
                               className="bi bi-pencil-square"
                               viewBox="0 0 16 16"
                             >

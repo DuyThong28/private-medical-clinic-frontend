@@ -39,6 +39,7 @@ function BillDetail({timeoption, date, billList, aptList, setIsOpenBillDetail}) 
         }
         return false;
     };
+
     const filterBillList = () => {
         const tmp = aptList.filter(item => checkDate(item.scheduleDate));
         const tmpId = tmp.map(item => item.id)

@@ -148,7 +148,7 @@ function PrincipleView() {
       <NotificationDialog ref={notiDialogRef} keyQuery={[]} />
       <div
         className="h-100 position-relative"
-        style={{ backgroundColor: "#E9ECEF" }}
+        style={{ background: "#F5F6FA" }}
       >
         <div className="position-absolute top-50 mt-50 start-50 translate-middle">
           <Card>

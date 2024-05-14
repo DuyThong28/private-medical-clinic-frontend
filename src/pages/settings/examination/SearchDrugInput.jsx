@@ -60,7 +60,7 @@ export default function SearchDrugInput() {
   }
 
   return (
-    <div>
+    <div className="mb-3">
       <div className="input-group flex-nowrap">
         <span
           className="input-group-text"

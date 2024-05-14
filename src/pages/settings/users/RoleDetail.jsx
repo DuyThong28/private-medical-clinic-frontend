@@ -30,15 +30,19 @@ function RoleDetail() {
       "CRecord",
       "CInvoice",
     ],
-    Patient: [
-      "RPatient",
-      "CPatient",
-      "UPatient",
-      "RRecord",
-    ],
+    Patient: ["RPatient", "CPatient", "UPatient", "RRecord"],
     Invoice: ["RInvoice"],
     Report: ["RReport"],
-    User: ["RUser", "CUser", "UUser", "DUser", "UUserGroup", "RUserGroup",  "CUserGroup",  "DUserGroup",],
+    User: [
+      "RUser",
+      "CUser",
+      "UUser",
+      "DUser",
+      "UUserGroup",
+      "RUserGroup",
+      "CUserGroup",
+      "DUserGroup",
+    ],
     Medicine: ["RDrug", "CDrug", "DDrug", "UDrug"],
     Principle: ["RArgument", "UArgument"],
   };
@@ -241,7 +245,9 @@ function RoleDetail() {
   }
 
   return (
-    <div className="h-100 w-100 d-flex flex-row">
+    <div
+      className="h-100 w-100 d-flex flex-row"
+    >
       <NotificationDialog ref={notiDialogRef} keyQuery={["member"]} />
       <div className="h-100" style={{ width: "30%" }}>
         <Card className="p-3">

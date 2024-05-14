@@ -1,17 +1,16 @@
 .nav-bar-border {
+  .nav-bar-active {
+    background-color: #4880ff;
+    color: #ffffff;
+    font-weight: bold;
+  }
 
-    .nav-bar-active {
-        background-color: #3A57E8;
-        color: #FFFFFF;
-        font-weight: bold;
-    
+  .nav-bar {
+    color: #202224;
+    font-weight: bold;
+    &:hover {
+      background-color: #e7eeff;
+      color: #4880ff;
     }
-    
-    .nav-bar {
-        color: #8A92A6;
-        font-weight: bold;
-    }
-    
+  }
 }
-
-

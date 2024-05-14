@@ -136,20 +136,14 @@ function ForgotPassword() {
     <>
       <NotificationDialog ref={notiDialogRef} />
       <div className="d-flex flex-row h-100">
-        <div
-          className="col h-100 position-relative"
-          style={{ backgroundColor: "#E9ECEF" }}
-        >
+        <div className="col h-100 position-relative">
           <div className="col h-100">
-            <div
-              className="h-100 position-relative"
-              style={{ backgroundColor: "#E9ECEF" }}
-            >
+            <div className="h-100 position-relative">
               <div
                 className="position-absolute top-50 mt-50 start-50 translate-middle"
                 style={{ width: "70%" }}
               >
-                <Card>
+                <div>
                   <div className="p-4">
                     <div>
                       {resetState === resetStep.CHECKMAIL && (
@@ -167,14 +161,13 @@ function ForgotPassword() {
                           <label>Thiết Lập Mật Khẩu</label>
                         </div>
                       )}
-                      <hr />
                       <Form
                         method="post"
                         onSubmit={submitHandler}
                         noValidate
                         validated={validated}
                         ref={formRef}
-                        className="h-100"
+                        className="h-100 mt-4"
                       >
                         {resetState === resetStep.CHECKMAIL && (
                           <div className="form-floating mb-3">
@@ -190,22 +183,15 @@ function ForgotPassword() {
                           </div>
                         )}
                         {resetState === resetStep.CHECKOTP && (
-                          <div>
-                            <label
-                              htmlFor="code"
-                              className="col-form-label fw-bold  text-dark"
-                            >
-                              Mã OTP
-                            </label>
-                            <div>
+                          <div className="form-floating mb-3">
                               <input
-                                className="form-control"
-                                type="number"
+                                className="form-control rounded-3"
                                 name="code"
                                 id="code"
+                                placeholder="Mã OTP"
                                 required
                               ></input>
-                            </div>
+                              <label htmlFor="code">Mã OTP</label>
                           </div>
                         )}
                         {resetState === resetStep.RESET && (
@@ -267,7 +253,7 @@ function ForgotPassword() {
                       </Form>
                     </div>
                   </div>
-                </Card>
+                </div>
               </div>
             </div>
           </div>

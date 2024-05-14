@@ -122,15 +122,15 @@ function RoleTab() {
               </div>
             </form>
           </div>
-          <div className=" w-100 h-100 overflow-hidden d-flex flex-column gap-3">
+          <div className=" w-100 h-100 overflow-hidden d-flex flex-column">
             <TableHeader>
               <div className="text-start" style={{ width: "5%" }}>
                 STT
               </div>
-              <div className="text-start" style={{ width: "24%" }}>
+              <div className="text-start" style={{ width: "74%" }}>
                 Vai trò
               </div>
-              <div className="text-start" style={{ width: "60%" }}>
+              <div className="text-start" style={{ width: "10%" }}>
                 Trạng thái
               </div>
               <div className="text-end" style={{ width: "10%" }}>
@@ -156,7 +156,7 @@ function RoleTab() {
                       </div>
                       <div
                         className="text-start"
-                        style={{ width: "25%" }}
+                        style={{ width: "75%" }}
                         data-bs-toggle="dropdown"
                         aria-expanded="false"
                       >
@@ -164,11 +164,21 @@ function RoleTab() {
                       </div>
                       <div
                         className="text-start"
-                        style={{ width: "60%" }}
+                        style={{ width: "10%" }}
                         data-bs-toggle="dropdown"
                         aria-expanded="false"
                       >
-                        {group.isActive === 1 ? "Hoạt động" : "Ngưng hoạt động"}
+                        <span
+                          className={
+                            group.isActive === 1
+                              ? "badge bg-success"
+                              : "badge bg-danger"
+                          }
+                        >
+                          {group.isActive === 1
+                            ? "Hoạt động"
+                            : "Ngưng hoạt động"}
+                        </span>
                       </div>
                       <div
                         className="text-end"
@@ -185,7 +195,7 @@ function RoleTab() {
                               xmlns="http://www.w3.org/2000/svg"
                               width="16"
                               height="16"
-                              fill="#1B59F8"
+                              fill="#646565"
                               className="bi bi-eye-fill"
                               viewBox="0 0 16 16"
                             >
@@ -205,16 +215,31 @@ function RoleTab() {
                                 })
                               }
                             >
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="16"
-                                height="16"
-                                fill="#1B59F8"
-                                className="bi bi-archive-fill"
-                                viewBox="0 0 16 16"
-                              >
-                                <path d="M12.643 15C13.979 15 15 13.845 15 12.5V5H1v7.5C1 13.845 2.021 15 3.357 15zM5.5 7h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1 0-1M.8 1a.8.8 0 0 0-.8.8V3a.8.8 0 0 0 .8.8h14.4A.8.8 0 0 0 16 3V1.8a.8.8 0 0 0-.8-.8z" />
-                              </svg>
+                              {group.isActive === 1 ? (
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  width="16"
+                                  height="16"
+                                  fill="#EF3826"
+                                  className="bi bi-trash"
+                                  viewBox="0 0 16 16"
+                                >
+                                  <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z" />
+                                  <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z" />
+                                </svg>
+                              ) : (
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  width="16"
+                                  height="16"
+                                  fill="#EF3826"
+                                  className="bi bi-arrow-counterclockwise"
+                                  viewBox="0 0 16 16"
+                                >
+                                  <path d="M8 3a5 5 0 1 1-4.546 2.914.5.5 0 0 0-.908-.417A6 6 0 1 0 8 2z" />
+                                  <path d="M8 4.466V.534a.25.25 0 0 0-.41-.192L5.23 2.308a.25.25 0 0 0 0 .384l2.36 1.966A.25.25 0 0 0 8 4.466" />
+                                </svg>
+                              )}
                             </span>
                           )}
                       </div>

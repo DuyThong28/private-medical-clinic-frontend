@@ -70,32 +70,25 @@ function LoginPage() {
           <img src={loginImage} className="w-100 h-100" />
         </div>
 
-        <div
-          className="col h-100 position-relative"
-          style={{ backgroundColor: "#E9ECEF" }}
-        >
+        <div className="col h-100 position-relative">
           <div className="col h-100">
-            <div
-              className="h-100 position-relative"
-              style={{ backgroundColor: "#E9ECEF" }}
-            >
+            <div className="h-100 position-relative">
               <div
                 className="position-absolute top-50 mt-50 start-50 translate-middle"
                 style={{ width: "70%" }}
               >
-                <Card>
+                <>
                   <div className="p-4">
                     <div className="col fw-bold fs-4 mb-4 text-center text-dark">
                       <label>Đăng Nhập</label>
                     </div>
                     <div>
                       <div
-                        className="position-relative border shadow border-1"
+                        className="position-relative border border-1 mb-4"
                         style={{
                           height: "40px",
                           overflow: "hidden",
-                          background: "rgb(66 133 244)",
-                          borderColor: "rgb(66 133 244)",
+                          background: "#3A57E8",
                         }}
                       >
                         <GoogleButton
@@ -107,8 +100,6 @@ function LoginPage() {
                           onClick={loginWithGoogleHandler}
                         />
                       </div>
-
-                      <hr />
                       <Form
                         method="post"
                         onSubmit={localLoginHandler}
@@ -125,7 +116,7 @@ function LoginPage() {
                           </label>
                           <div>
                             <input
-                              className="form-control"
+                              className="form-control input-border"
                               type="text"
                               name="username"
                               id="username"
@@ -134,7 +125,11 @@ function LoginPage() {
                             ></input>
                           </div>
                         </div>
-                        <PasswordInput name={"password"} label={"Mật khẩu"} />
+                        <PasswordInput
+                          className="input-border"
+                          name={"password"}
+                          label={"Mật khẩu"}
+                        />
                         <div className="forgot-password">
                           <a
                             className="fw-bold nav-link  mt-2 text-end"
@@ -144,7 +139,7 @@ function LoginPage() {
                           </a>
                         </div>
                         <button
-                          className="w-100 mb-3 mt-4 btn rounded-3 btn-primary shadow"
+                          className="w-100 mb-3 mt-4 btn rounded-3 shadow btn-primary"
                           type="submit"
                         >
                           Đăng nhập
@@ -152,7 +147,7 @@ function LoginPage() {
                       </Form>
                     </div>
                   </div>
-                </Card>
+                </>
               </div>
             </div>
           </div>
@@ -160,15 +155,6 @@ function LoginPage() {
       </div>
     </>
   );
-}
-
-function openCenteredWindow(url, width, height) {
-  const screenWidth = screen.width;
-  const screenHeight = screen.height;
-  const left = (screenWidth - width) / 2;
-  const top = (screenHeight - height) / 2;
-  const windowFeatures = `width=${width},height=${height},top=${top},left=${left}`;
-  return window.open(url, "_blank", windowFeatures);
 }
 
 export default LoginPage;

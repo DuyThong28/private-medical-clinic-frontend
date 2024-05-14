@@ -5,6 +5,7 @@ export default function PasswordInput({
   value,
   disabled,
   name,
+  style,
   label,
 }) {
   const [isVisible, setIsVisible] = useState(false);
@@ -61,6 +62,7 @@ export default function PasswordInput({
             disabled={disabled}
             value={value}
             onChange={onChange}
+            style={style}
             required
           />
           <span

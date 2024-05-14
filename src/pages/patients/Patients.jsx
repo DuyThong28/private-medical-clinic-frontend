@@ -268,7 +268,7 @@ function PatientsPage() {
             </div>
           </div>
 
-          <div className=" w-100 h-100 overflow-hidden d-flex flex-column gap-3">
+          <div className=" w-100 h-100 overflow-hidden d-flex flex-column">
             <TableHeader>
               <div className="text-start" style={{ width: "5%" }}>
                 STT
@@ -340,7 +340,7 @@ function PatientsPage() {
                               xmlns="http://www.w3.org/2000/svg"
                               width="16"
                               height="16"
-                              fill="#1B59F8"
+                              fill="#646565"
                               className="bi bi-eye-fill"
                               viewBox="0 0 16 16"
                             >
@@ -363,7 +363,7 @@ function PatientsPage() {
                               xmlns="http://www.w3.org/2000/svg"
                               width="16"
                               height="16"
-                              fill="#1B59F8"
+                              fill="#646565"
                               className="bi bi-pencil-square"
                               viewBox="0 0 16 16"
                             >

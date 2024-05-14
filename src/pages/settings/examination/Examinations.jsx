@@ -132,7 +132,7 @@ function ExaminationsPage() {
         <Card className="p-3">
           <div className="w-100 h-100 d-flex flex-column gap-3">
             <ExaminationModal ref={modalRef} setSearchData={setSearchData} />
-            <div className=" w-100 h-100 overflow-hidden d-flex flex-column gap-3">
+            <div className=" w-100 h-100 overflow-hidden d-flex flex-column">
               <TableHeader>
                 <div className="text-start" style={{ width: "5%" }}>
                   STT
@@ -155,7 +155,7 @@ function ExaminationsPage() {
                 <div className="text-start" style={{ width: "10%" }}>
                   Trạng thái
                 </div>
-                <div className="text-start" style={{ width: "10%" }}>
+                <div className="text-end" style={{ width: "10%" }}>
                   Thanh toán
                 </div>
                 <div className="text-start" style={{ width: "1%" }}></div>
@@ -239,7 +239,7 @@ function ExaminationsPage() {
                           </span>
                         </div>
                         <div
-                          className="text-start"
+                          className="text-end"
                           style={{ width: "10%" }}
                           data-bs-toggle="dropdown"
                           aria-expanded="false"
