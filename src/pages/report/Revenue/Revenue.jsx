@@ -261,11 +261,11 @@ function Revenue() {
     const date = formatDate(time);
     if (date.start < date.end) {
       for (let i = date.start; i <= date.end; i++)
-        arr.push(i + "/" + date.month);
+        arr.push(i);
     } else {
       for (let i = date.start; i <= getDayofMonth(date.ms, date.ys); i++)
-        arr.push(i + "/" + date.ms);
-      for (let i = 1; i <= date.end; i++) arr.push(i + "/" + date.me);
+        arr.push(i);
+      for (let i = 1; i <= date.end; i++) arr.push(i);
     }
     return arr;
   };
@@ -628,6 +628,7 @@ function Revenue() {
   const [donutText, setDonutText] = useState("Tổng tiền");
   const [donutCost, setDonutCost] = useState(dataDonut.datasets[0].data[0] + dataDonut.datasets[0].data[1]);
   const [donutColor, setDonutColor] = useState('#555555');
+  const [totalDonutCost, setTotalDonutCost] = useState(0);
   
   const optionsDn = {
     plugins: {
@@ -665,11 +666,11 @@ function Revenue() {
       const canvas = chartInstance.canvas;
       const handleMouseOut = () => {
         setIsSetAvailable(false);
-        // setDonutColor("#555555");
-        // setDonutText("Tổng tiền");
-        // setDonutCost(dataDonut.datasets[0].data[0] + dataDonut.datasets[0].data[1]);
-        // console.log("cost4",dataDonut.datasets[0].data[0] + " " + dataDonut.datasets[0].data[1]);
-
+        setDonutColor("#555555");
+        setDonutText("Tổng tiền");
+        const newData = getDataForDonutChart(valueTime2, timeOption2);
+        setDonutCost(newData.sumDrug + newData.sumFee);
+        console.log("cost4",newData.sumDrug + newData.sumFee);
       };
       
 
@@ -679,7 +680,7 @@ function Revenue() {
         canvas.removeEventListener('mouseout', handleMouseOut);
       };
     }
-  }, [chartRef]);
+  }, [chartRef, appointmentLists, bills]);
   useEffect(() => {
     const chartInstance = chartRef.current;
     if (chartInstance) {
@@ -694,15 +695,8 @@ function Revenue() {
     }
   }, [chartRef]);
   function formatMoneyForDonutChart(number) {  
-    if(number <= 999) return number;
-    if(number <= 999999) return Math.floor(number/1000) + "K";
-    if(number <= 999999999) 
-    {
-      if(Math.floor(number/1000000) >= 100)
-        return Math.floor(number/1000000) + "M";
-      else
-        return Math.floor(number/1000000) + ',' + Math.floor((number%1000000)/100000) + "M";
-    }
+    if(number <= 999999999) return formatMoney(number);
+    
     if(number <= 999999999999) 
     {
       if(Math.floor(number/1000000000) >= 100)
@@ -968,7 +962,7 @@ function Revenue() {
                         <Doughnut  ref={chartRef} className="Donut" data={dataDonut} options={optionsDn}></Doughnut>
                         <div className="Text-doughnut">
                             <p >{donutText}</p>
-                            <p >{formatMoney(donutCost)}</p>
+                            <p >{formatMoneyForDonutChart(donutCost)}</p>
                         </div>
                       </div>
                     </div>

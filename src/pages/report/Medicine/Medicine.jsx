@@ -111,7 +111,7 @@ const billList = ConvernToArray(bills) || [];
 useEffect(()=>{
     setSelectItem(drugs[0]);
     getDataForChartWeek(valueTime, drugs[0]);
-},[drugs, appointment, record, recorddt])
+},[drugs, appointment, record, recorddt, bills])
   function searchHandler(event) {
     const textSearch = event.target.value.toLowerCase().trim();
     const result = drugs.filter((drug) =>
@@ -290,13 +290,13 @@ useEffect(()=>{
         const date = formatDate(time);
         if(date.start < date.end) {
             for(let i = date.start; i <= date.end; i++)
-                arr.push(i + '/' + date.month);
+                arr.push(i);
         }
         else {
             for(let i = date.start; i <= getDayofMonth(date.ms, date.ys); i++)
-                arr.push(i + '/' + date.ms);
+                arr.push(i);
             for(let i = 1; i <= date.end; i++)
-                arr.push(i + '/' + date.me);
+                arr.push(i);
         }
         return arr;
     }
