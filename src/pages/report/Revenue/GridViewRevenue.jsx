@@ -11,8 +11,8 @@ import "./GridViewRevenue.scss";
 function GridViewRevenue({
   date,
   getDayOfMonth,
-  aptList,
-  billList,
+  appointmentLists,
+  bills,
   timeOption,
   handleSetSelectedBill,
   setIsOpenBillDetail
@@ -36,15 +36,15 @@ function GridViewRevenue({
       let arr = [];
       let sum = 0;
       let cnt = 0;
-      for (let j = 0; j < aptList.length; j++) {
-        const tmp = StringToDate(aptList[j].scheduleDate);
+      for (let j = 0; j < appointmentLists.length; j++) {
+        const tmp = StringToDate(appointmentLists[j].scheduleDate);
         if (tmp.day === i && tmp.month === month && tmp.year === year) {
-          arr.push(aptList[j].id);
+          arr.push(appointmentLists[j].id);
         }
       }
-      for (let j = 0; j < billList.length; j++) {
-        if (arr.includes(billList[j].appointmentListId)) {
-          sum = sum + billList[j].drugExpense + billList[j].feeConsult;
+      for (let j = 0; j < bills.length; j++) {
+        if (arr.includes(bills[j].appointmentListId)) {
+          sum = sum + bills[j].drugExpense + bills[j].feeConsult;
           cnt++;
         }
       }
@@ -65,15 +65,15 @@ function GridViewRevenue({
         let arr = [];
         let sum = 0;
         let cnt = 0;
-        for (let j = 0; j < aptList.length; j++) {
-          const tmp = StringToDate(aptList[j].scheduleDate);
+        for (let j = 0; j < appointmentLists.length; j++) {
+          const tmp = StringToDate(appointmentLists[j].scheduleDate);
           if (tmp.day === i && tmp.month === date.month && tmp.year === date.year) {
-            arr.push(aptList[j].id);
+            arr.push(appointmentLists[j].id);
           }
         }
-        for (let j = 0; j < billList.length; j++) {
-          if (arr.includes(billList[j].appointmentListId)) {
-            sum = sum + billList[j].drugExpense + billList[j].feeConsult;
+        for (let j = 0; j < bills.length; j++) {
+          if (arr.includes(bills[j].appointmentListId)) {
+            sum = sum + bills[j].drugExpense + bills[j].feeConsult;
             cnt++;
           }
         }
@@ -87,15 +87,15 @@ function GridViewRevenue({
         let arr = [];
         let sum = 0;
         let cnt = 0;
-        for (let j = 0; j < aptList.length; j++) {
-          const tmp = StringToDate(aptList[j].scheduleDate);
+        for (let j = 0; j < appointmentLists.length; j++) {
+          const tmp = StringToDate(appointmentLists[j].scheduleDate);
           if (tmp.day === i && tmp.month === date.ms && tmp.year === date.ys) {
-            arr.push(aptList[j].id);
+            arr.push(appointmentLists[j].id);
           }
         }
-        for (let j = 0; j < billList.length; j++) {
-          if (arr.includes(billList[j].appointmentListId)) {
-            sum = sum + billList[j].drugExpense+ billList[j].feeConsult;
+        for (let j = 0; j < bills.length; j++) {
+          if (arr.includes(bills[j].appointmentListId)) {
+            sum = sum + bills[j].drugExpense+ bills[j].feeConsult;
             cnt++;
           }
         }
@@ -107,15 +107,15 @@ function GridViewRevenue({
         let arr = [];
         let sum = 0;
         let cnt = 0;
-        for (let j = 0; j < aptList.length; j++) {
-          const tmp = StringToDate(aptList[j].scheduleDate);
+        for (let j = 0; j < appointmentLists.length; j++) {
+          const tmp = StringToDate(appointmentLists[j].scheduleDate);
           if (tmp.day === i && tmp.month === date.me && tmp.year === date.ye) {
-            arr.push(aptList[j].id);
+            arr.push(appointmentLists[j].id);
           }
         }
-        for (let j = 0; j < billList.length; j++) {
-          if (arr.includes(billList[j].appointmentListId)) {
-            sum = sum + billList[j].drugExpense+ billList[j].feeConsult;
+        for (let j = 0; j < bills.length; j++) {
+          if (arr.includes(bills[j].appointmentListId)) {
+            sum = sum + bills[j].drugExpense+ bills[j].feeConsult;
             cnt++;
           }
         }
@@ -136,15 +136,15 @@ function GridViewRevenue({
       let arr = [];
       let sum = 0;
       let cnt = 0;
-      for (let j = 0; j < aptList.length; j++) {
-        const tmp = StringToDate(aptList[j].scheduleDate);
+      for (let j = 0; j < appointmentLists.length; j++) {
+        const tmp = StringToDate(appointmentLists[j].scheduleDate);
         if (tmp.month === i && tmp.year === year) {
-          arr.push(aptList[j].id);
+          arr.push(appointmentLists[j].id);
         }
       }
-      for (let j = 0; j < billList.length; j++) {
-        if (arr.includes(billList[j].appointmentListId)) {
-          sum = sum + billList[j].drugExpense+ billList[j].feeConsult;
+      for (let j = 0; j < bills.length; j++) {
+        if (arr.includes(bills[j].appointmentListId)) {
+          sum = sum + bills[j].drugExpense+ bills[j].feeConsult;
           cnt++;
         }
       }

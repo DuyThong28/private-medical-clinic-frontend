@@ -63,10 +63,10 @@ function Revenue() {
       return fetchAllAppointmentList();
     },
   });
-  const appointmentLists = appointmentListsQuery.data;
+  const appointmentLists = appointmentListsQuery.data || [];
 
   const billsQuery = useQuery({
-    queryKey: ["billlist"],
+    queryKey: ["bills"],
     queryFn: () => {
       return fetchAllBills();
     },
@@ -81,8 +81,6 @@ function Revenue() {
     return arr;
   };
 
-  const aptList = ConvernToArray(appointmentLists);
-  const billList = ConvernToArray(bills) || [];
   const patientList = ConvernToArray(patients);
 
   const StringToDate = (str) => {
@@ -289,19 +287,19 @@ function Revenue() {
         let arr = [];
         let sum = 0;
         let cnt = 0;
-        for (let j = 0; j < aptList.length; j++) {
-          const tmp = StringToDate(aptList[j].scheduleDate);
+        for (let j = 0; j < appointmentLists.length; j++) {
+          const tmp = StringToDate(appointmentLists[j].scheduleDate);
           if (
             tmp.day === i &&
             tmp.month === date.month &&
             tmp.year === date.year
           ) {
-            arr.push(aptList[j].id);
+            arr.push(appointmentLists[j].id);
           }
         }
-        for (let j = 0; j < billList.length; j++) {
-          if (arr.includes(billList[j].appointmentListId)) {
-            sum = sum + billList[j].drugExpense + billList[j].feeConsult;
+        for (let j = 0; j < bills.length; j++) {
+          if (arr.includes(bills[j].appointmentListId)) {
+            sum = sum + bills[j].drugExpense + bills[j].feeConsult;
             cnt++;
           }
         }
@@ -313,14 +311,14 @@ function Revenue() {
         let arr = [];
         let sum = 0;
         let cnt = 0;
-        for (let j = 0; j < aptList.length; j++) {
-          const tmp = StringToDate(aptList[j].scheduleDate);
+        for (let j = 0; j < appointmentLists.length; j++) {
+          const tmp = StringToDate(appointmentLists[j].scheduleDate);
           if (tmp.day === i && tmp.month === date.ms && tmp.year === date.ys)
-            arr.push(aptList[j].id);
+            arr.push(appointmentLists[j].id);
         }
-        for (let j = 0; j < billList.length; j++) {
-          if (arr.includes(billList[j].appointmentListId)) {
-            sum = sum + billList[j].drugExpense + billList[j].feeConsult
+        for (let j = 0; j < bills.length; j++) {
+          if (arr.includes(bills[j].appointmentListId)) {
+            sum = sum + bills[j].drugExpense + bills[j].feeConsult
             cnt++;
           }
         }
@@ -332,14 +330,14 @@ function Revenue() {
         let arr = [];
         let sum = 0;
         let cnt = 0;
-        for (let j = 0; j < aptList.length; j++) {
-          const tmp = StringToDate(aptList[j].scheduleDate);
+        for (let j = 0; j < appointmentLists.length; j++) {
+          const tmp = StringToDate(appointmentLists[j].scheduleDate);
           if (tmp.day === i && tmp.month === date.me && tmp.year === date.ye)
-            arr.push(aptList[j].id);
+            arr.push(appointmentLists[j].id);
         }
-        for (let j = 0; j < billList.length; j++) {
-          if (arr.includes(billList[j].appointmentListId)) {
-            sum = sum + billList[j].drugExpense + billList[j].feeConsult
+        for (let j = 0; j < bills.length; j++) {
+          if (arr.includes(bills[j].appointmentListId)) {
+            sum = sum + bills[j].drugExpense + bills[j].feeConsult
             cnt++;
           }
         }
@@ -361,15 +359,15 @@ function Revenue() {
       let arr = [];
       let sum = 0;
       let cnt = 0;
-      for (let j = 0; j < aptList.length; j++) {
-        const tmp = StringToDate(aptList[j].scheduleDate);
+      for (let j = 0; j < appointmentLists.length; j++) {
+        const tmp = StringToDate(appointmentLists[j].scheduleDate);
         if (tmp.month === i && tmp.year === date.year) {
-          arr.push(aptList[j].id);
+          arr.push(appointmentLists[j].id);
         }
       }
-      for (let j = 0; j < billList.length; j++) {
-        if (arr.includes(billList[j].appointmentListId)) {
-          sum = sum + billList[j].drugExpense + billList[j].feeConsult
+      for (let j = 0; j < bills.length; j++) {
+        if (arr.includes(bills[j].appointmentListId)) {
+          sum = sum + bills[j].drugExpense + bills[j].feeConsult
           cnt++;
         }
       }
@@ -391,15 +389,15 @@ function Revenue() {
       let arr = [];
       let sum = 0;
       let cnt = 0;
-      for (let j = 0; j < aptList.length; j++) {
-        const tmp = StringToDate(aptList[j].scheduleDate);
+      for (let j = 0; j < appointmentLists.length; j++) {
+        const tmp = StringToDate(appointmentLists[j].scheduleDate);
         if (tmp.day === i && tmp.month == date.month && tmp.year === date.year) {
-          arr.push(aptList[j].id);
+          arr.push(appointmentLists[j].id);
         }
       }
-      for (let j = 0; j < billList.length; j++) {
-        if (arr.includes(billList[j].appointmentListId)) {
-          sum = sum + billList[j].drugExpense + billList[j].feeConsult;
+      for (let j = 0; j < bills.length; j++) {
+        if (arr.includes(bills[j].appointmentListId)) {
+          sum = sum + bills[j].drugExpense + bills[j].feeConsult;
           cnt++;
         }
       }
@@ -474,24 +472,24 @@ function Revenue() {
     setChartData(tmp);
   };
   React.useEffect(()=>{
-        // setChartData({
-        //   labels: getLabelForChartWeek(valueTime), // Replace with your category labels
-        //   datasets: [
-        //     {
-        //       label: "Doanh thu",
-        //       data: getDataNewForChartWeek(valueTime).count, // Replace with your variable 2 data
-        //       backgroundColor: "#3A57E8",
-        //       borderWidth: 1,
-        //       barThickness: 10,
-        //       borderRadius: 50,
-        //     },
-        //   ],
-        // })
-        // setNewDataForDonutChart(valueTime2, "Week");
+        setChartData({
+          labels: getLabelForChartWeek(valueTime), // Replace with your category labels
+          datasets: [
+            {
+              label: "Doanh thu",
+              data: getDataNewForChartWeek(valueTime).count, // Replace with your variable 2 data
+              backgroundColor: "#3A57E8",
+              borderWidth: 1,
+              barThickness: 10,
+              borderRadius: 50,
+            },
+          ],
+        })
+        setNewDataForDonutChart(valueTime2, "Week");
   }, [bills])
 
   // React.useEffect(()=>{
-  //     if(aptList.length > 0)
+  //     if(appointmentLists.length > 0)
   //     {
   //       setChartData({
   //         labels: getLabelForChartWeek(valueTime), // Replace with your category labels
@@ -508,7 +506,7 @@ function Revenue() {
   //       })
   //       stopInitLoad = true;
   //     }
-  // }, [aptList])
+  // }, [appointmentLists])
   
   const [chartData, setChartData] = useState({
     labels: getLabelForChartWeek(valueTime), // Replace with your category labels
@@ -592,7 +590,7 @@ function Revenue() {
     labels: ['Tiền khám', 'Tiền thuốc'],
     datasets: [
       {
-        label: "Doanh thu",
+        // label: "Doanh thu",
         data: [20, 10],
         backgroundColor: [
           'rgba(58, 87, 232, 0.2)',
@@ -613,7 +611,7 @@ function Revenue() {
       labels: ['Tiền khám', 'Tiền thuốc'],
       datasets: [
         {
-          label: "Doanh thu",
+          // label: "Doanh thu",
           data: [20, 10],
           backgroundColor: [
             'rgba(133, 244, 250, 0.2)',
@@ -634,6 +632,9 @@ function Revenue() {
       legend: {
         display: false, // Ẩn chú thích màu
       },
+      tooltips: {
+        enabled: false, // Tắt tooltip
+    }
     },
     responsive: true,
     onClick: (event, elements) => {
@@ -644,7 +645,19 @@ function Revenue() {
         setDonutText(label);
         setDonutCost(value);
       }
-    }
+    },
+    onHover: (event, elements) => {
+      if (elements.length) {
+        const clickedElementIndex = elements[0].index;
+        const label = dataDonut.labels[clickedElementIndex];
+        const value = dataDonut.datasets[0].data[clickedElementIndex];
+        setDonutText(label);
+        setDonutCost(value);
+      } else {
+          setDonutText('Tong');
+          setDonutCost('120000');
+      }
+  },
   };
   // GET DATA FOR DOUGHNUT CHART
   const setNewDataForDonutChart = (time, option) => {
@@ -680,35 +693,35 @@ function Revenue() {
     const date = formatDate(time);
     if(option == "Month") {
       const cntDay = getDayofMonth(date.month, date.year)
-      for(let i = 0; i < aptList.length; i++) {
-        const tmp = StringToDate(aptList[i].scheduleDate);
+      for(let i = 0; i < appointmentLists.length; i++) {
+        const tmp = StringToDate(appointmentLists[i].scheduleDate);
         if(1 <= tmp.day && tmp.day <= cntDay && tmp.month == date.month && tmp.year == date.year) {
-          arr.push(aptList[i].id);
+          arr.push(appointmentLists[i].id);
         }
       }
     }
     else if(option == "Year") {
-      for(let i = 0; i < aptList.length; i++) {
-        const tmp = StringToDate(aptList[i].scheduleDate);
+      for(let i = 0; i < appointmentLists.length; i++) {
+        const tmp = StringToDate(appointmentLists[i].scheduleDate);
         if(1 <= tmp.month && tmp.month <= 12 && tmp.year == date.year) {
-          arr.push(aptList[i].id);
+          arr.push(appointmentLists[i].id);
         }
       }
     }
     else {
-      for(let i = 0; i < aptList.length; i++) {
-        const tmp = StringToDate(aptList[i].scheduleDate);
+      for(let i = 0; i < appointmentLists.length; i++) {
+        const tmp = StringToDate(appointmentLists[i].scheduleDate);
         if((date.ms == date.me && date.start <= tmp.day && tmp.day <= date.end && tmp.month == date.month && tmp.year == date.year) ||
            (date.ms != date.me && ((date.start <= tmp.day && tmp.month == date.ms && tmp.year == date.ys)|| 
                                    (tmp.day <= date.end && tmp.month == date.me && tmp.year == date.ye)))) {
-          arr.push(aptList[i].id);
+          arr.push(appointmentLists[i].id);
         }
       }
     }
-    for (let j = 0; j < billList.length; j++) {
-      if (arr.includes(billList[j].appointmentListId)) {
-        sumFee = sumFee + billList[j].feeConsult;
-        sumDrug = sumDrug + billList[j].drugExpense;
+    for (let j = 0; j < bills.length; j++) {
+      if (arr.includes(bills[j].appointmentListId)) {
+        sumFee = sumFee + bills[j].feeConsult;
+        sumDrug = sumDrug + bills[j].drugExpense;
       }
     }
     return {
@@ -729,7 +742,7 @@ function Revenue() {
   return (
     <div className="d-flex flex-row w-100 maincontainer">
       {isOpenBillDetail && <div className="bill-detail">
-          <BillDetail billList={billList} aptList={aptList} timeoption={timeOption} date={selectedBill} setIsOpenBillDetail={setIsOpenBillDetail}>
+          <BillDetail bills={bills} appointmentLists={appointmentLists} timeoption={timeOption} date={selectedBill} setIsOpenBillDetail={setIsOpenBillDetail}>
         </BillDetail>
       </div>}
       <div className="col-md-7">
@@ -806,8 +819,8 @@ function Revenue() {
                 <GridViewRevenue
                   date={formatDate(valueTime)}
                   getDayOfMonth={getDayofMonth}
-                  aptList={aptList}
-                  billList={billList}
+                  appointmentLists={appointmentLists}
+                  bills={bills}
                   timeOption={timeOption}
                   handleSetSelectedBill={handleSetSelectedBill}
                   setIsOpenBillDetail={setIsOpenBillDetail}
