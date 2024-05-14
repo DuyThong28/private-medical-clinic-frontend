@@ -298,7 +298,7 @@ function GridViewRevenue({
           <div className="export-button">
             <button onClick={handleExportReport}>
               <FontAwesomeIcon className="icon-export" icon={faFileExcel} />
-              Export
+              Xuất
             </button>
           </div>
           <TableHeader>

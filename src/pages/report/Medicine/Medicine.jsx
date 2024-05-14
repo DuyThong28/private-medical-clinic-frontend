@@ -130,7 +130,7 @@ const billList = ConvernToArray(bills) || [];
       getDataForChartWeek(valueTime, drugs[0]);
     },[drugs])
     useEffect(()=>{
-      console.log("item", selectItem);
+      console.log("item", selectItem || drugs[0]);
       getDataForChartWeek(valueTime, selectItem);
     },[drugs, appointment, record, recorddt])
     // Select Time
@@ -398,6 +398,7 @@ const billList = ConvernToArray(bills) || [];
         let tmp = chartData;
         tmp.labels = getLabelForChartWeek(date);
         const tmp2 = getDataNewForChartWeek(date, item);
+        console.log("tmp", tmp2);
         tmp.datasets = [
             {
               label: 'Số lượng bán ra',
@@ -514,7 +515,7 @@ const billList = ConvernToArray(bills) || [];
             labels: [1,1,1,1,1,1,1], // Replace with your category labels
             datasets: [
                 {label: 'Số lượng bán ra',
-                    data: [0,0,0,0,0,9,0], 
+                    data: [0,0,0,0,0,0,0], 
                     backgroundColor: '#3A57E8',
                     borderWidth: 1,
                     barThickness: 25,
@@ -834,7 +835,7 @@ const billList = ConvernToArray(bills) || [];
                   <div className="export-button">
                 <button onClick={handleExportReport}>
                     <FontAwesomeIcon className='icon-export' icon={faFileExcel} />
-                    Export
+                    Xuất
                 </button>
             </div>
                 </div>
