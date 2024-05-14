@@ -43,7 +43,7 @@ let setFirstDrug = false;
 function Medicine() {
 
   const drugsQuery = useQuery({
-    queryKey: ["druglist"],
+    queryKey: ["drugs"],
     queryFn: () => {
       return fetchAllDrugs({ });
     },
@@ -58,7 +58,7 @@ function Medicine() {
     queryFn: fetchAllUnit,
   });
 
-  const unitState = unitsQuery.data;
+  const unitState = unitsQuery.data || [];
   function getUnitName({ id }) {
     if(unitState == null) return;
     const res = unitState.filter((unit) => unit.id === id)[0];
@@ -75,14 +75,14 @@ function Medicine() {
       return fetchAllAppointmentRecordDetails();
     }, 
   });
-  const recorddt = recorddtQuery.data;
+  const recorddt = recorddtQuery.data || [];
   const recordQuery = useQuery({
     queryKey: ["recordlist"],
     queryFn: () => {
       return fetchAllAppointmentRecords();
     }, 
   });
-  const record = recordQuery.data;
+  const record = recordQuery.data || [];
   const appointmentQuery = useQuery({
     queryKey: ["appointmentlist"],
     queryFn: () => {
@@ -96,7 +96,7 @@ function Medicine() {
       return fetchAllBills();
     },
   });
-  const bills = billsQuery.data;
+  const bills = billsQuery.data || [];
   
   const ConvernToArray = (obj) => {
     let arr = []
@@ -107,16 +107,11 @@ function Medicine() {
     return arr;
 }
 
-const recDetList = ConvernToArray(recorddt);
-const recList = ConvernToArray(record);
-const aptList = ConvernToArray(appointment);
-const drugList = ConvernToArray(drugs);
 const billList = ConvernToArray(bills) || [];
 useEffect(()=>{
-    console.log("Change?")
-    setSelectItem(drugList[0]);
-    getDataForChartWeek(valueTime, drugList[0]);
-},[drugs])
+    setSelectItem(drugs[0]);
+    getDataForChartWeek(valueTime, drugs[0]);
+},[drugs, appointment, record, recorddt])
   function searchHandler(event) {
     const textSearch = event.target.value.toLowerCase().trim();
     const result = drugs.filter((drug) =>
@@ -125,7 +120,7 @@ useEffect(()=>{
     setListState(() => result);
   }
 
-    const [selectItem, setSelectItem] = useState(drugList[0]);
+    const [selectItem, setSelectItem] = useState(drugs[0]);
     const setDetailItem = (item) => {
         setSelectItem(item);
         if(timeOption == "Tuần") getDataForChartWeek(valueTime, item);
@@ -179,20 +174,20 @@ useEffect(()=>{
     const countDrugInRecord = (month, year, item) => {
       let arrApt = [];
           let count = 0;
-          for(let j = 0; j < aptList.length; j++) {
-            const tmp = StringToDate(aptList[j].scheduleDate);
+          for(let j = 0; j < appointment.length; j++) {
+            const tmp = StringToDate(appointment[j].scheduleDate);
             if((month == -1 || tmp.month === month) && tmp.year === year)
-              arrApt.push(aptList[j].id)
+              arrApt.push(appointment[j].id)
           }
           let arrRec = [];
-          for(let j = 0; j < recList.length; j++) {
-            if(arrApt.includes(recList[j].appointmentListId))
-              arrRec.push(recList[j].id);
+          for(let j = 0; j < record.length; j++) {
+            if(arrApt.includes(record[j].appointmentListId))
+              arrRec.push(record[j].id);
           }
-          for(let j = 0; j < recDetList.length; j++) {
-            if(arrRec.includes(recDetList[j].appointmentRecordId)) {
-              if(recDetList[j].drugId === item.id) {
-                count+=recDetList[j].count;
+          for(let j = 0; j < recorddt.length; j++) {
+            if(arrRec.includes(recorddt[j].appointmentRecordId)) {
+              if(recorddt[j].drugId === item.id) {
+                count+=recorddt[j].count;
               }
             }
           }
@@ -204,30 +199,30 @@ useEffect(()=>{
       let count = 0;
       const date = formatDate(time);
           if(date.ms != date.ms){
-            for(let j = 0; j < aptList.length; j++) {
-              const tmp = StringToDate(aptList[j].scheduleDate);
+            for(let j = 0; j < appointment.length; j++) {
+              const tmp = StringToDate(appointment[j].scheduleDate);
               if((tmp.month === date.ms && tmp.year === date.ys && tmp.day >= date.start) ||
                 (tmp.month === date.me && tmp.year === date.ye && tmp.day <= date.end))
-              arrApt.push(aptList[j].id)
+              arrApt.push(appointment[j].id)
             }
           }
           else {
-            for(let j = 0; j < aptList.length; j++) {
-              const tmp = StringToDate(aptList[j].scheduleDate);
+            for(let j = 0; j < appointment.length; j++) {
+              const tmp = StringToDate(appointment[j].scheduleDate);
               if(tmp.month === date.month && tmp.year === date.year && tmp.day >= date.start && tmp.day <= date.end)
-                arrApt.push(aptList[j].id)
+                arrApt.push(appointment[j].id)
             }
           }
           let arrRec = [];
-          for(let j = 0; j < recList.length; j++) {
-            if(arrApt.includes(recList[j].appointmentListId))
-              arrRec.push(recList[j].id);
+          for(let j = 0; j < record.length; j++) {
+            if(arrApt.includes(record[j].appointmentListId))
+              arrRec.push(record[j].id);
           }
 
-          for(let j = 0; j < recDetList.length; j++) {
-            if(arrRec.includes(recDetList[j].appointmentRecordId)) {
-              if(recDetList[j].drugId === item.id) {
-                count+=recDetList[j].count;
+          for(let j = 0; j < recorddt.length; j++) {
+            if(arrRec.includes(recorddt[j].appointmentRecordId)) {
+              if(recorddt[j].drugId === item.id) {
+                count+=recorddt[j].count;
               }
             }
           }
@@ -317,27 +312,26 @@ useEffect(()=>{
 
     const getDataNewForChartWeek = (time, item) => {
       const date = formatDate(time);
-      console.log("New data", date.start + " " + item?.drugName);
       let newData = [];
       if(date.start < date.end) {
         for(let i = date.start; i <= date.end; i++)
         {
           let arrApt = [];
           let count = 0;
-          for(let j = 0; j < aptList.length; j++) {
-            const tmp = StringToDate(aptList[j].scheduleDate);
+          for(let j = 0; j < appointment.length; j++) {
+            const tmp = StringToDate(appointment[j].scheduleDate);
             if(tmp.day === i && tmp.month === date.month && tmp.year === date.year)
-              arrApt.push(aptList[j].id)
+              arrApt.push(appointment[j].id)
           }
           let arrRec = [];
-          for(let j = 0; j < recList.length; j++) {
-            if(arrApt.includes(recList[j].appointmentListId))
-              arrRec.push(recList[j].id);
+          for(let j = 0; j < record.length; j++) {
+            if(arrApt.includes(record[j].appointmentListId))
+              arrRec.push(record[j].id);
           }
-          for(let j = 0; j < recDetList.length; j++) {
-            if(arrRec.includes(recDetList[j].appointmentRecordId)) {
-              if(recDetList[j]?.drugId == item?.id) {
-                count = count + recDetList[j].count;
+          for(let j = 0; j < recorddt.length; j++) {
+            if(arrRec.includes(recorddt[j].appointmentRecordId)) {
+              if(recorddt[j]?.drugId == item?.id) {
+                count = count + recorddt[j].count;
               }
             }
           }
@@ -349,21 +343,21 @@ useEffect(()=>{
         {
           let arrApt = [];
           let count = 0;
-          for(let j = 0; j < aptList.length; j++) {
-            const tmp = StringToDate(aptList[j].scheduleDate);
+          for(let j = 0; j < appointment.length; j++) {
+            const tmp = StringToDate(appointment[j].scheduleDate);
             if(tmp.day === i && tmp.month === date.ms && tmp.year === date.ye)
-              arrApt.push(aptList[j].id)
+              arrApt.push(appointment[j].id)
           }
           let arrRec = [];
-          for(let j = 0; j < recList.length; j++) {
-            if(arrApt.includes(recList[j].appointmentListId))
-              arrRec.push(recList[j].id);
+          for(let j = 0; j < record.length; j++) {
+            if(arrApt.includes(record[j].appointmentListId))
+              arrRec.push(record[j].id);
           }
 
-          for(let j = 0; j < recDetList.length; j++) {
-            if(arrRec.includes(recDetList[j].appointmentRecordId)) {
-              if(recDetList[j].drugId == item?.id) {
-                count = count + recDetList[j].count;
+          for(let j = 0; j < recorddt.length; j++) {
+            if(arrRec.includes(recorddt[j].appointmentRecordId)) {
+              if(recorddt[j].drugId == item?.id) {
+                count = count + recorddt[j].count;
               }
             }
           }
@@ -373,20 +367,20 @@ useEffect(()=>{
         {
           let arrApt = [];
           let count = 0;
-          for(let j = 0; j < aptList.length; j++) {
-            const tmp = StringToDate(aptList[j].scheduleDate);
+          for(let j = 0; j < appointment.length; j++) {
+            const tmp = StringToDate(appointment[j].scheduleDate);
             if(tmp.day === i && tmp.month === date.me && tmp.year === date.ye)
-              arrApt.push(aptList[j].id)
+              arrApt.push(appointment[j].id)
           }
           let arrRec = [];
-          for(let j = 0; j < recList.length; j++) {
-            if(arrApt.includes(recList[j].appointmentListId))
-              arrRec.push(recList[j].id);
+          for(let j = 0; j < record.length; j++) {
+            if(arrApt.includes(record[j].appointmentListId))
+              arrRec.push(record[j].id);
           }
-          for(let j = 0; j < recDetList.length; j++) {
-            if(arrRec.includes(recDetList[j].appointmentRecordId)) {
-              if(recDetList[j].drugId == item.id) {
-                count = count + recDetList[j].count;
+          for(let j = 0; j < recorddt.length; j++) {
+            if(arrRec.includes(recorddt[j].appointmentRecordId)) {
+              if(recorddt[j].drugId == item.id) {
+                count = count + recorddt[j].count;
               }
             }
           }
@@ -396,12 +390,12 @@ useEffect(()=>{
       return newData;
     }
     const getDataForChartWeek = (date, item) => {
+      console.log("Value", valueTime);
+      console.log("Drug", drugs[0]?.drugName);
         let tmp = chartData;
-        console.log("date", formatDate(date));
-        console.log("item", item?.drugName);
         tmp.labels = getLabelForChartWeek(date);
         const tmp2 = getDataNewForChartWeek(date, item);
-        console.log("getData", tmp2);
+        console.log("tmp2",tmp2);
         tmp.datasets = [
             {
               label: 'Số lượng bán ra',
@@ -412,6 +406,7 @@ useEffect(()=>{
                 borderRadius: 50,
             },
         ]
+        console.log("tmp", tmp);
         setChartData(tmp);
     }
     const getDataNewForChartMonth = (time, item) => {
@@ -420,20 +415,20 @@ useEffect(()=>{
       for(let i = 1; i <= getDayofMonth(date.month, date.year); i++) {
         let arrApt = [];
           let count = 0;
-          for(let j = 0; j < aptList.length; j++) {
-            const tmp = StringToDate(aptList[j].scheduleDate);
+          for(let j = 0; j < appointment.length; j++) {
+            const tmp = StringToDate(appointment[j].scheduleDate);
             if(tmp.day === i && tmp.month === date.month && tmp.year === date.year)
-              arrApt.push(aptList[j].id)
+              arrApt.push(appointment[j].id)
           }
           let arrRec = [];
-          for(let j = 0; j < recList.length; j++) {
-            if(arrApt.includes(recList[j].appointmentListId))
-              arrRec.push(recList[j].id);
+          for(let j = 0; j < record.length; j++) {
+            if(arrApt.includes(record[j].appointmentListId))
+              arrRec.push(record[j].id);
           }
-          for(let j = 0; j < recDetList.length; j++) {
-            if(arrRec.includes(recDetList[j].appointmentRecordId)) {
-              if(recDetList[j].drugId == item.id) {
-                count = count + recDetList[j].count;
+          for(let j = 0; j < recorddt.length; j++) {
+            if(arrRec.includes(recorddt[j].appointmentRecordId)) {
+              if(recorddt[j].drugId == item.id) {
+                count = count + recorddt[j].count;
               }
             }
           }
@@ -463,20 +458,20 @@ useEffect(()=>{
     for(let i = 1; i <= 12; i++) {
       let arrApt = [];
         let count = 0;
-        for(let j = 0; j < aptList.length; j++) {
-          const tmp = StringToDate(aptList[j].scheduleDate);
+        for(let j = 0; j < appointment.length; j++) {
+          const tmp = StringToDate(appointment[j].scheduleDate);
           if(tmp.month === i && tmp.year === date.year)
-            arrApt.push(aptList[j].id)
+            arrApt.push(appointment[j].id)
         }
         let arrRec = [];
-        for(let j = 0; j < recList.length; j++) {
-          if(arrApt.includes(recList[j].appointmentListId))
-            arrRec.push(recList[j].id);
+        for(let j = 0; j < record.length; j++) {
+          if(arrApt.includes(record[j].appointmentListId))
+            arrRec.push(record[j].id);
         }
-        for(let j = 0; j < recDetList.length; j++) {
-          if(arrRec.includes(recDetList[j].appointmentRecordId)) {
-            if(recDetList[j].drugId == item.id) {
-              count = count + recDetList[j].count;
+        for(let j = 0; j < recorddt.length; j++) {
+          if(arrRec.includes(recorddt[j].appointmentRecordId)) {
+            if(recorddt[j].drugId == item.id) {
+              count = count + recorddt[j].count;
             }
           }
         }
@@ -518,7 +513,7 @@ useEffect(()=>{
             labels: [1,1,1,1,1,1,1], // Replace with your category labels
             datasets: [
                 {label: 'Số lượng bán ra',
-                    data: [0,0,0,0,0,0,0], 
+                    data: [0,0,0,0,0,9,0], 
                     backgroundColor: '#3A57E8',
                     borderWidth: 1,
                     barThickness: 25,
@@ -528,9 +523,9 @@ useEffect(()=>{
         }
     );
     // React.useEffect(()=>{
-    //     console.log("medicine", aptList.length);
+    //     console.log("medicine", appointment.length);
     //     console.log("item", selectItem);
-    //     if(aptList.length > 0 && selectItem!=null)
+    //     if(appointment.length > 0 && selectItem!=null)
     //     {
     //       console.log("on", getLabelForChartWeek(valueTime));
     //       getDataForChartWeek(valueTime, selectItem);
@@ -609,21 +604,21 @@ useEffect(()=>{
   const getCountInTime = (month, year, item) => {
           let arrApt = [];
           let count = 0;
-          for(let j = 0; j < aptList.length; j++) {
-            const tmp = StringToDate(aptList[j].scheduleDate);
+          for(let j = 0; j < appointment.length; j++) {
+            const tmp = StringToDate(appointment[j].scheduleDate);
             if((month == -1 || tmp.month === month) && tmp.year === year)
-              arrApt.push(aptList[j].id)
+              arrApt.push(appointment[j].id)
           }
           let arrRec = [];
-          for(let j = 0; j < recList.length; j++) {
-            if(arrApt.includes(recList[j].appointmentListId))
-              arrRec.push(recList[j].id);
+          for(let j = 0; j < record.length; j++) {
+            if(arrApt.includes(record[j].appointmentListId))
+              arrRec.push(record[j].id);
           }
 
-          for(let j = 0; j < recDetList.length; j++) {
-            if(arrRec.includes(recDetList[j].appointmentRecordId)) {
-              if(recDetList[j].drugId === item.id) {
-                count = count + recDetList[j].count;
+          for(let j = 0; j < recorddt.length; j++) {
+            if(arrRec.includes(recorddt[j].appointmentRecordId)) {
+              if(recorddt[j].drugId === item.id) {
+                count = count + recorddt[j].count;
               }
             }
           }
@@ -634,31 +629,31 @@ useEffect(()=>{
     let count = 0;
     const date = formatDate(time);
     if(date.ms != date.ms){
-      for(let j = 0; j < aptList.length; j++) {
-        const tmp = StringToDate(aptList[j].scheduleDate);
+      for(let j = 0; j < appointment.length; j++) {
+        const tmp = StringToDate(appointment[j].scheduleDate);
         if((tmp.month === date.ms && tmp.year === date.ys && tmp.day >= date.start) ||
           (tmp.month === date.me && tmp.year === date.ye && tmp.day <= date.end))
-        arrApt.push(aptList[j].id)
+        arrApt.push(appointment[j].id)
       }
     }
     else {
-      for(let j = 0; j < aptList.length; j++) {
-        const tmp = StringToDate(aptList[j].scheduleDate);
+      for(let j = 0; j < appointment.length; j++) {
+        const tmp = StringToDate(appointment[j].scheduleDate);
         if(tmp.month === date.month && tmp.year === date.year && tmp.day >= date.start && tmp.day <= date.end)
-          arrApt.push(aptList[j].id)
+          arrApt.push(appointment[j].id)
       }
     }
     
     let arrRec = [];
-    for(let j = 0; j < recList.length; j++) {
-      if(arrApt.includes(recList[j].appointmentListId))
-        arrRec.push(recList[j].id);
+    for(let j = 0; j < record.length; j++) {
+      if(arrApt.includes(record[j].appointmentListId))
+        arrRec.push(record[j].id);
     }
 
-    for(let j = 0; j < recDetList.length; j++) {
-      if(arrRec.includes(recDetList[j].appointmentRecordId)) {
-        if(recDetList[j].drugId === item.id) {
-          count = count + recDetList[j].count;
+    for(let j = 0; j < recorddt.length; j++) {
+      if(arrRec.includes(recorddt[j].appointmentRecordId)) {
+        if(recorddt[j].drugId === item.id) {
+          count = count + recorddt[j].count;
         }
       }
     }
@@ -706,19 +701,19 @@ useEffect(()=>{
     reportCell.alignment = { vertical: 'middle', horizontal: 'center' };
     
     let data = [];
-    for (let i = 0; i < drugList.length; i++) {
+    for (let i = 0; i < drugs.length; i++) {
       let sl;
-      if(timeOption2 === 'Tháng') sl = getCountInTime(formatDate(valueTime2).month, formatDate(valueTime2).year, drugList[i]);
-      else if(timeOption2 === 'Năm') sl = getCountInTime(-1, formatDate(valueTime2).year, drugList[i])
-      else sl = getCountInTimeWeek(valueTime2, drugList[i])
+      if(timeOption2 === 'Tháng') sl = getCountInTime(formatDate(valueTime2).month, formatDate(valueTime2).year, drugs[i]);
+      else if(timeOption2 === 'Năm') sl = getCountInTime(-1, formatDate(valueTime2).year, drugs[i])
+      else sl = getCountInTimeWeek(valueTime2, drugs[i])
       let sld;
-      if(timeOption2 === 'Tháng') sld = countDrugInRecord(date.month, date.year, drugList[i]);
-      else if(timeOption2 === 'Năm') sld = countDrugInRecord(-1, date.year, drugList[i]);
-      else sld = countDrugInRecordWeek(valueTime2, drugList[i]);
+      if(timeOption2 === 'Tháng') sld = countDrugInRecord(date.month, date.year, drugs[i]);
+      else if(timeOption2 === 'Năm') sld = countDrugInRecord(-1, date.year, drugs[i]);
+      else sld = countDrugInRecordWeek(valueTime2, drugs[i]);
         data.push({
             STT: i+1,
-            thuoc: drugList[i].drugName,
-            donVi: getUnitName({ id: drugList[i].unitId }),
+            thuoc: drugs[i].drugName,
+            donVi: getUnitName({ id: drugs[i].unitId }),
             soLuong: sl,
             soLD: sld,
         })
@@ -753,8 +748,8 @@ useEffect(()=>{
     return formattedNumber;
   }
 
+  console.log("tmp outside", chartData);
   
-  console.log("Selected Item",selectItem);
     return ( 
       
     <div className="d-flex flex-row w-100">
@@ -776,6 +771,7 @@ useEffect(()=>{
                               </div>
                           }
                       </div>
+                      {false && 
                       <div className='select-box-2' style={{marginLeft: '10px'}}>
                           <div className='combobox' onClick={() => handleOpenTimeOption2(!isOpenTimeOption2)}>
                               <p>{timeOption2}</p>
@@ -786,18 +782,18 @@ useEffect(()=>{
                           
                           {isOpenTimeOption2 &&
                               <div className='select-time' >
-                                  <div className='item' onClick={() => {handleSetTimeOption2('Tuần');  handleOpenTimeOption2(false)}}>
+                                  {/* <div className='item' onClick={() => {handleSetTimeOption2('Tuần');  handleOpenTimeOption2(false)}}>
                                       <p>Tuần</p>
-                                  </div>
-                                  <div className='item' onClick={() => {handleSetTimeOption2('Tháng');  handleOpenTimeOption2(false)}}>
+                                  </div> */}
+                                  {/* <div className='item' onClick={() => {handleSetTimeOption2('Tháng');  handleOpenTimeOption2(false)}}>
                                       <p>Tháng</p>
-                                  </div>
-                                  <div className='item' onClick={() => {handleSetTimeOption2('Năm');  handleOpenTimeOption2(false)}}>
+                                  </div> */}
+                                  {/* <div className='item' onClick={() => {handleSetTimeOption2('Năm');  handleOpenTimeOption2(false)}}>
                                       <p>Năm</p>
-                                  </div>
+                                  </div> */}
                               </div>
                           }
-                      </div>
+                      </div>}
                       
                   </div>
                   <div className="d-flex col-md-6 justify-content-end">

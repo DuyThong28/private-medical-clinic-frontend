@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useRef, useEffect } from 'react';
 import { useQuery } from "@tanstack/react-query";
 
 import { useState, useLayoutEffect } from "react";
@@ -13,8 +14,8 @@ import { fetchAllAppointmentList } from "../../../services/appointmentList";
 import { fetchAllBills } from "../../../services/bill";
 
 import { Bar, Doughnut } from "react-chartjs-2";
-import ChartAnnotation from 'chartjs-plugin-annotation';
 import SelectTime from "../../../components/SelectTime";
+import BillDetail from "./BillDetail";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -40,7 +41,6 @@ ChartJS.register(
   Legend
 );
 
-
 let rememberWeek = dayjs();
 let rememberMonth = dayjs();
 let rememberYear = dayjs();
@@ -64,10 +64,10 @@ function Revenue() {
       return fetchAllAppointmentList();
     },
   });
-  const appointmentLists = appointmentListsQuery.data;
+  const appointmentLists = appointmentListsQuery.data || [];
 
   const billsQuery = useQuery({
-    queryKey: ["billlist"],
+    queryKey: ["bills"],
     queryFn: () => {
       return fetchAllBills();
     },
@@ -82,8 +82,6 @@ function Revenue() {
     return arr;
   };
 
-  const aptList = ConvernToArray(appointmentLists);
-  const billList = ConvernToArray(bills) || [];
   const patientList = ConvernToArray(patients);
 
   const StringToDate = (str) => {
@@ -290,19 +288,19 @@ function Revenue() {
         let arr = [];
         let sum = 0;
         let cnt = 0;
-        for (let j = 0; j < aptList.length; j++) {
-          const tmp = StringToDate(aptList[j].scheduleDate);
+        for (let j = 0; j < appointmentLists.length; j++) {
+          const tmp = StringToDate(appointmentLists[j].scheduleDate);
           if (
             tmp.day === i &&
             tmp.month === date.month &&
             tmp.year === date.year
           ) {
-            arr.push(aptList[j].id);
+            arr.push(appointmentLists[j].id);
           }
         }
-        for (let j = 0; j < billList.length; j++) {
-          if (arr.includes(billList[j].appointmentListId)) {
-            sum = sum + billList[j].drugExpense + billList[j].feeConsult;
+        for (let j = 0; j < bills.length; j++) {
+          if (arr.includes(bills[j].appointmentListId)) {
+            sum = sum + bills[j].drugExpense + bills[j].feeConsult;
             cnt++;
           }
         }
@@ -314,14 +312,14 @@ function Revenue() {
         let arr = [];
         let sum = 0;
         let cnt = 0;
-        for (let j = 0; j < aptList.length; j++) {
-          const tmp = StringToDate(aptList[j].scheduleDate);
+        for (let j = 0; j < appointmentLists.length; j++) {
+          const tmp = StringToDate(appointmentLists[j].scheduleDate);
           if (tmp.day === i && tmp.month === date.ms && tmp.year === date.ys)
-            arr.push(aptList[j].id);
+            arr.push(appointmentLists[j].id);
         }
-        for (let j = 0; j < billList.length; j++) {
-          if (arr.includes(billList[j].appointmentListId)) {
-            sum = sum + billList[j].drugExpense + billList[j].feeConsult
+        for (let j = 0; j < bills.length; j++) {
+          if (arr.includes(bills[j].appointmentListId)) {
+            sum = sum + bills[j].drugExpense + bills[j].feeConsult
             cnt++;
           }
         }
@@ -333,14 +331,14 @@ function Revenue() {
         let arr = [];
         let sum = 0;
         let cnt = 0;
-        for (let j = 0; j < aptList.length; j++) {
-          const tmp = StringToDate(aptList[j].scheduleDate);
+        for (let j = 0; j < appointmentLists.length; j++) {
+          const tmp = StringToDate(appointmentLists[j].scheduleDate);
           if (tmp.day === i && tmp.month === date.me && tmp.year === date.ye)
-            arr.push(aptList[j].id);
+            arr.push(appointmentLists[j].id);
         }
-        for (let j = 0; j < billList.length; j++) {
-          if (arr.includes(billList[j].appointmentListId)) {
-            sum = sum + billList[j].drugExpense + billList[j].feeConsult
+        for (let j = 0; j < bills.length; j++) {
+          if (arr.includes(bills[j].appointmentListId)) {
+            sum = sum + bills[j].drugExpense + bills[j].feeConsult
             cnt++;
           }
         }
@@ -362,15 +360,15 @@ function Revenue() {
       let arr = [];
       let sum = 0;
       let cnt = 0;
-      for (let j = 0; j < aptList.length; j++) {
-        const tmp = StringToDate(aptList[j].scheduleDate);
+      for (let j = 0; j < appointmentLists.length; j++) {
+        const tmp = StringToDate(appointmentLists[j].scheduleDate);
         if (tmp.month === i && tmp.year === date.year) {
-          arr.push(aptList[j].id);
+          arr.push(appointmentLists[j].id);
         }
       }
-      for (let j = 0; j < billList.length; j++) {
-        if (arr.includes(billList[j].appointmentListId)) {
-          sum = sum + billList[j].drugExpense + billList[j].feeConsult
+      for (let j = 0; j < bills.length; j++) {
+        if (arr.includes(bills[j].appointmentListId)) {
+          sum = sum + bills[j].drugExpense + bills[j].feeConsult
           cnt++;
         }
       }
@@ -392,15 +390,15 @@ function Revenue() {
       let arr = [];
       let sum = 0;
       let cnt = 0;
-      for (let j = 0; j < aptList.length; j++) {
-        const tmp = StringToDate(aptList[j].scheduleDate);
+      for (let j = 0; j < appointmentLists.length; j++) {
+        const tmp = StringToDate(appointmentLists[j].scheduleDate);
         if (tmp.day === i && tmp.month == date.month && tmp.year === date.year) {
-          arr.push(aptList[j].id);
+          arr.push(appointmentLists[j].id);
         }
       }
-      for (let j = 0; j < billList.length; j++) {
-        if (arr.includes(billList[j].appointmentListId)) {
-          sum = sum + billList[j].drugExpense + billList[j].feeConsult;
+      for (let j = 0; j < bills.length; j++) {
+        if (arr.includes(bills[j].appointmentListId)) {
+          sum = sum + bills[j].drugExpense + bills[j].feeConsult;
           cnt++;
         }
       }
@@ -475,24 +473,24 @@ function Revenue() {
     setChartData(tmp);
   };
   React.useEffect(()=>{
-        // setChartData({
-        //   labels: getLabelForChartWeek(valueTime), // Replace with your category labels
-        //   datasets: [
-        //     {
-        //       label: "Doanh thu",
-        //       data: getDataNewForChartWeek(valueTime).count, // Replace with your variable 2 data
-        //       backgroundColor: "#3A57E8",
-        //       borderWidth: 1,
-        //       barThickness: 10,
-        //       borderRadius: 50,
-        //     },
-        //   ],
-        // })
+        setChartData({
+          labels: getLabelForChartWeek(valueTime), // Replace with your category labels
+          datasets: [
+            {
+              label: "Doanh thu",
+              data: getDataNewForChartWeek(valueTime).count, // Replace with your variable 2 data
+              backgroundColor: "#3A57E8",
+              borderWidth: 1,
+              barThickness: 10,
+              borderRadius: 50,
+            },
+          ],
+        })
         setNewDataForDonutChart(valueTime2, "Week");
   }, [bills])
 
   // React.useEffect(()=>{
-  //     if(aptList.length > 0)
+  //     if(appointmentLists.length > 0)
   //     {
   //       setChartData({
   //         labels: getLabelForChartWeek(valueTime), // Replace with your category labels
@@ -509,7 +507,7 @@ function Revenue() {
   //       })
   //       stopInitLoad = true;
   //     }
-  // }, [aptList])
+  // }, [appointmentLists])
   
   const [chartData, setChartData] = useState({
     labels: getLabelForChartWeek(valueTime), // Replace with your category labels
@@ -524,6 +522,30 @@ function Revenue() {
       },
     ],
   });
+  function formatNumberY(number) {  
+    if(number <= 999) return number;
+    if(number <= 999999) return Math.floor(number/1000) + "K";
+    if(number <= 999999999) 
+    {
+      if(Math.floor(number/1000000) >= 100)
+        return Math.floor(number/1000000) + "M";
+      else
+        return Math.floor(number/1000000) + ',' + Math.floor((number%1000000)/100000) + "M";
+    }
+    if(number <= 999999999999) 
+    {
+      if(Math.floor(number/1000000000) >= 100)
+        return Math.floor(number/1000000000) + "B";
+      else
+        return Math.floor(number/1000000000) + ',' + Math.floor((number%1000000000)/100000000) + "B";
+    }
+    if(number <= 999999999999999) {
+      if(Math.floor(number/1000000000000) >= 100)
+        return Math.floor(number/1000000000000) + "T";
+      else
+        return Math.floor(number/1000000000000) + ',' + Math.floor((number%1000000000000)/100000000000) + "T";
+    }
+  }
 
   const optionschart = {
     title: {
@@ -534,10 +556,17 @@ function Revenue() {
         ticks: {
           maxTicksLimit: 5,
           callback: function(value, index, values) {
-            return Number.isInteger(value) ? value : '';
-          }
+            return formatNumberY(value); // Format x-axis labels as well
+          },
         },
       },
+      x: {
+        ticks: {
+          rotation: 0,
+          textAlign: 'center', // Center text horizontally (optional)
+        textBaseline: 'middle',
+        }
+      }
     },
     plugins: {
       legend: {
@@ -562,7 +591,7 @@ function Revenue() {
     labels: ['Tiền khám', 'Tiền thuốc'],
     datasets: [
       {
-        label: "Doanh thu",
+        // label: "Doanh thu",
         data: [20, 10],
         backgroundColor: [
           'rgba(58, 87, 232, 0.2)',
@@ -576,14 +605,14 @@ function Revenue() {
       },
     ],
   };
-  const [donutText, setDonutText] = useState("Tổng tiền");
-  const [donutCost, setDonutCost] = useState(0);
+  
+  const [isSetAvailable, setIsSetAvailable] = useState(true);
   const [dataDonut, setDataDonut] = useState(
     {
       labels: ['Tiền khám', 'Tiền thuốc'],
       datasets: [
         {
-          label: "Doanh thu",
+          // label: "Doanh thu",
           data: [20, 10],
           backgroundColor: [
             'rgba(133, 244, 250, 0.2)',
@@ -598,30 +627,76 @@ function Revenue() {
       ],
     }
   );
+  const [donutText, setDonutText] = useState("Tổng tiền");
+  const [donutCost, setDonutCost] = useState(dataDonut.datasets[0].data[0] + dataDonut.datasets[0].data[1]);
+  const [donutColor, setDonutColor] = useState('#555555');
   
   const optionsDn = {
     plugins: {
+      tooltip: {
+        enabled: false, // Tắt tooltip
+      },
       legend: {
         display: false, // Ẩn chú thích màu
       },
     },
     responsive: true,
-    onClick: (event, elements) => {
-      if (elements.length) {
-        const clickedElementIndex = elements[0].index;
-        const label = dataDonut.labels[clickedElementIndex];
-        const value = dataDonut.datasets[0].data[clickedElementIndex];
+    onHover: (event, elements) => {
+      if (elements.length&& isSetAvailable) {
+        const hoveredElementIndex = elements[0].index;
+        const label = dataDonut.labels[hoveredElementIndex];
+        const value = dataDonut.datasets[0].data[hoveredElementIndex];
         setDonutText(label);
         setDonutCost(value);
+        if(hoveredElementIndex == 0) setDonutColor("#85f4fa");
+        else setDonutColor("#3a57e8");
+      } else {
+        setDonutColor("#555555");
+        setDonutText("Tổng tiền");
+        setDonutCost(dataDonut.datasets[0].data[0] + dataDonut.datasets[0].data[1]);
       }
-    }
+    },
   };
+  const chartRef = useRef(null);
+  useEffect(() => {
+    const chartInstance = chartRef.current;
+    if (chartInstance) {
+      const canvas = chartInstance.canvas;
+      const handleMouseOut = () => {
+        setIsSetAvailable(false);
+        setDonutColor("#555555");
+        setDonutText("Tổng tiền");
+        setDonutCost(dataDonut.datasets[0].data[0] + dataDonut.datasets[0].data[1]);
+      };
+      
+
+      canvas.addEventListener('mouseout', handleMouseOut);
+
+      return () => {
+        canvas.removeEventListener('mouseout', handleMouseOut);
+      };
+    }
+  }, [chartRef]);
+  useEffect(() => {
+    const chartInstance = chartRef.current;
+    if (chartInstance) {
+      const canvas = chartInstance.canvas;
+      const handleMouseOver = () => {
+        setIsSetAvailable(true);
+      };
+      canvas.addEventListener('mouseover', handleMouseOver);
+      return () => {
+        canvas.removeEventListener('mouseover', handleMouseOver);
+      };
+    }
+  }, [chartRef]);
+  
   // GET DATA FOR DOUGHNUT CHART
   const setNewDataForDonutChart = (time, option) => {
-    console.log(bills);
     const newData = getDataForDonutChart(time, option);
     setDonutText("Tổng tiền");
     setDonutCost(newData.sumDrug + newData.sumFee);
+    setDonutColor("#555555");
     setDataDonut(
       {
         labels: ['Tiền khám', 'Tiền thuốc'],
@@ -650,35 +725,35 @@ function Revenue() {
     const date = formatDate(time);
     if(option == "Month") {
       const cntDay = getDayofMonth(date.month, date.year)
-      for(let i = 0; i < aptList.length; i++) {
-        const tmp = StringToDate(aptList[i].scheduleDate);
+      for(let i = 0; i < appointmentLists.length; i++) {
+        const tmp = StringToDate(appointmentLists[i].scheduleDate);
         if(1 <= tmp.day && tmp.day <= cntDay && tmp.month == date.month && tmp.year == date.year) {
-          arr.push(aptList[i].id);
+          arr.push(appointmentLists[i].id);
         }
       }
     }
     else if(option == "Year") {
-      for(let i = 0; i < aptList.length; i++) {
-        const tmp = StringToDate(aptList[i].scheduleDate);
+      for(let i = 0; i < appointmentLists.length; i++) {
+        const tmp = StringToDate(appointmentLists[i].scheduleDate);
         if(1 <= tmp.month && tmp.month <= 12 && tmp.year == date.year) {
-          arr.push(aptList[i].id);
+          arr.push(appointmentLists[i].id);
         }
       }
     }
     else {
-      for(let i = 0; i < aptList.length; i++) {
-        const tmp = StringToDate(aptList[i].scheduleDate);
+      for(let i = 0; i < appointmentLists.length; i++) {
+        const tmp = StringToDate(appointmentLists[i].scheduleDate);
         if((date.ms == date.me && date.start <= tmp.day && tmp.day <= date.end && tmp.month == date.month && tmp.year == date.year) ||
            (date.ms != date.me && ((date.start <= tmp.day && tmp.month == date.ms && tmp.year == date.ys)|| 
                                    (tmp.day <= date.end && tmp.month == date.me && tmp.year == date.ye)))) {
-          arr.push(aptList[i].id);
+          arr.push(appointmentLists[i].id);
         }
       }
     }
-    for (let j = 0; j < billList.length; j++) {
-      if (arr.includes(billList[j].appointmentListId)) {
-        sumFee = sumFee + billList[j].feeConsult;
-        sumDrug = sumDrug + billList[j].drugExpense;
+    for (let j = 0; j < bills.length; j++) {
+      if (arr.includes(bills[j].appointmentListId)) {
+        sumFee = sumFee + bills[j].feeConsult;
+        sumDrug = sumDrug + bills[j].drugExpense;
       }
     }
     return {
@@ -686,8 +761,20 @@ function Revenue() {
       sumDrug: sumDrug,
     };
   };
+
+  // BILL DETAILS
+  const [selectedBill, setSelectedBill] = useState({});
+  const [isOpenBillDetail, setIsOpenBillDetail] = useState(false);
+  const handleSetSelectedBill = (newValue) => {
+    setSelectedBill(newValue);
+    setIsOpenBillDetail(true);
+  }
   return (
-    <div className="d-flex flex-row w-100">
+    <div className="d-flex flex-row w-100 maincontainer">
+      {isOpenBillDetail && <div className="bill-detail">
+          <BillDetail bills={bills} appointmentLists={appointmentLists} timeoption={timeOption} date={selectedBill} setIsOpenBillDetail={setIsOpenBillDetail}>
+        </BillDetail>
+      </div>}
       <div className="col-md-7">
         <Card>
           <div className=" w-100 h-100 overflow-hidden">
@@ -762,9 +849,11 @@ function Revenue() {
                 <GridViewRevenue
                   date={formatDate(valueTime)}
                   getDayOfMonth={getDayofMonth}
-                  aptList={aptList}
-                  billList={billList}
+                  appointmentLists={appointmentLists}
+                  bills={bills}
                   timeOption={timeOption}
+                  handleSetSelectedBill={handleSetSelectedBill}
+                  setIsOpenBillDetail={setIsOpenBillDetail}
                 ></GridViewRevenue>
             </div>
           </div>
@@ -841,10 +930,12 @@ function Revenue() {
               <div className="chartdonut-area">
                 <div className="Spacer"></div>
                 <div className="donut-chart">
-                  <Doughnut data={dataDonut} options={optionsDn}></Doughnut>
-                  <div className="Text-doughnut">
-                      <p>{donutText}</p>
-                      <p>{formatMoney(donutCost)}</p>
+                  <div className="Chart">
+                    <Doughnut  ref={chartRef} className="Donut" data={dataDonut} options={optionsDn}></Doughnut>
+                    <div className="Text-doughnut">
+                        <p >{donutText}</p>
+                        <p >{formatMoney(donutCost)}</p>
+                    </div>
                   </div>
                 </div>
               </div>

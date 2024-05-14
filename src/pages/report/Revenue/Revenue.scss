@@ -33,7 +33,7 @@
     .calendar {
         position: absolute;
         top: 40px;
-        left: -12px;
+        left: 0px;
     }
 }
 .select-box-2 {
@@ -61,7 +61,7 @@
     .calendar {
         position: absolute;
         top: 40px;
-        left: -12px;
+        left: -5px;
     }
 }
 
@@ -117,8 +117,8 @@
     }
     .calendar {
         position: absolute;
-        top: 40px;
-        left: -12px;
+        top: 20px;
+        left: -5px;
     }
 }
 .select-box-5 {
@@ -148,12 +148,11 @@
     .calendar {
         position: absolute;
         top: 40px;
-        left: -12px;
+        left: -5px;
     }
 }
 
 .donut-chart {
-    position: relative;
     display: flex;
     flex-grow: 1;
     align-items: center;
@@ -172,6 +171,19 @@
 
 .chartdonut-area {
     flex-grow: 1;
+    height: 100%;
+    width: 100%;
+    .Chart {
+        position: relative;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        .Donut {
+            height: 80%!important;
+            width: 80%!important;
+        }
+    }
     // height: calc((100%) - 40px);
 }
 
@@ -180,11 +192,27 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    font-size: 2vw;
+    font-size: 1.5vw;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     p {
         margin: 0px;
     }
 }
 
 .Spacer {
+}
+
+.maincontainer {
+    position: relative;
+    .bill-detail {
+        height: 400px;
+        width: 80%;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 1;
+    }
 }
