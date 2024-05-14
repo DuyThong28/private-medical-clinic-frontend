@@ -75,10 +75,16 @@ const InvoiceDetail = forwardRef(function InvoiceDetail({ children }, ref) {
   });
 
   function calculateDrugExpense({ totalPrice }) {
-    setDialogState((prevState) => {
-      const newDrugExpense = prevState.drugExpense + totalPrice;
-      return { ...prevState, drugExpense: newDrugExpense };
-    });
+    if (!isBill) {
+      setDialogState((prevState) => {
+        const newDrugExpense = prevState.drugExpense + totalPrice;
+        return { ...prevState, drugExpense: newDrugExpense };
+      });
+    } else {
+      setDialogState((prevState) => {
+        return { ...prevState };
+      });
+    }
   }
 
   const diseaseState = diseasesQuery.data;
@@ -112,12 +118,12 @@ const InvoiceDetail = forwardRef(function InvoiceDetail({ children }, ref) {
       },
 
       async showDetail({ bill }) {
-        // setDialogState((prevState) => {
-        //   return {
-        //     ...prevState,
-        //     drugExpense: 0,
-        //   };
-        // });
+        setDialogState((prevState) => {
+          return {
+            ...prevState,
+            drugExpense: 0,
+          };
+        });
 
         const resData = await fetchAppointmentRecordByBill({ bill });
         const billData = await fetchBillById({ id: bill.id });
@@ -300,7 +306,7 @@ const InvoiceDetail = forwardRef(function InvoiceDetail({ children }, ref) {
                   isBill={true}
                 />
               </div>
-              <div className="d-flex mt-3 justify-content-end">
+              <div className="d-flex mt-3 justify-content-end text-dark">
                 <div style={{ width: "20rem" }}>
                   <div className="row justify-content-around">
                     <span className="col">Tổng tiền thuốc:</span>

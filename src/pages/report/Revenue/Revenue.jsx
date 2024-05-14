@@ -803,8 +803,8 @@ function Revenue() {
       {isOpenBillDetail && (
         <div className="bill-detail">
           <BillDetail
-            billList={bills}
-            aptList={appointmentLists}
+            bills={bills}
+            appointmentLists={appointmentLists}
             timeoption={timeOption}
             date={selectedBill}
             setIsOpenBillDetail={setIsOpenBillDetail}

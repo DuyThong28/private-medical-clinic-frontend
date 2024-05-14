@@ -120,7 +120,7 @@ export default function HistoryTab({ isEditable }) {
                           xmlns="http://www.w3.org/2000/svg"
                           width="16"
                           height="16"
-                          fill="#1B59F8"
+                          fill="#646565"
                           className="bi bi-eye-fill"
                           viewBox="0 0 16 16"
                         >
@@ -139,7 +139,7 @@ export default function HistoryTab({ isEditable }) {
                           xmlns="http://www.w3.org/2000/svg"
                           width="16"
                           height="16"
-                          fill="#1B59F8"
+                          fill="#646565"
                           className="bi bi-archive-fill"
                           viewBox="0 0 16 16"
                         >

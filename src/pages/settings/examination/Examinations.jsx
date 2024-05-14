@@ -126,7 +126,7 @@ function ExaminationsPage() {
   return (
     <>
       <RescordHistoryModal ref={payModalRef} />
-      <InvoiceDetail ref={invoiceRef} />
+      <InvoiceDetail ref={invoiceRef}/>
       <NotificationDialog ref={notiDialogRef} keyQuery={["appointmentList"]} />
       <div className="h-100 w-100">
         <Card className="p-3">
