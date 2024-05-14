@@ -5,214 +5,217 @@
 //     width: 100%;
 // }
 .icon {
-    font-size: 25px;
-    margin-left: 15px;
+  font-size: 25px;
+  margin-left: 15px;
 }
 .select-box-3 {
-    position: relative;
-    display: flex;
-    align-items: center;
-    height: 40px;
-    width: 215px;
-    border-radius: 5px;
-    z-index: 1;
-    border: 1px solid blue;
-    .combobox {
-        height: 100%;
-        width: 100%;
-    }
-    p {
-        margin: 8px;
-        font-weight: 600;
-    }
-    .icon {
-        position: absolute;
-        top: 4px;
-        right: 5px;
-    }
-    .calendar {
-        position: absolute;
-        top: 40px;
-        left: 0px;
-    }
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 40px;
+  width: 215px;
+  border-radius: 5px;
+  z-index: 1;
+  border: 1px solid #d5d5d5 !important;
+  .combobox {
+    height: 100%;
+    width: 100%;
+  }
+  p {
+    margin: 8px;
+    font-weight: 600;
+  }
+  .icon {
+    position: absolute;
+    top: 4px;
+    right: 5px;
+  }
+  .calendar {
+    position: absolute;
+    top: 40px;
+    left: 0px;
+  }
 }
 .select-box-2 {
-    position: relative;
-    display: flex;
-    align-items: center;
-    height: 40px;
-    width: 100px;
-    border-radius: 5px;
-    border: 1px solid blue;
-    z-index: 1;
-    .combobox {
-        height: 100%;
-        width: 100%;
-    }
-    p {
-        margin: 8px;
-        font-weight: 600;
-    }
-    .icon {
-        position: absolute;
-        top: 4px;
-        right: 5px;
-    }
-    .calendar {
-        position: absolute;
-        top: 40px;
-        left: -5px;
-    }
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 40px;
+  width: 100px;
+  border-radius: 5px;
+  border: 1px solid #d5d5d5 !important;
+  z-index: 1;
+  .combobox {
+    height: 100%;
+    width: 100%;
+  }
+  p {
+    margin: 8px;
+    font-weight: 600;
+  }
+  .icon {
+    position: absolute;
+    top: 4px;
+    right: 5px;
+  }
+  .calendar {
+    position: absolute;
+    top: 40px;
+    left: -5px;
+  }
 }
 
 .select-time {
-    position: absolute;
-    margin: 0;
-    top: 40px;
-    left: 0px;
-    width: 100%;
-    border-radius: 5px;
-    background-color: white;
-    border: 1px solid blue;
-    .item {
-        padding: 8px;
-        p {
-            margin: 0px;
-        }
+  position: absolute;
+  margin: 0;
+  top: 40px;
+  left: 0px;
+  width: 100%;
+  border-radius: 5px;
+  background-color: white;
+  border: 1px solid #4880ff !important;
+  .item {
+    padding: 8px;
+    p {
+      margin: 0px;
     }
-    .item:hover {
-        background-color: #999;
-    }
+  }
+  .item:hover {
+    background-color: #999;
+  }
 }
 
 .chart {
-    margin-top: 10px;
-    height: 100%;
-    z-index: -99;
+  margin-top: 10px;
+  height: 100%;
+  width: 100%;
+  z-index: -99;
 }
 
 .select-box-4 {
-    position: relative;
-    display: flex;
-    align-items: center;
-    height: 30px;
-    width: 130px;
-    z-index: 1;
-    border: 1px solid blue;
-    border-radius: 3px;
-    .combobox {
-        height: 100%;
-        width: 100%;
-    }
-    p {
-        margin: 8px;
-        font-weight: 500;
-        font-size: 12px;
-    }
-    .icon {
-        position: absolute;
-        top: 4px;
-        right: 3px;
-        font-size: 12px;
-    }
-    .calendar {
-        position: absolute;
-        top: 20px;
-        left: -5px;
-    }
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 30px;
+  width: 130px;
+  z-index: 1;
+  border: 1px solid #d5d5d5 !important;
+  border-radius: 3px;
+  .combobox {
+    height: 100%;
+    width: 100%;
+  }
+  p {
+    margin: 8px;
+    font-weight: 500;
+    font-size: 12px;
+  }
+  .icon {
+    position: absolute;
+    top: 4px;
+    right: 3px;
+    font-size: 12px;
+  }
+  .calendar {
+    position: absolute;
+    top: 20px;
+    left: -125px !important;
+  }
 }
 .select-box-5 {
-    position: relative;
-    display: flex;
-    align-items: center;
-    height: 30px;
-    width: 60px;
-    z-index: 1;
-    border: 1px solid blue;
-    border-radius: 3px;
-    .combobox {
-        height: 100%;
-        width: 100%;
-    }
-    p {
-        margin: 6px;
-        font-weight: 500;
-        font-size: 12px;
-    }
-    .icon {
-        position: absolute;
-        top: 4px;
-        right: 3px;
-        font-size: 12px;
-    }
-    .calendar {
-        position: absolute;
-        top: 40px;
-        left: -5px;
-    }
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 30px;
+  width: 60px;
+  z-index: 1;
+  border: 1px solid #d5d5d5 !important;
+  border-radius: 3px;
+  .combobox {
+    height: 100%;
+    width: 100%;
+  }
+  p {
+    margin: 6px;
+    font-weight: 500;
+    font-size: 12px;
+  }
+  .icon {
+    position: absolute;
+    top: 4px;
+    right: 3px;
+    font-size: 12px;
+  }
+  .calendar {
+    position: absolute;
+    top: 40px;
+    left: -5px;
+  }
 }
 
 .donut-chart {
-    display: flex;
-    flex-grow: 1;
-    align-items: center;
-    justify-content: center;
-    // padding-top: 40px;
-    // padding-bottom: 40px;
-    border-radius: 3px;
-    height: 100%;
+  display: flex;
+  flex-grow: 1;
+  align-items: center;
+  justify-content: center;
+  // padding-top: 40px;
+  // padding-bottom: 40px;
+  border-radius: 3px;
+  height: 100%;
 }
 
 .container-chart {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .chartdonut-area {
-    flex-grow: 1;
-    height: 100%;
-    width: 100%;
-    .Chart {
-        position: relative;
-        width: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        .Donut {
-            height: 70%!important;
-            width: 70%!important;
-        }
+  flex-grow: 1;
+  height: 100%;
+  width: 100%;
+  .Chart {
+    position: relative;
+    width: 80%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    .Donut {
+      height: 70% !important;
+      width: 70% !important;
     }
-    // height: calc((100%) - 40px);
+  }
+  // height: calc((100%) - 40px);
 }
 
 .Text-doughnut {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 1.5vw;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    p {
-        margin: 0px;
-    }
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  // font-size: 1.5vw;
+  font-weight: bold;
+  color: black;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  p {
+    margin: 0px;
+  }
 }
 
 .Spacer {
 }
 
 .maincontainer {
-    position: relative;
-    .bill-detail {
-        height: 400px;
-        width: 80%;
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        z-index: 1;
-    }
+  position: relative;
+  .bill-detail {
+    height: 400px;
+    width: 80%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1;
+  }
 }

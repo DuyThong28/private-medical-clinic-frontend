@@ -1,29 +1,32 @@
 .year-calendar {
-    height: 300px;
-    width: 300px;
-    // border: 1px solid blue;
-    border-radius: 5px;
-    background-color: white;
+  height: 300px;
+  width: 300px;
+//   border: 1px solid #4880ff !important;
+  border-radius: 4px;
+  background-color: white;
 }
 .container {
-    display: flex;
-    height: 300px;
-    flex-direction: row;
+  display: flex;
+  height: 300px;
+  flex-direction: row;
+  border: 1px solid #4880ff !important;
+  --bs-gutter-x: 0rem !important;
+  overflow: hidden;
 }
 
 .month-calendar {
-    height: 300px;
-    max-height: 300px;
-    width: 320px;
-    // border: 1px solid blue;
-    border-radius: 5px;
-    background-color: white;
+  height: 300px;
+  max-height: 300px;
+  width: 320px;
+//   border: 1px solid #4880ff !important;
+  border-radius: 4px;
+  background-color: white;
 }
 
 .year-calendar {
-    height: 300px;
-    width: 320px;
-    // border: 1px solid blue;
-    border-radius: 5px;
-    background-color: white;
+  height: 300px;
+  width: 320px;
+//   border: 1px solid #4880ff !important;
+  border-radius: 4px;
+  background-color: white;
 }

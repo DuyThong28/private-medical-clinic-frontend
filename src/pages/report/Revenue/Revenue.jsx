@@ -272,12 +272,11 @@ function Revenue() {
     let arr = [];
     const date = formatDate(time);
     if (date.start < date.end) {
-      for (let i = date.start; i <= date.end; i++)
-        arr.push(i + "/" + date.month);
+      for (let i = date.start; i <= date.end; i++) arr.push(i);
     } else {
       for (let i = date.start; i <= getDayofMonth(date.ms, date.ys); i++)
-        arr.push(i + "/" + date.ms);
-      for (let i = 1; i <= date.end; i++) arr.push(i + "/" + date.me);
+        arr.push(i);
+      for (let i = 1; i <= date.end; i++) arr.push(i);
     }
     return arr;
   };
@@ -583,7 +582,7 @@ function Revenue() {
     scales: {
       x: {
         ticks: {
-          maxTicksLimit: 20,
+          maxTicksLimit: 16,
         },
       },
       y: {
@@ -640,11 +639,12 @@ function Revenue() {
       },
     ],
   });
-  const [donutText, setDonutText] = useState("Tổng tiền");
+  const [donutText, setDonutText] = useState("Doanh thu");
   const [donutCost, setDonutCost] = useState(
     dataDonut.datasets[0].data[0] + dataDonut.datasets[0].data[1]
   );
   const [donutColor, setDonutColor] = useState("#555555");
+  const [totalDonutCost, setTotalDonutCost] = useState(0);
 
   const optionsDn = {
     plugins: {
@@ -669,7 +669,7 @@ function Revenue() {
         else setDonutColor("#3a57e8");
       } else {
         setDonutColor("#555555");
-        setDonutText("Tổng tiền");
+        setDonutText("Doanh thu");
         setDonutCost(
           dataDonut.datasets[0].data[0] + dataDonut.datasets[0].data[1]
         );
@@ -684,10 +684,11 @@ function Revenue() {
       const canvas = chartInstance.canvas;
       const handleMouseOut = () => {
         setIsSetAvailable(false);
-        // setDonutColor("#555555");
-        // setDonutText("Tổng tiền");
-        // setDonutCost(dataDonut.datasets[0].data[0] + dataDonut.datasets[0].data[1]);
-        // console.log("cost4",dataDonut.datasets[0].data[0] + " " + dataDonut.datasets[0].data[1]);
+        setDonutColor("#555555");
+        setDonutText("Doanh thu");
+        const newData = getDataForDonutChart(valueTime2, timeOption2);
+        setDonutCost(newData.sumDrug + newData.sumFee);
+        console.log("cost4", newData.sumDrug + newData.sumFee);
       };
 
       canvas.addEventListener("mouseout", handleMouseOut);
@@ -696,7 +697,7 @@ function Revenue() {
         canvas.removeEventListener("mouseout", handleMouseOut);
       };
     }
-  }, [chartRef]);
+  }, [chartRef, appointmentLists, bills]);
   useEffect(() => {
     const chartInstance = chartRef.current;
     if (chartInstance) {
@@ -711,19 +712,8 @@ function Revenue() {
     }
   }, [chartRef]);
   function formatMoneyForDonutChart(number) {
-    if (number <= 999) return number;
-    if (number <= 999999) return Math.floor(number / 1000) + "K";
-    if (number <= 999999999) {
-      if (Math.floor(number / 1000000) >= 100)
-        return Math.floor(number / 1000000) + "M";
-      else
-        return (
-          Math.floor(number / 1000000) +
-          "," +
-          Math.floor((number % 1000000) / 100000) +
-          "M"
-        );
-    }
+    if (number <= 999999999) return formatMoney(number);
+
     if (number <= 999999999999) {
       if (Math.floor(number / 1000000000) >= 100)
         return Math.floor(number / 1000000000) + "B";
@@ -751,7 +741,7 @@ function Revenue() {
   // GET DATA FOR DOUGHNUT CHART
   const setNewDataForDonutChart = (time, option) => {
     const newData = getDataForDonutChart(time, option);
-    setDonutText("Tổng tiền");
+    setDonutText("Doanh thu");
     setDonutCost(newData.sumDrug + newData.sumFee);
     // console.log("cost2",newData.sumDrug + newData.sumFee);
 
@@ -838,9 +828,9 @@ function Revenue() {
     setIsOpenBillDetail(true);
   };
   return (
-    <div className="d-flex flex-row w-100 maincontainer">
+    <div className="d-flex flex-row w-100 h-100 maincontainer p-3">
       {isOpenBillDetail && (
-        <div className="bill-detail">
+        <div className=" bill-detail">
           <BillDetail
             bills={bills}
             appointmentLists={appointmentLists}
@@ -850,100 +840,98 @@ function Revenue() {
           ></BillDetail>
         </div>
       )}
-      <div className="col-md-7">
-        <Card>
+      <div className="col-md-8">
+        <Card style={{ padding: "0rem 1rem 0rem 0rem" }}>
           <div className=" w-100 h-100 overflow-hidden">
-            <div className="position-relative">
-              <div className="row">
-                <div className="d-flex col-md-6 justify-content-start">
-                  <div className="select-box-3">
-                    <div
-                      className="combobox"
-                      onClick={() => handleOpenCalendar(!isOpenCalendar)}
-                    >
-                      <p>{displayTime(valueTime)}</p>
-                      <div className="icon">
-                        <FontAwesomeIcon className="icon" icon={faCaretDown} />
-                      </div>
-                    </div>
-                    {isOpenCalendar && (
-                      <div className="calendar">
-                        <SelectTime
-                          setNewTime={setNewTime}
-                          value={valueTime}
-                          timeOption={timeOption}
-                          handlerSetNewTime={handlerSetNewTime}
-                        ></SelectTime>
-                      </div>
-                    )}
-                  </div>
-                  <div className="select-box-2" style={{ marginLeft: "10px" }}>
-                    <div
-                      className="combobox"
-                      onClick={() => handleOpenTimeOption(!isOpenTimeOption)}
-                    >
-                      <p>{timeOption}</p>
-                      <div className="icon">
-                        <FontAwesomeIcon className="icon" icon={faCaretDown} />
-                      </div>
-                    </div>
-                    {isOpenTimeOption && (
-                      <div className="select-time">
-                        <div
-                          className="item"
-                          onClick={() => {
-                            handleSetTimeOption("Tuần");
-                            handleOpenTimeOption(false);
-                          }}
-                        >
-                          <p>Tuần</p>
-                        </div>
-                        <div
-                          className="item"
-                          onClick={() => {
-                            handleSetTimeOption("Tháng");
-                            handleOpenTimeOption(false);
-                          }}
-                        >
-                          <p>Tháng</p>
-                        </div>
-                        <div
-                          className="item"
-                          onClick={() => {
-                            handleSetTimeOption("Năm");
-                            handleOpenTimeOption(false);
-                          }}
-                        >
-                          <p>Năm</p>
-                        </div>
-                      </div>
-                    )}
+            <div className="d-flex col-md-6 justify-content-start">
+              <div className="select-box-3">
+                <div
+                  className="combobox"
+                  onClick={() => handleOpenCalendar(!isOpenCalendar)}
+                >
+                  <p>{displayTime(valueTime)}</p>
+                  <div className="icon">
+                    <FontAwesomeIcon className="icon" icon={faCaretDown} />
                   </div>
                 </div>
+                {isOpenCalendar && (
+                  <div className="calendar">
+                    <SelectTime
+                      setNewTime={setNewTime}
+                      value={valueTime}
+                      timeOption={timeOption}
+                      handlerSetNewTime={handlerSetNewTime}
+                    ></SelectTime>
+                  </div>
+                )}
+              </div>
+              <div className="select-box-2" style={{ marginLeft: "10px" }}>
+                <div
+                  className="combobox"
+                  onClick={() => handleOpenTimeOption(!isOpenTimeOption)}
+                >
+                  <p>{timeOption}</p>
+                  <div className="icon">
+                    <FontAwesomeIcon className="icon" icon={faCaretDown} />
+                  </div>
+                </div>
+                {isOpenTimeOption && (
+                  <div className="select-time">
+                    <div
+                      className="item"
+                      onClick={() => {
+                        handleSetTimeOption("Tuần");
+                        handleOpenTimeOption(false);
+                      }}
+                    >
+                      <p>Tuần</p>
+                    </div>
+                    <div
+                      className="item"
+                      onClick={() => {
+                        handleSetTimeOption("Tháng");
+                        handleOpenTimeOption(false);
+                      }}
+                    >
+                      <p>Tháng</p>
+                    </div>
+                    <div
+                      className="item"
+                      onClick={() => {
+                        handleSetTimeOption("Năm");
+                        handleOpenTimeOption(false);
+                      }}
+                    >
+                      <p>Năm</p>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
-
-            <div className="chart h-100">
-              <GridViewRevenue
-                date={formatDate(valueTime)}
-                getDayOfMonth={getDayofMonth}
-                appointmentLists={appointmentLists}
-                bills={bills}
-                timeOption={timeOption}
-                handleSetSelectedBill={handleSetSelectedBill}
-                setIsOpenBillDetail={setIsOpenBillDetail}
-              ></GridViewRevenue>
+            <div className="w-100 h-100">
+              <div className="chart ">
+                <GridViewRevenue
+                  date={formatDate(valueTime)}
+                  getDayOfMonth={getDayofMonth}
+                  appointmentLists={appointmentLists}
+                  bills={bills}
+                  timeOption={timeOption}
+                  handleSetSelectedBill={handleSetSelectedBill}
+                  setIsOpenBillDetail={setIsOpenBillDetail}
+                ></GridViewRevenue>
+              </div>
             </div>
           </div>
         </Card>
       </div>
-      <div className="col-md-5 h-100">
-        <div className="row h-100">
-          <div className="row-md-6">
-            <Card>
-              <div className="chartbar-area">
-                <div className="option-time-chart">
-                  <div className="d-flex justify-content-start">
+      <div className="col-md-4 d-flex flex-column">
+        <div className="row">
+          <Card style={{ padding: "0rem 0rem 1rem 0rem" }}>
+            <div className="chartbar-area">
+              <div className="option-time-chart">
+                <div className="d-flex justify-content-between">
+                  <label className="fw-bold text-dark">Doanh thu</label>
+                  <div className="row">
                     <div className="select-box-4">
                       <div
                         className="combobox-chart"
@@ -1020,130 +1008,25 @@ function Revenue() {
                     </div>
                   </div>
                 </div>
-                <Bar data={chartData} options={optionschart} />
               </div>
-            </Card>
-          </div>
-          <div className="row-md-8">
-            <Card>
-              <div className="chartdonut-area">
-                <div className="Spacer"></div>
-                <div className="donut-chart">
-                  <div className="Chart">
-                    <Doughnut
-                      ref={chartRef}
-                      className="Donut"
-                      data={dataDonut}
-                      options={optionsDn}
-                    ></Doughnut>
-                    <div className="Text-doughnut">
-                      <p>{donutText}</p>
-                      <p>{formatMoney(donutCost)}</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </Card>
-          </div>
+              <Bar data={chartData} options={optionschart} />
+            </div>
+          </Card>
         </div>
-        <div className="col-md-5">
+        <div className="row h-100">
           <Card>
-            <div className="container-chart">
-              <div className="chartbar-area">
-                <div className="option-time-chart">
-                  <div className="d-flex justify-content-start">
-                    <div className="select-box-4">
-                      <div
-                        className="combobox-chart"
-                        onClick={() => handleOpenCalendar2(!isOpenCalendar2)}
-                      >
-                        <p>{displayTime2(valueTime2)}</p>
-                        <div className="icon">
-                          <FontAwesomeIcon
-                            className="icon"
-                            icon={faCaretDown}
-                          />
-                        </div>
-                      </div>
-                      {isOpenCalendar2 && (
-                        <div className="calendar">
-                          <SelectTime
-                            setNewTime={setNewTime2}
-                            value={valueTime2}
-                            timeOption={timeOption2}
-                            handlerSetNewTime={handlerSetNewTime2}
-                          ></SelectTime>
-                        </div>
-                      )}
-                    </div>
-                    <div
-                      className="select-box-5"
-                      style={{ marginLeft: "10px" }}
-                    >
-                      <div
-                        className="combobox"
-                        onClick={() =>
-                          handleOpenTimeOption2(!isOpenTimeOption2)
-                        }
-                      >
-                        <p>{timeOption2}</p>
-                        <div className="icon">
-                          <FontAwesomeIcon
-                            className="icon"
-                            icon={faCaretDown}
-                          />
-                        </div>
-                      </div>
-                      {isOpenTimeOption2 && (
-                        <div className="select-time">
-                          <div
-                            className="item"
-                            onClick={() => {
-                              handleSetTimeOption2("Tuần");
-                              handleOpenTimeOption2(false);
-                            }}
-                          >
-                            <p>Tuần</p>
-                          </div>
-                          <div
-                            className="item"
-                            onClick={() => {
-                              handleSetTimeOption2("Tháng");
-                              handleOpenTimeOption2(false);
-                            }}
-                          >
-                            <p>Tháng</p>
-                          </div>
-                          <div
-                            className="item"
-                            onClick={() => {
-                              handleSetTimeOption2("Năm");
-                              handleOpenTimeOption2(false);
-                            }}
-                          >
-                            <p>Năm</p>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-                <Bar data={chartData} options={optionschart} />
-              </div>
-              <div className="chartdonut-area">
-                <div className="Spacer"></div>
-                <div className="donut-chart">
-                  <div className="Chart">
-                    <Doughnut
-                      ref={chartRef}
-                      className="Donut"
-                      data={dataDonut}
-                      options={optionsDn}
-                    ></Doughnut>
-                    <div className="Text-doughnut">
-                      <p>{donutText}</p>
-                      <p>{formatMoney(donutCost)}</p>
-                    </div>
+            <div className="chartdonut-area">
+              <div className="donut-chart">
+                <div className="Chart">
+                  <Doughnut
+                    ref={chartRef}
+                    className="Donut"
+                    data={dataDonut}
+                    options={optionsDn}
+                  ></Doughnut>
+                  <div className="Text-doughnut">
+                    <p>{donutText}</p>
+                    <p>{formatMoneyForDonutChart(donutCost)}</p>
                   </div>
                 </div>
               </div>

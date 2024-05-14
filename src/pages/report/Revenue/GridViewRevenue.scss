@@ -1,30 +1,32 @@
 .export-button {
-    width: 100%;
-    display: flex;
-    justify-content: flex-end;
-    button {
-        width: 100px;
-        background-color: #208000;
-        border-radius: 2px;
-        .icon-export {
-            margin-right: 10px;
-            font-size: 18px;
-        }
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  button {
+    width: 100px;
+    background-color: #208000;
+    border-radius: 2px;
+    .icon-export {
+      margin-right: 10px;
+      font-size: 18px;
     }
+  }
 }
 
 .content-body {
-    width: 100%;
-    max-height: calc(100% - 40px);
+  width: 100%;
+  max-height: calc(100% - 40px);
 }
 
 .total-view {
-    width: 100%;
-    height: 80px;
-    flex-grow: 1; /* Chiếm hết không gian trống */
+  width: 100%;
+  // height: 80px;
+  flex-grow: 1; /* Chiếm hết không gian trống */
 }
 
 .main-content {
-    width: 100%;
-    height: calc(100% - 40px);
+  margin-top: -3.15rem;
+  width: 100%;
+  height: 100%;
+  //   height: calc(100% - 40px);
 }

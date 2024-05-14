@@ -3,14 +3,14 @@ import "./Medicine.scss";
 
 function MedicineView() {
   return (
-    <div className="col h-100">
+    // <div className="col h-100">
       <div className="d-flex flex-column w-100 h-100 medicine-navigation">
         <nav className="nav nav-pills gap-4 justify-content-center border-bottom border-2 p-2">
           <NavLink
             className={({ isActive }) =>
               isActive
                 ? "nav-link shadow-sm bg-white  nav-bar"
-                : "nav-link   nav-bar-active"
+                : "nav-link nav-bar-active"
             }
             to="drugs"
           >
@@ -20,7 +20,7 @@ function MedicineView() {
             className={({ isActive }) =>
               isActive
                 ? "nav-link shadow-sm bg-white  nav-bar"
-                : "nav-link   nav-bar-active"
+                : "nav-link  nav-bar-active"
             }
             to="units"
           >
@@ -51,7 +51,7 @@ function MedicineView() {
           <Outlet />
         </div>
       </div>
-    </div>
+    // </div>
   );
 }
 
