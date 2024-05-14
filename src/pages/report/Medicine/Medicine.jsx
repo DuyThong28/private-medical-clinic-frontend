@@ -108,10 +108,7 @@ function Medicine() {
 }
 
 const billList = ConvernToArray(bills) || [];
-useEffect(()=>{
-    setSelectItem(drugs[0]);
-    getDataForChartWeek(valueTime, drugs[0]);
-},[drugs, appointment, record, recorddt, bills])
+
   function searchHandler(event) {
     const textSearch = event.target.value.toLowerCase().trim();
     const result = drugs.filter((drug) =>
@@ -123,11 +120,19 @@ useEffect(()=>{
     const [selectItem, setSelectItem] = useState(drugs[0]);
     const setDetailItem = (item) => {
         setSelectItem(item);
+        console.log("item", item);
         if(timeOption == "Tuần") getDataForChartWeek(valueTime, item);
         else if(timeOption == "Tháng") getDataForChartMonth(valueTime, item);
         else getDataForChartYear(valueTime, item);
     }
-
+    useEffect(()=>{
+      setSelectItem(drugs[0]);
+      getDataForChartWeek(valueTime, drugs[0]);
+    },[drugs])
+    useEffect(()=>{
+      console.log("item", selectItem);
+      getDataForChartWeek(valueTime, selectItem);
+    },[drugs, appointment, record, recorddt])
     // Select Time
     const [valueTime, setValueTime] = React.useState(dayjs());
     const setNewTime = (value) => {
@@ -390,12 +395,9 @@ useEffect(()=>{
       return newData;
     }
     const getDataForChartWeek = (date, item) => {
-      console.log("Value", valueTime);
-      console.log("Drug", drugs[0]?.drugName);
         let tmp = chartData;
         tmp.labels = getLabelForChartWeek(date);
         const tmp2 = getDataNewForChartWeek(date, item);
-        console.log("tmp2",tmp2);
         tmp.datasets = [
             {
               label: 'Số lượng bán ra',
@@ -406,7 +408,6 @@ useEffect(()=>{
                 borderRadius: 50,
             },
         ]
-        console.log("tmp", tmp);
         setChartData(tmp);
     }
     const getDataNewForChartMonth = (time, item) => {
@@ -781,7 +782,6 @@ useEffect(()=>{
     return formattedNumber;
   }
 
-  console.log("tmp outside", chartData.datasets[0].data);
   
     return ( 
       
