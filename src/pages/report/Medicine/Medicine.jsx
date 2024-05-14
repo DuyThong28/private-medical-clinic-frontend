@@ -777,6 +777,7 @@ useEffect(()=>{
                               </div>
                           }
                       </div>
+                      {false && 
                       <div className='select-box-2' style={{marginLeft: '10px'}}>
                           <div className='combobox' onClick={() => handleOpenTimeOption2(!isOpenTimeOption2)}>
                               <p>{timeOption2}</p>
@@ -787,18 +788,18 @@ useEffect(()=>{
                           
                           {isOpenTimeOption2 &&
                               <div className='select-time' >
-                                  <div className='item' onClick={() => {handleSetTimeOption2('Tuần');  handleOpenTimeOption2(false)}}>
+                                  {/* <div className='item' onClick={() => {handleSetTimeOption2('Tuần');  handleOpenTimeOption2(false)}}>
                                       <p>Tuần</p>
-                                  </div>
-                                  <div className='item' onClick={() => {handleSetTimeOption2('Tháng');  handleOpenTimeOption2(false)}}>
+                                  </div> */}
+                                  {/* <div className='item' onClick={() => {handleSetTimeOption2('Tháng');  handleOpenTimeOption2(false)}}>
                                       <p>Tháng</p>
-                                  </div>
-                                  <div className='item' onClick={() => {handleSetTimeOption2('Năm');  handleOpenTimeOption2(false)}}>
+                                  </div> */}
+                                  {/* <div className='item' onClick={() => {handleSetTimeOption2('Năm');  handleOpenTimeOption2(false)}}>
                                       <p>Năm</p>
-                                  </div>
+                                  </div> */}
                               </div>
                           }
-                      </div>
+                      </div>}
                       
                   </div>
                   <div className="d-flex col-md-6 justify-content-end">

@@ -1,7 +1,7 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import TableHeader from "../../../components/TableHeader";
 import TableBody from "../../../components/TableBody";
-import { faFileExcel } from "@fortawesome/free-solid-svg-icons";
+import { faEye, faFileExcel } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
@@ -14,6 +14,8 @@ function GridViewRevenue({
   aptList,
   billList,
   timeOption,
+  handleSetSelectedBill,
+  setIsOpenBillDetail
 }) {
   const StringToDate = (str) => {
     if (str != null) {
@@ -284,10 +286,14 @@ function GridViewRevenue({
     const formattedNumber = parts.join('.');
     return formattedNumber;
   }
+
+  
+
   let STT = 0;
   return (
     <>
       <div className="main-content">
+        
         <div className=" w-100 h-100 overflow-hidden d-flex flex-column gap-3">
           <div className="export-button">
             <button onClick={handleExportReport}>
@@ -318,13 +324,13 @@ function GridViewRevenue({
                 SumList.map((item, index) => {
                   return (
                     CountList[index] > 0 && (<li
-                      className="dropdown-center list-group-item list-group-item-primary list-group-item-action w-100 h-80 d-flex flex-row"
+                      className="list-group-item list-group-item-primary list-group-item-action w-100 h-80 d-flex flex-row"
                       key={index}
                     >
                       <div
                         className="text-start"
                         style={{ width: "10%" }}
-                        data-bs-toggle="dropdown"
+                        data-bs-toggle=""
                         aria-expanded="false"
                       >
                         {++STT}
@@ -332,7 +338,7 @@ function GridViewRevenue({
                       <div
                         className="text-start"
                         style={{ width: "25%" }}
-                        data-bs-toggle="dropdown"
+                        data-bs-toggle=""
                         aria-expanded="false"
                       >
                         {timeOption === "Tháng" &&
@@ -343,7 +349,7 @@ function GridViewRevenue({
                       <div
                         className="text-start"
                         style={{ width: "20%" }}
-                        data-bs-toggle="dropdown"
+                        data-bs-toggle=""
                         aria-expanded="false"
                       >
                         {CountList[index]}
@@ -351,19 +357,38 @@ function GridViewRevenue({
                       <div
                         className="text-start"
                         style={{ width: "25%" }}
-                        data-bs-toggle="dropdown"
+                        data-bs-toggle=""
                         aria-expanded="false"
                       >
                         {formatMoney(item)}
                       </div>
                       <div
                         className="text-start"
-                        style={{ width: "20%" }}
-                        data-bs-toggle="dropdown"
+                        style={{ width: "16%" }}
+                        data-bs-toggle=""
                         aria-expanded="false"
                       >
                         {total === 0 ? "0" : Math.floor((item / total) * 10000) / 100}%
                       </div>
+                      <div
+                            className="text-end"
+                            style={{ width: "4%" }}
+                            data-bs-toggle=""
+                            aria-expanded="false"
+                          >
+                                <FontAwesomeIcon onClick={() => {
+                                  console.log("click!!!");
+                                    if(timeOption=="Năm") handleSetSelectedBill({day: 0, month: index + 1, year: date.year});
+                                    else if(timeOption == "Tháng") handleSetSelectedBill({day: index + 1, month: date.month, year: date.year});
+                                    else {
+                                      const [day, month, year] = disTime[index].split('/');
+                                      handleSetSelectedBill({day: parseInt(day),
+                                      month: parseInt(month),
+                                      year: parseInt(year)})
+                                    }
+                                  }
+                                } className='icon-view' icon={faEye} />
+                          </div>
                     </li>)
                   );
                 })}

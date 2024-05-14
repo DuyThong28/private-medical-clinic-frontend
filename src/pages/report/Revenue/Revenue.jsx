@@ -13,8 +13,8 @@ import { fetchAllAppointmentList } from "../../../services/appointmentList";
 import { fetchAllBills } from "../../../services/bill";
 
 import { Bar, Doughnut } from "react-chartjs-2";
-import ChartAnnotation from 'chartjs-plugin-annotation';
 import SelectTime from "../../../components/SelectTime";
+import BillDetail from "./BillDetail";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -39,7 +39,6 @@ ChartJS.register(
   Tooltip,
   Legend
 );
-
 
 let rememberWeek = dayjs();
 let rememberMonth = dayjs();
@@ -488,7 +487,7 @@ function Revenue() {
         //     },
         //   ],
         // })
-        setNewDataForDonutChart(valueTime2, "Week");
+        // setNewDataForDonutChart(valueTime2, "Week");
   }, [bills])
 
   // React.useEffect(()=>{
@@ -524,6 +523,30 @@ function Revenue() {
       },
     ],
   });
+  function formatNumberY(number) {  
+    if(number <= 999) return number;
+    if(number <= 999999) return Math.floor(number/1000) + "K";
+    if(number <= 999999999) 
+    {
+      if(Math.floor(number/1000000) >= 100)
+        return Math.floor(number/1000000) + "M";
+      else
+        return Math.floor(number/1000000) + ',' + Math.floor((number%1000000)/100000) + "M";
+    }
+    if(number <= 999999999999) 
+    {
+      if(Math.floor(number/1000000000) >= 100)
+        return Math.floor(number/1000000000) + "B";
+      else
+        return Math.floor(number/1000000000) + ',' + Math.floor((number%1000000000)/100000000) + "B";
+    }
+    if(number <= 999999999999999) {
+      if(Math.floor(number/1000000000000) >= 100)
+        return Math.floor(number/1000000000000) + "T";
+      else
+        return Math.floor(number/1000000000000) + ',' + Math.floor((number%1000000000000)/100000000000) + "T";
+    }
+  }
 
   const optionschart = {
     title: {
@@ -534,10 +557,17 @@ function Revenue() {
         ticks: {
           maxTicksLimit: 5,
           callback: function(value, index, values) {
-            return Number.isInteger(value) ? value : '';
-          }
+            return formatNumberY(value); // Format x-axis labels as well
+          },
         },
       },
+      x: {
+        ticks: {
+          rotation: 0,
+          textAlign: 'center', // Center text horizontally (optional)
+        textBaseline: 'middle',
+        }
+      }
     },
     plugins: {
       legend: {
@@ -686,8 +716,22 @@ function Revenue() {
       sumDrug: sumDrug,
     };
   };
+
+  // BILL DETAILS
+  const [selectedBill, setSelectedBill] = useState({});
+  const [isOpenBillDetail, setIsOpenBillDetail] = useState(false);
+  const handleSetSelectedBill = (newValue) => {
+    console.log("...");
+    setSelectedBill(newValue);
+    setIsOpenBillDetail(true);
+  }
+
   return (
-    <div className="d-flex flex-row w-100">
+    <div className="d-flex flex-row w-100 maincontainer">
+      {isOpenBillDetail && <div className="bill-detail">
+          <BillDetail billList={billList} aptList={aptList} timeoption={timeOption} date={selectedBill} setIsOpenBillDetail={setIsOpenBillDetail}>
+        </BillDetail>
+      </div>}
       <div className="col-md-7">
         <Card>
           <div className=" w-100 h-100 overflow-hidden">
@@ -765,6 +809,8 @@ function Revenue() {
                   aptList={aptList}
                   billList={billList}
                   timeOption={timeOption}
+                  handleSetSelectedBill={handleSetSelectedBill}
+                  setIsOpenBillDetail={setIsOpenBillDetail}
                 ></GridViewRevenue>
             </div>
           </div>
@@ -841,10 +887,12 @@ function Revenue() {
               <div className="chartdonut-area">
                 <div className="Spacer"></div>
                 <div className="donut-chart">
-                  <Doughnut data={dataDonut} options={optionsDn}></Doughnut>
-                  <div className="Text-doughnut">
-                      <p>{donutText}</p>
-                      <p>{formatMoney(donutCost)}</p>
+                  <div className="Chart">
+                    <Doughnut className="Donut" data={dataDonut} options={optionsDn}></Doughnut>
+                    <div className="Text-doughnut">
+                        <p>{donutText}</p>
+                        <p>{formatMoney(donutCost)}</p>
+                    </div>
                   </div>
                 </div>
               </div>
