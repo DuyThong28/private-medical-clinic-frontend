@@ -126,7 +126,7 @@ function ExaminationsPage() {
   return (
     <>
       <RescordHistoryModal ref={payModalRef} />
-      <InvoiceDetail ref={invoiceRef}/>
+      <InvoiceDetail ref={invoiceRef} />
       <NotificationDialog ref={notiDialogRef} keyQuery={["appointmentList"]} />
       <div className="h-100 w-100">
         <Card className="p-3">
@@ -162,6 +162,7 @@ function ExaminationsPage() {
               </TableHeader>
               <TableBody>
                 {appointmentListPatients &&
+                appointmentListPatients.length > 0 ? (
                   appointmentListPatients.map((appointmentListPatient) => {
                     return (
                       <li
@@ -320,7 +321,14 @@ function ExaminationsPage() {
                         )}
                       </li>
                     );
-                  })}
+                  })
+                ) : (
+                  <div className="position-relative w-100 h-100">
+                    <h5 className="position-absolute top-50 start-50 translate-middle fw-bold text-dark">
+                      Không có ca khám
+                    </h5>
+                  </div>
+                )}
               </TableBody>
             </div>
           </div>

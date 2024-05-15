@@ -94,7 +94,7 @@ export default function HistoryTab({ isEditable }) {
           <div style={{ width: "1%" }}></div>
         </TableHeader>
         <TableBody>
-          {recordHistory &&
+          {recordHistory && recordHistory.length > 0 ? (
             recordHistory.map((record) => {
               return (
                 <li
@@ -150,7 +150,14 @@ export default function HistoryTab({ isEditable }) {
                   </div>
                 </li>
               );
-            })}
+            })
+          ) : (
+            <div className="position-relative w-100 h-100">
+              <h5 className="position-absolute top-50 start-50 translate-middle fw-bold text-dark">
+                Không có phiếu khám bệnh
+              </h5>
+            </div>
+          )}
         </TableBody>
       </div>
     </>

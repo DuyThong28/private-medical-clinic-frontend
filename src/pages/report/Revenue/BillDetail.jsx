@@ -101,10 +101,10 @@ function BillDetail({
               <div className="text-start" style={{ width: "29%" }}>
                 Mã hóa đơn
               </div>
-              <div className="text-start" style={{ width: "30%" }}>
+              <div className="text-start" style={{ width: "40%" }}>
                 Ngày Thu
               </div>
-              <div className="text-start" style={{ width: "30%" }}>
+              <div className="text-start" style={{ width: "20%" }}>
                 Tổng tiền
               </div>
 
@@ -122,15 +122,15 @@ function BillDetail({
                         <div className="text-start" style={{ width: "10%" }}>
                           {index + 1}
                         </div>
-                        <div className="text-start" style={{ width: "29%" }}>
+                        <div className="text-start" style={{ width: "30%" }}>
                           {bill?.id}
                         </div>
-                        <div className="text-start" style={{ width: "30%" }}>
+                        <div className="text-start" style={{ width: "40%" }}>
                           {displayDate(
                             getAptById(bill?.appointmentListId)?.scheduleDate
                           )}
                         </div>
-                        <div className="text-start" style={{ width: "30%" }}>
+                        <div className="text-start" style={{ width: "20%" }}>
                           {formatNumber(bill?.drugExpense + bill?.feeConsult)}
                         </div>
                       </li>

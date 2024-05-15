@@ -190,8 +190,11 @@ function NumberOfPatient() {
   }, [range]);
 
   return (
-    <div className=" h-100 w-80 overview-patient-ofday shadow rounded-2 p-3 ">
-      <h6>Số lượng bệnh nhân</h6>
+    <div
+      className=" h-100 w-80 overview-patient-ofday  rounded-3 p-3"
+      style={{ border: "1px solid #B9B9B9" }}
+    >
+      <label className="fw-bold text-dark">Số lượng bệnh nhân</label>
       <div className="overview-patient-chart">
         <Bar
           data={dataOfChart}

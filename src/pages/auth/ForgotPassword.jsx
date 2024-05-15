@@ -143,9 +143,8 @@ function ForgotPassword() {
                 className="position-absolute top-50 mt-50 start-50 translate-middle"
                 style={{ width: "70%" }}
               >
-                <div>
+                <Card>
                   <div className="p-4">
-                    <div>
                       {resetState === resetStep.CHECKMAIL && (
                         <div className="col fw-bold fs-4 mb-4 text-center text-dark">
                           <label>Tìm Kiếm Email</label>
@@ -251,9 +250,8 @@ function ForgotPassword() {
                           </button>
                         )}
                       </Form>
-                    </div>
                   </div>
-                </div>
+                </Card>
               </div>
             </div>
           </div>

@@ -936,19 +936,19 @@ function Medicine() {
               <div className="text-start" style={{ width: "30%" }}>
                 Tên thuốc
               </div>
-              <div className="text-start" style={{ width: "20%" }}>
+              <div className="text-start" style={{ width: "19%" }}>
                 Đơn vị
               </div>
               <div className="text-start" style={{ width: "30%" }}>
-                Doanh thu bán được
+                Doanh thu
               </div>
-              <div className="text-start" style={{ width: "19%" }}>
+              <div className="text-start" style={{ width: "20%" }}>
                 Số lần dùng
               </div>
               <div className="text-start" style={{ width: "1%" }}></div>
             </TableHeader>
             <TableBody>
-              {listState &&
+              {listState && listState.length > 0 ? (
                 listState.map((drug, index) => {
                   return (
                     <li
@@ -1034,7 +1034,14 @@ function Medicine() {
                       </div>
                     </li>
                   );
-                })}
+                })
+              ) : (
+                <div className="position-relative w-100 h-100">
+                  <h5 className="position-absolute top-50 start-50 translate-middle fw-bold text-dark">
+                    Không có thuốc
+                  </h5>
+                </div>
+              )}
             </TableBody>
           </div>
         </Card>
@@ -1137,7 +1144,7 @@ function Medicine() {
                 <p>Đơn vị: {getUnitName({ id: selectItem?.unitId })}</p>
               </div>
               <div className="detail-item">
-                <p>Giá bán: {selectItem?.price}</p>
+                <p>Giá bán: {formatMoney(selectItem?.price)}</p>
               </div>
               <div className="detail-item">
                 <p>Số lượng tồn kho: {selectItem?.count}</p>

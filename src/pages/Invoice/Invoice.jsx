@@ -132,7 +132,7 @@ function PatientsPage() {
                 <div className="text-end" style={{ width: "1%" }}></div>
               </TableHeader>
               <TableBody>
-                {bills &&
+                {bills && bills.length > 0 ? (
                   bills.map((bill, index) => {
                     return (
                       <li
@@ -149,9 +149,7 @@ function PatientsPage() {
                           {convertDate(bill?.appointmentList?.scheduleDate)}
                         </div>
                         <div className="text-start" style={{ width: "30%" }}>
-                          {formatNumber(
-                            bill.drugExpense + bill.feeConsult
-                          )}
+                          {formatNumber(bill.drugExpense + bill.feeConsult)}
                         </div>
                         <div className="text-end" style={{ width: "10%" }}>
                           {permission?.includes("RInvoice") && (
@@ -196,7 +194,14 @@ function PatientsPage() {
                         </div>
                       </li>
                     );
-                  })}
+                  })
+                ) : (
+                  <div className="position-relative w-100 h-100">
+                    <h5 className="position-absolute top-50 start-50 translate-middle fw-bold text-dark">
+                      Không có hóa đơn
+                    </h5>
+                  </div>
+                )}
               </TableBody>
             </div>
           </div>

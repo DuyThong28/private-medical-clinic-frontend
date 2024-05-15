@@ -333,7 +333,7 @@ function GridViewRevenue({
             <div className="text-start" style={{ width: "10%" }}>
               STT
             </div>
-            <div className="text-start" style={{ width: "25%" }}>
+            <div className="text-start" style={{ width: "24%" }}>
               {timeOption === "Năm" ? "Tháng" : "Ngày"}
             </div>
             <div className="text-start" style={{ width: "20%" }}>
@@ -441,6 +441,15 @@ function GridViewRevenue({
                   )
                 );
               })}
+            {SumList &&
+              SumList.filter((item, index) => CountList[index] > 0).length ==
+                0 && (
+                <div className="position-relative w-100 h-100">
+                  <h5 className="position-absolute top-50 start-50 translate-middle fw-bold text-dark">
+                    Không có doanh thu
+                  </h5>
+                </div>
+              )}
           </TableBody>
           <div className="total-view">
             <TableHeader>

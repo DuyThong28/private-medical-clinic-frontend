@@ -91,6 +91,7 @@ function MemberTab() {
   }, [searchState]);
 
   async function editUserHandler({ id, action }) {
+    console.log("this isi id ", id);
     setIsPasswordChanged(() => false);
     await dialogRef.current.edit({ id, action });
   }
@@ -101,31 +102,34 @@ function MemberTab() {
   }
 
   async function deActivateUserHandler({ id, isActive }) {
-    let adminCount = 0;
-    members.map((member) => {
-      if (member.id === 1) {
-        adminCount++;
-      }
-    });
+    if (id === 1) {
+      let adminCount = 0;
+      members.map((member) => {
+        if (member.id === 1) {
+          adminCount++;
+        }
+      });
 
-    if (adminCount <= 1) {
-      notiDialogRef.current.toastError({
-        message: "Không thể xóa admin duy nhất",
-      });
-    } else {
-      notiDialogRef.current.setDialogData({
-        action: DialogAction.DELETE,
-        dispatchFn: () => deleteUserById({ id }),
-      });
-      if (isActive === 1)
-        notiDialogRef.current.showDialogWarning({
-          message: "Xác nhận lưu trữ thành viên?",
+      if (adminCount <= 1) {
+        notiDialogRef.current.toastError({
+          message: "Không thể xóa admin duy nhất",
         });
-      else
-        notiDialogRef.current.showDialogWarning({
-          message: "Xác nhận kích hoạt thành viên?",
-        });
+        return;
+      }
     }
+
+    notiDialogRef.current.setDialogData({
+      action: DialogAction.DELETE,
+      dispatchFn: () => deleteUserById({ id }),
+    });
+    if (isActive === 1)
+      notiDialogRef.current.showDialogWarning({
+        message: "Xác nhận lưu trữ thành viên?",
+      });
+    else
+      notiDialogRef.current.showDialogWarning({
+        message: "Xác nhận kích hoạt thành viên?",
+      });
   }
 
   function onSubmitPassword({ data, addMutate }) {
@@ -370,7 +374,7 @@ function MemberTab() {
               <div className="text-end" style={{ width: "1%" }}></div>
             </TableHeader>
             <TableBody>
-              {members &&
+              {members && members.length > 0 ? (
                 members.map((user, index) => {
                   return (
                     <li
@@ -516,7 +520,14 @@ function MemberTab() {
                       </div>
                     </li>
                   );
-                })}
+                })
+              ) : (
+                <div className="position-relative w-100 h-100">
+                  <h5 className="position-absolute top-50 start-50 translate-middle fw-bold text-dark">
+                    Không có thành viên
+                  </h5>
+                </div>
+              )}
             </TableBody>
           </div>
         </div>

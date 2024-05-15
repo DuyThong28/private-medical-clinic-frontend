@@ -65,7 +65,7 @@ function LoginPage() {
   return (
     <>
       <NotificationDialog ref={notiDialogRef} />
-      <div className="d-flex flex-row h-100">
+      <div className="d-flex flex-row h-100" >
         <div className="col w-100 h-100">
           <img src={loginImage} className="w-100 h-100" />
         </div>
@@ -77,7 +77,7 @@ function LoginPage() {
                 className="position-absolute top-50 mt-50 start-50 translate-middle"
                 style={{ width: "70%" }}
               >
-                <>
+                <Card>
                   <div className="p-4">
                     <div className="col fw-bold fs-4 mb-4 text-center text-dark">
                       <label>Đăng Nhập</label>
@@ -147,7 +147,7 @@ function LoginPage() {
                       </Form>
                     </div>
                   </div>
-                </>
+                </Card>
               </div>
             </div>
           </div>

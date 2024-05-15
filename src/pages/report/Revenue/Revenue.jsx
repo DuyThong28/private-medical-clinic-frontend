@@ -1015,6 +1015,7 @@ function Revenue() {
         </div>
         <div className="row h-100">
           <Card>
+            <label className="fw-bold text-dark">Chi tiết doanh thu</label>
             <div className="chartdonut-area">
               <div className="donut-chart">
                 <div className="Chart">

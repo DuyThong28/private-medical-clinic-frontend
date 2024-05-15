@@ -70,7 +70,7 @@ function DiseasesTab() {
   return (
     <div className="h-100 w-100">
       <NotificationDialog ref={notiDialogRef} keyQuery={["diseases"]} />
-      <Card className="p-3" >
+      <Card className="p-3">
         <div className="w-100 h-100 d-flex flex-column gap-3">
           <div className=" w-100  d-flex flex-row justify-content-around">
             <div className="col fw-bold fs-4 text-black">
@@ -146,7 +146,7 @@ function DiseasesTab() {
               <div className="text-end" style={{ width: "1%" }}></div>
             </TableHeader>
             <TableBody>
-              {listState &&
+              {listState && listState.length > 0 ? (
                 listState.map((disease) => {
                   return (
                     <li
@@ -216,7 +216,14 @@ function DiseasesTab() {
                       </div>
                     </li>
                   );
-                })}
+                })
+              ) : (
+                <div className="position-relative w-100 h-100">
+                  <h5 className="position-absolute top-50 start-50 translate-middle fw-bold text-dark">
+                    Không có bệnh
+                  </h5>
+                </div>
+              )}
             </TableBody>
           </div>
         </div>

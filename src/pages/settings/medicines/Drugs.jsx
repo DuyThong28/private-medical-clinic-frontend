@@ -310,7 +310,7 @@ function DrugTab() {
               <div className="text-start" style={{ width: "1%" }}></div>
             </TableHeader>
             <TableBody>
-              {drugs &&
+              {drugs && drugs.length > 0 ? (
                 drugs.map((drug, index) => {
                   return (
                     <li
@@ -466,7 +466,14 @@ function DrugTab() {
                       </div>
                     </li>
                   );
-                })}
+                })
+              ) : (
+                <div className="position-relative w-100 h-100">
+                  <h5 className="position-absolute top-50 start-50 translate-middle fw-bold text-dark">
+                    Không có thuốc
+                  </h5>
+                </div>
+              )}
             </TableBody>
           </div>
         </div>

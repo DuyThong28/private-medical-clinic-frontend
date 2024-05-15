@@ -297,7 +297,7 @@ function PatientsPage() {
               <div className="text-end" style={{ width: "1%" }}></div>
             </TableHeader>
             <TableBody>
-              {patients &&
+              {patients && patients.length > 0 ? (
                 patients.map((patient) => {
                   return (
                     <li
@@ -396,7 +396,14 @@ function PatientsPage() {
                       </div>
                     </li>
                   );
-                })}
+                })
+              ) : (
+                <div className="position-relative w-100 h-100">
+                  <h5 className="position-absolute top-50 start-50 translate-middle fw-bold text-dark">
+                    Không có bệnh nhân
+                  </h5>
+                </div>
+              )}
             </TableBody>
           </div>
         </div>

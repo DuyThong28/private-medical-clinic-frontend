@@ -48,6 +48,7 @@ const MainDialog = forwardRef(function MainDialog(
           let editData;
           if (id && editFn) {
             editData = await editFn({ id });
+            console.log("edit data", id);
           }
 
           if (data) {
