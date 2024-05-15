@@ -71,8 +71,8 @@ export default function PreScriptionTab({
             unitId: drugData[0]?.unitId,
             usageId: record.usageId,
             count: drugData[0]?.count,
-            price: drugData[0]?.price,
-            totalPrice: record.count * drugData[0]?.price,
+            price: record.drugPrice,
+            totalPrice: record.count * record.drugPrice,
           };
           if (setExpense) {
             setExpense({ totalPrice: recordDetail?.totalPrice });
