@@ -6,8 +6,13 @@ import { Form } from "react-bootstrap";
 import Card from "../../components/Card";
 import "./Login.scss";
 import { useMutation } from "@tanstack/react-query";
-import { checkMail, checkOTP, resetPassword, sendOTP } from "../../util/auth";
-import { Navigate, redirect, useNavigate } from "react-router";
+import {
+  checkMail,
+  checkOTP,
+  resetPassword,
+  sendOTP,
+} from "../../services/auth";
+import { useNavigate } from "react-router";
 
 const resetStep = {
   CHECKMAIL: "check mail",
@@ -131,22 +136,15 @@ function ForgotPassword() {
     <>
       <NotificationDialog ref={notiDialogRef} />
       <div className="d-flex flex-row h-100">
-        <div
-          className="col h-100 position-relative"
-          style={{ backgroundColor: "#E9ECEF" }}
-        >
+        <div className="col h-100 position-relative">
           <div className="col h-100">
-            <div
-              className="h-100 position-relative"
-              style={{ backgroundColor: "#E9ECEF" }}
-            >
+            <div className="h-100 position-relative">
               <div
                 className="position-absolute top-50 mt-50 start-50 translate-middle"
                 style={{ width: "70%" }}
               >
                 <Card>
                   <div className="p-4">
-                    <div>
                       {resetState === resetStep.CHECKMAIL && (
                         <div className="col fw-bold fs-4 mb-4 text-center text-dark">
                           <label>Tìm Kiếm Email</label>
@@ -157,19 +155,18 @@ function ForgotPassword() {
                           <label>Xác Thực Mã OTP</label>
                         </div>
                       )}
-                        {resetState === resetStep.RESET && (
+                      {resetState === resetStep.RESET && (
                         <div className="col fw-bold fs-4 mb-4 text-center text-dark">
                           <label>Thiết Lập Mật Khẩu</label>
                         </div>
                       )}
-                      <hr />
                       <Form
                         method="post"
                         onSubmit={submitHandler}
                         noValidate
                         validated={validated}
                         ref={formRef}
-                        className="h-100"
+                        className="h-100 mt-4"
                       >
                         {resetState === resetStep.CHECKMAIL && (
                           <div className="form-floating mb-3">
@@ -185,22 +182,15 @@ function ForgotPassword() {
                           </div>
                         )}
                         {resetState === resetStep.CHECKOTP && (
-                          <div>
-                            <label
-                              htmlFor="code"
-                              className="col-form-label fw-bold  text-dark"
-                            >
-                              Mã OTP
-                            </label>
-                            <div>
+                          <div className="form-floating mb-3">
                               <input
-                                className="form-control"
-                                type="number"
+                                className="form-control rounded-3"
                                 name="code"
                                 id="code"
+                                placeholder="Mã OTP"
                                 required
                               ></input>
-                            </div>
+                              <label htmlFor="code">Mã OTP</label>
                           </div>
                         )}
                         {resetState === resetStep.RESET && (
@@ -260,7 +250,6 @@ function ForgotPassword() {
                           </button>
                         )}
                       </Form>
-                    </div>
                   </div>
                 </Card>
               </div>

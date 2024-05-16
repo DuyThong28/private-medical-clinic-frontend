@@ -3,6 +3,7 @@ import { createAppointmentPatientList } from "../../../services/appointmentListP
 import { fetchOnePatient } from "../../../services/patients";
 import { useRef, useState, forwardRef, useImperativeHandle } from "react";
 import { inputDateFormat, inputToDayFormat } from "../../../util/date";
+import useAuth from "../../../hooks/useAuth";
 
 const ExaminationModal = forwardRef(function ExaminationModal(
   { children, setSearchData },
@@ -11,6 +12,8 @@ const ExaminationModal = forwardRef(function ExaminationModal(
   const searchRef = useRef();
   const dialogRef = useRef();
   const searchRecordRef = useRef();
+  const { auth } = useAuth();
+  const permission = auth?.permission || [];
   const [dialogState, setDialogState] = useState({
     data: null,
     isEditable: true,
@@ -253,7 +256,6 @@ const ExaminationModal = forwardRef(function ExaminationModal(
             </div>
           </form>
         </div>
-
         <div style={{ width: "fit-content" }}>
           <MainDialog
             ref={dialogRef}
@@ -263,6 +265,7 @@ const ExaminationModal = forwardRef(function ExaminationModal(
             onChange={changeFormHandler}
             keyQuery={["appointmentList"]}
             searchElement={searchElement}
+            addButton={permission?.includes("CAppointment") ? true : false}
           >
             <div className="row">
               <label className="col-form-label fw-bold">

@@ -15,8 +15,11 @@ import MainDialog from "../../../components/MainDialog";
 import NotificationDialog, {
   DialogAction,
 } from "../../../components/NotificationDialog";
+import useAuth from "../../../hooks/useAuth";
 
 function UnitsTab() {
+  const { auth } = useAuth();
+  const permission = auth?.permission || [];
   const dialogRef = useRef();
   const notiDialogRef = useRef();
   const [dialogState, setDialogState] = useState({
@@ -57,18 +60,20 @@ function UnitsTab() {
     dialogRef.current.edit({ action, data: unit });
   }
 
-  async function deleteUnitHandnler(id) {
-    notiDialogRef.current.setDialogData({
-      action: DialogAction.DELETE,
-      dispatchFn: () => deleteUnit({ id }),
-    });
-    notiDialogRef.current.showDialogWarning({message:"Xác nhận xóa đơn vị?"});
-  }
+  // async function deleteUnitHandnler(id) {
+  //   notiDialogRef.current.setDialogData({
+  //     action: DialogAction.DELETE,
+  //     dispatchFn: () => deleteUnit({ id }),
+  //   });
+  //   notiDialogRef.current.showDialogWarning({
+  //     message: "Xác nhận xóa đơn vị?",
+  //   });
+  // }
 
   return (
     <div className="h-100 w-100">
       <NotificationDialog ref={notiDialogRef} keyQuery={["units"]} />
-      <Card>
+      <Card className="p-3">
         <div className="w-100 h-100 d-flex flex-column gap-3">
           <div className=" w-100  d-flex flex-row justify-content-around">
             <div className="col fw-bold fs-4 text-black">
@@ -107,6 +112,7 @@ function UnitsTab() {
                   addFn={createNewUnit}
                   keyQuery={["units"]}
                   onEdit={setData}
+                  addButton={permission?.includes("CDrug") ? true : false}
                 >
                   <div className="mb-3">
                     <label
@@ -129,7 +135,7 @@ function UnitsTab() {
             </div>
           </div>
 
-          <div className=" w-100 h-100 overflow-hidden d-flex flex-column gap-3">
+          <div className=" w-100 h-100 overflow-hidden d-flex flex-column">
             <TableHeader>
               <div className="text-start" style={{ width: "5%" }}>
                 STT
@@ -137,13 +143,13 @@ function UnitsTab() {
               <div className="text-start" style={{ width: "84%" }}>
                 Đơn vị
               </div>
-              <div className="text-start" style={{ width: "10%" }}>
+              <div className="text-end" style={{ width: "10%" }}>
                 Thao tác
               </div>
               <div className="text-start" style={{ width: "1%" }}></div>
             </TableHeader>
             <TableBody>
-              {listState &&
+              {listState && listState.length > 0 ? (
                 listState.map((unit) => {
                   return (
                     <li
@@ -168,12 +174,12 @@ function UnitsTab() {
                       </div>
 
                       <div
-                        className="text-start"
+                        className="text-end"
                         style={{ width: "10%" }}
                         data-bs-toggle="dropdown"
                         aria-expanded="false"
                       >
-                        <span
+                        {/* <span
                           className="p-2"
                           onClick={() =>
                             editUnitHandler({ unit, action: "view" })
@@ -190,44 +196,55 @@ function UnitsTab() {
                             <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0" />
                             <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8m8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7" />
                           </svg>
-                        </span>
-                        <span
-                          className="p-2"
-                          onClick={() =>
-                            editUnitHandler({ unit, action: "edit" })
-                          }
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="16"
-                            height="16"
-                            fill="#1B59F8"
-                            className="bi bi-pencil-square"
-                            viewBox="0 0 16 16"
+                        </span> */}
+                        {permission?.includes("UDrug") && (
+                          <span
+                            className="p-2"
+                            onClick={() =>
+                              editUnitHandler({ unit, action: "edit" })
+                            }
                           >
-                            <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
-                            <path d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z" />
-                          </svg>
-                        </span>
-                        <span
-                          className="p-2"
-                          onClick={() => deleteUnitHandnler(unit.id)}
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="16"
-                            height="16"
-                            fill="#1B59F8"
-                            className="bi bi-archive-fill"
-                            viewBox="0 0 16 16"
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="16"
+                              height="16"
+                              fill="#646565"
+                              className="bi bi-pencil-square"
+                              viewBox="0 0 16 16"
+                            >
+                              <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
+                              <path d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z" />
+                            </svg>
+                          </span>
+                        )}
+                        {/* {permission?.includes("DDrug") && (
+                          <span
+                            className="p-2"
+                            onClick={() => deleteUnitHandnler(unit.id)}
                           >
-                            <path d="M12.643 15C13.979 15 15 13.845 15 12.5V5H1v7.5C1 13.845 2.021 15 3.357 15zM5.5 7h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1 0-1M.8 1a.8.8 0 0 0-.8.8V3a.8.8 0 0 0 .8.8h14.4A.8.8 0 0 0 16 3V1.8a.8.8 0 0 0-.8-.8z" />
-                          </svg>
-                        </span>
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="16"
+                              height="16"
+                              fill="#1B59F8"
+                              className="bi bi-archive-fill"
+                              viewBox="0 0 16 16"
+                            >
+                              <path d="M12.643 15C13.979 15 15 13.845 15 12.5V5H1v7.5C1 13.845 2.021 15 3.357 15zM5.5 7h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1 0-1M.8 1a.8.8 0 0 0-.8.8V3a.8.8 0 0 0 .8.8h14.4A.8.8 0 0 0 16 3V1.8a.8.8 0 0 0-.8-.8z" />
+                            </svg>
+                          </span>
+                        )} */}
                       </div>
                     </li>
                   );
-                })}
+                })
+              ) : (
+                <div className="position-relative w-100 h-100">
+                  <h5 className="position-absolute top-50 start-50 translate-middle fw-bold text-dark">
+                    Không có đơn vị
+                  </h5>
+                </div>
+              )}
             </TableBody>
           </div>
         </div>

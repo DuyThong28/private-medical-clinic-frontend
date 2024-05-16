@@ -23,7 +23,11 @@ export default function SearchDrugInput() {
 
   const drugsQuery = useQuery({
     queryKey: ["drugs"],
-    queryFn: fetchAllDrugs,
+    queryFn: async () => {
+      const data = await fetchAllDrugs();
+      const activeDrugs = data.filter((item) => item.isActive === 1);
+      return activeDrugs;
+    },
   });
 
   const drugState = drugsQuery.data;
@@ -37,10 +41,12 @@ export default function SearchDrugInput() {
 
   function searchDrugHandler(event) {
     const textSearch = event.target.value.toLowerCase().trim();
+
     if (!textSearch) {
       setDrugs(() => []);
       return;
     }
+
     const drugResult = drugState.filter((drug) =>
       drug.drugName.toLowerCase().includes(textSearch)
     );
@@ -54,7 +60,7 @@ export default function SearchDrugInput() {
   }
 
   return (
-    <div>
+    <div className="mb-3">
       <div className="input-group flex-nowrap">
         <span
           className="input-group-text"
@@ -99,7 +105,9 @@ export default function SearchDrugInput() {
                         Thuốc: <span className="fw-bold">{drug.drugName}</span>
                         {drug.note && (
                           <>
-                            <span className="fw-bold">{' ('+ drug.note +' )'}</span>
+                            <span className="fw-bold">
+                              {" (" + drug.note + " )"}
+                            </span>
                           </>
                         )}
                       </div>

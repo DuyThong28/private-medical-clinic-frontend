@@ -1,3 +1,4 @@
+import Cookies from "js-cookie";
 export async function login(userData) {
   let response;
 
@@ -21,27 +22,58 @@ export async function login(userData) {
     }
   } else {
     //login with google
-    response = await fetch("http://localhost:8080/api/v1/auth/success");
+    response = await fetch("http://localhost:8080/api/v1/auth/success", {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        authorization: `Bearer`,
+      },
+    });
     if (!response.ok) {
-      const error = new Error("cancel-login");
+      const error = new Error("Đăng nhập thất bại");
       error.code = response.status;
       error.info = await response.json();
       throw error;
     }
   }
 
-  const headers = response.headers;
-  headers.forEach((value, name) => {
-    console.log(`${name}: ${value}`);
-  });
-  console.log(headers.get("Content-Type"));
+  // const headers = response.headers;
+  // headers.forEach((value, name) => {
+  //   console.log(`${name}: ${value}`);
+  // });
+  // console.log(headers.get("Content-Type"));
   const resData = await response.json();
   const refreshToken = resData.user.refreshToken;
-  setTimeout(() => {
-    const user = resData.user.user;
-    localStorage.setItem("user", JSON.stringify(user));
-    localStorage.setItem("refreshToken", refreshToken);
-  }, 500);
+  Cookies.set("refreshToken", refreshToken);
+
+  resData.message = "Đăng nhập thành công";
+  return resData;
+}
+
+export async function loginWithGoogle() {
+  const response = await fetch("http://localhost:8080/api/v1/auth/success", {
+    method: "GET",
+    credentials: "include",
+    headers: {
+      authorization: `Bearer`,
+    },
+  });
+  if (!response.ok) {
+    const error = new Error("Đăng nhập thất bại");
+    error.code = response.status;
+    error.info = await response.json();
+    throw error;
+  }
+
+  // const headers = response.headers;
+  // headers.forEach((value, name) => {
+  //   console.log(`${name}: ${value}`);
+  // });
+  // console.log(headers.get("Content-Type"));
+  const resData = await response.json();
+  const refreshToken = resData.user.refreshToken;
+  Cookies.set("refreshToken", refreshToken);
+
   resData.message = "Đăng nhập thành công";
   return resData;
 }
@@ -64,8 +96,7 @@ export async function logout() {
   }
 
   const resData = await response.json();
-  localStorage.removeItem("user");
-  localStorage.removeItem("refreshToken");
+  Cookies.remove("refreshToken");
   return resData;
 }
 
@@ -151,18 +182,15 @@ export async function sendOTP({ email }) {
 }
 
 export async function checkOTP({ email, code }) {
-  const response = await fetch(
-    `http://localhost:8080/api/v1/auth/check-otp`,
-    {
-      method: "POST",
-      credentials: "include",
-      body: JSON.stringify({ email, code }),
-      headers: {
-        "Content-Type": "application/json",
-        authorization: "Bearer",
-      },
-    }
-  );
+  const response = await fetch(`http://localhost:8080/api/v1/auth/check-otp`, {
+    method: "POST",
+    credentials: "include",
+    body: JSON.stringify({ email, code }),
+    headers: {
+      "Content-Type": "application/json",
+      authorization: "Bearer",
+    },
+  });
   if (!response.ok) {
     const error = new Error("Mã OPT không chính xác, vui lòng kiểm tra lại");
     error.code = response.status;
@@ -199,4 +227,36 @@ export async function resetPassword({ email, newPassword, confirmPassword }) {
   const resData = await response.json();
   const data = resData.data;
   return data;
+}
+
+export async function resetPasswordById({ id, newPassword, confirmPassword }) {
+  const response = await fetch(
+    `http://localhost:8080/api/v1/auth/reset-password-by-id`,
+    {
+      method: "POST",
+      credentials: "include",
+      body: JSON.stringify({ id, newPassword, confirmPassword }),
+      headers: {
+        "Content-Type": "application/json",
+        authorization: "Bearer",
+      },
+    }
+  );
+  if (!response.ok) {
+    const error = new Error("Thay đổi mật khẩu không thành công");
+    error.code = response.status;
+    error.info = await response.json();
+    throw error;
+  }
+
+  const resData = await response.json();
+  const data = resData.data;
+
+  return {
+    ...data,
+    message: "Thiết lập lại mật khẩu thành công",
+    sendUserInfoByUserId: true,
+    id: id,
+    password: newPassword.trim(),
+  };
 }

@@ -1,12 +1,14 @@
-import { useEffect } from "react";
+import { loginWithGoogle } from "../../services/auth";
+import { useQuery } from "@tanstack/react-query";
 
 function LoginSuccess() {
-  useEffect(() => {
-    setTimeout(() => {
-      window.close();
-    }, 1000);
-  }, []);
-
+  useQuery({
+    queryKey: ["loginWithGoogle"],
+    queryFn: async () => {
+      await loginWithGoogle();
+      window.open("http://localhost:3000/home", "_self");
+    },
+  });
   return <></>;
 }
 

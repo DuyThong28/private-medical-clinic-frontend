@@ -32,7 +32,7 @@ export async function createNewDrug(data) {
     response = await fetch(`http://localhost:8080/api/v1/drugs/${drugID}`, {
       credentials: "include",
       method: "PUT",
-      body: JSON.stringify({ drugName, price, count, unitId, note }),
+      body: JSON.stringify({ drugName, price, count, unitId, note, }),
       headers: {
         "Content-Type": "application/json",
         authorization: "Bearer",

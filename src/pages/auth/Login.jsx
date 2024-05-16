@@ -1,18 +1,22 @@
-import loginImage from "../../assets/login-background.png";
-import { Navigate, useNavigate } from "react-router-dom";
+import { redirect, useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
-import GoogleButton from "react-google-button";
-import { login } from "../../util/auth";
-import NotificationDialog from "../../components/NotificationDialog";
 import { useRef, useState } from "react";
-import PasswordInput from "../../components/PasswordInput";
 import { Form } from "react-bootstrap";
+import { jwtDecode } from "jwt-decode";
+import { login } from "../../services/auth";
+
+import loginImage from "../../assets/login-background.png";
+import GoogleButton from "react-google-button";
+import NotificationDialog from "../../components/NotificationDialog";
+import PasswordInput from "../../components/PasswordInput";
 import Card from "../../components/Card";
 import "./Login.scss";
+import useAuth from "../../hooks/useAuth";
 
 function LoginPage() {
-  const navigate = useNavigate();
+  const { setAuth } = useAuth();
   const notiDialogRef = useRef();
+  const navigate = useNavigate();
   const [validated, setValidated] = useState(false);
   localStorage.removeItem("email");
 
@@ -20,23 +24,15 @@ function LoginPage() {
     mutationKey: ["login"],
     mutationFn: login,
     onSuccess: (data) => {
-      notiDialogRef.current.toastSuccess({ message: data.message });
-      setTimeout(() => {
-        navigate("/systems/home");
-        setValidated(false);
-      }, 500);
+      const refreshToken = data.user.refreshToken;
+      setAuth(jwtDecode(refreshToken));
+      setValidated(false);
+      window.open("http://localhost:3000/home", "_self");
     },
     onError: (data) => {
-      if (data.message !== "cancel-login") {
-        notiDialogRef.current.toastError({ message: data.message });
-      }
+      notiDialogRef.current.toastError({ message: data.message });
     },
   });
-
-  const isAuth = localStorage.getItem("refreshToken");
-  if (isAuth) {
-    return <Navigate to="/systems/home" />;
-  }
 
   async function localLoginHandler(event) {
     event.preventDefault();
@@ -59,21 +55,7 @@ function LoginPage() {
   }
 
   async function loginWithGoogleHandler() {
-    const newWindow = openCenteredWindow(
-      "http://localhost:8080/api/v1/auth/google",
-      500,
-      550
-    );
-    mutate();
-
-    // if (newWindow) {
-    //   const timer = setInterval(() => {
-    //     if (newWindow.closed) {
-    //       mutate();
-    //       if (timer) clearInterval(timer);
-    //     }
-    //   });
-    // }
+    window.open("http://localhost:8080/api/v1/auth/google", "_self");
   }
 
   function navigateToForgotPassHandler() {
@@ -83,20 +65,14 @@ function LoginPage() {
   return (
     <>
       <NotificationDialog ref={notiDialogRef} />
-      <div className="d-flex flex-row h-100">
+      <div className="d-flex flex-row h-100" >
         <div className="col w-100 h-100">
           <img src={loginImage} className="w-100 h-100" />
         </div>
 
-        <div
-          className="col h-100 position-relative"
-          style={{ backgroundColor: "#E9ECEF" }}
-        >
+        <div className="col h-100 position-relative">
           <div className="col h-100">
-            <div
-              className="h-100 position-relative"
-              style={{ backgroundColor: "#E9ECEF" }}
-            >
+            <div className="h-100 position-relative">
               <div
                 className="position-absolute top-50 mt-50 start-50 translate-middle"
                 style={{ width: "70%" }}
@@ -108,12 +84,11 @@ function LoginPage() {
                     </div>
                     <div>
                       <div
-                        className="position-relative border shadow border-1"
+                        className="position-relative border border-1 mb-4"
                         style={{
                           height: "40px",
                           overflow: "hidden",
-                          background: "rgb(66 133 244)",
-                          borderColor: "rgb(66 133 244)",
+                          background: "#3A57E8",
                         }}
                       >
                         <GoogleButton
@@ -125,8 +100,6 @@ function LoginPage() {
                           onClick={loginWithGoogleHandler}
                         />
                       </div>
-
-                      <hr />
                       <Form
                         method="post"
                         onSubmit={localLoginHandler}
@@ -143,7 +116,7 @@ function LoginPage() {
                           </label>
                           <div>
                             <input
-                              className="form-control"
+                              className="form-control input-border"
                               type="text"
                               name="username"
                               id="username"
@@ -152,7 +125,11 @@ function LoginPage() {
                             ></input>
                           </div>
                         </div>
-                        <PasswordInput name={"password"} label={"Mật khẩu"} />
+                        <PasswordInput
+                          className="input-border"
+                          name={"password"}
+                          label={"Mật khẩu"}
+                        />
                         <div className="forgot-password">
                           <a
                             className="fw-bold nav-link  mt-2 text-end"
@@ -162,7 +139,7 @@ function LoginPage() {
                           </a>
                         </div>
                         <button
-                          className="w-100 mb-3 mt-4 btn rounded-3 btn-primary shadow"
+                          className="w-100 mb-3 mt-4 btn rounded-3 shadow btn-primary"
                           type="submit"
                         >
                           Đăng nhập
@@ -178,15 +155,6 @@ function LoginPage() {
       </div>
     </>
   );
-}
-
-function openCenteredWindow(url, width, height) {
-  const screenWidth = screen.width;
-  const screenHeight = screen.height;
-  const left = (screenWidth - width) / 2;
-  const top = (screenHeight - height) / 2;
-  const windowFeatures = `width=${width},height=${height},top=${top},left=${left}`;
-  return window.open(url, "_blank", windowFeatures);
 }
 
 export default LoginPage;

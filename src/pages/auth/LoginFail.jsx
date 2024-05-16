@@ -1,11 +1,5 @@
-import { useEffect } from "react";
-
 function LoginFail() {
-  useEffect(() => {
-    setTimeout(() => {
-      window.close();
-    }, 1000);
-  }, []);
+  window.open("http://localhost:3000/", "_self");
 
   return <></>;
 }

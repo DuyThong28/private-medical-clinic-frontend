@@ -16,12 +16,16 @@ import { fetchAllDisease } from "../../../services/diseases";
 import NotificationDialog, {
   DialogAction,
 } from "../../../components/NotificationDialog";
+import useAuth from "../../../hooks/useAuth";
 
 export default function HistoryTab({ isEditable }) {
+  let { patientId } = useParams();
   const modalRef = useRef();
   const notiDialogRef = useRef();
   const { appopintmentListPatientId } = useParams();
-  let { patientId } = useParams();
+
+  const { auth } = useAuth();
+  const permission = auth?.permission || [];
 
   const diseasesQuery = useQuery({
     queryKey: ["diseases"],
@@ -61,7 +65,9 @@ export default function HistoryTab({ isEditable }) {
       action: DialogAction.DELETE,
       dispatchFn: () => deleteAppointmentRecordById({ id }),
     });
-    notiDialogRef.current.showDialogWarning({message:"Xác nhận xóa phiếu khám bệnh?"});
+    notiDialogRef.current.showDialogWarning({
+      message: "Xác nhận xóa phiếu khám bệnh?",
+    });
   }
 
   return (
@@ -88,7 +94,7 @@ export default function HistoryTab({ isEditable }) {
           <div style={{ width: "1%" }}></div>
         </TableHeader>
         <TableBody>
-          {recordHistory &&
+          {recordHistory && recordHistory.length > 0 ? (
             recordHistory.map((record) => {
               return (
                 <li
@@ -105,23 +111,26 @@ export default function HistoryTab({ isEditable }) {
                     {getDiseaseName({ id: record.diseaseId })}
                   </div>
                   <div className="text-end" style={{ width: "10%" }}>
-                    <span
-                      className="p-2"
-                      onClick={() => showRecordHandler({ id: record.id })}
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="16"
-                        height="16"
-                        fill="#1B59F8"
-                        className="bi bi-eye-fill"
-                        viewBox="0 0 16 16"
+                    {permission?.includes("RRecord") && (
+                      <span
+                        className="p-2"
+                        onClick={() => showRecordHandler({ id: record.id })}
                       >
-                        <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0" />
-                        <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8m8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7" />
-                      </svg>
-                    </span>
-                    {isEditable && (
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="16"
+                          height="16"
+                          fill="#646565"
+                          className="bi bi-eye-fill"
+                          viewBox="0 0 16 16"
+                        >
+                          <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0" />
+                          <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8m8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7" />
+                        </svg>
+                      </span>
+                    )}
+
+                    {permission?.includes("DRecord") && isEditable && (
                       <span
                         className="p-2"
                         onClick={() => deleterecordHandler({ id: record.id })}
@@ -130,7 +139,7 @@ export default function HistoryTab({ isEditable }) {
                           xmlns="http://www.w3.org/2000/svg"
                           width="16"
                           height="16"
-                          fill="#1B59F8"
+                          fill="#646565"
                           className="bi bi-archive-fill"
                           viewBox="0 0 16 16"
                         >
@@ -141,7 +150,14 @@ export default function HistoryTab({ isEditable }) {
                   </div>
                 </li>
               );
-            })}
+            })
+          ) : (
+            <div className="position-relative w-100 h-100">
+              <h5 className="position-absolute top-50 start-50 translate-middle fw-bold text-dark">
+                Không có phiếu khám bệnh
+              </h5>
+            </div>
+          )}
         </TableBody>
       </div>
     </>

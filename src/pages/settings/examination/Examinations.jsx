@@ -23,6 +23,7 @@ import InvoiceDetail from "../../Invoice/InvoiceDetail";
 import NotificationDialog, {
   DialogAction,
 } from "../../../components/NotificationDialog";
+import useAuth from "../../../hooks/useAuth";
 
 function ExaminationsPage() {
   const navigate = useNavigate();
@@ -31,6 +32,8 @@ function ExaminationsPage() {
   const invoiceRef = useRef();
   const notiDialogRef = useRef();
   const dispatch = useDispatch();
+  const { auth } = useAuth();
+  const permission = auth?.permission || [];
   const [examState, setExamState] = useState({
     name: "",
     date: inputToDayFormat(),
@@ -83,7 +86,10 @@ function ExaminationsPage() {
 
   function acceptHandler(data) {
     dispatch(prescriptionAction.removeAll());
-    navigate(`${data.id}/prescription`);
+    if (permission?.includes("RDrug")) navigate(`${data.id}/prescription`);
+    else if (permission?.includes("RRecord"))
+      navigate(`${data.id}/examhistory`);
+    else navigate(`${data.id}`);
   }
 
   function payHandler({ id }) {
@@ -123,10 +129,10 @@ function ExaminationsPage() {
       <InvoiceDetail ref={invoiceRef} />
       <NotificationDialog ref={notiDialogRef} keyQuery={["appointmentList"]} />
       <div className="h-100 w-100">
-        <Card>
+        <Card className="p-3">
           <div className="w-100 h-100 d-flex flex-column gap-3">
             <ExaminationModal ref={modalRef} setSearchData={setSearchData} />
-            <div className=" w-100 h-100 overflow-hidden d-flex flex-column gap-3">
+            <div className=" w-100 h-100 overflow-hidden d-flex flex-column">
               <TableHeader>
                 <div className="text-start" style={{ width: "5%" }}>
                   STT
@@ -149,13 +155,14 @@ function ExaminationsPage() {
                 <div className="text-start" style={{ width: "10%" }}>
                   Trạng thái
                 </div>
-                <div className="text-start" style={{ width: "10%" }}>
+                <div className="text-end" style={{ width: "10%" }}>
                   Thanh toán
                 </div>
                 <div className="text-start" style={{ width: "1%" }}></div>
               </TableHeader>
               <TableBody>
                 {appointmentListPatients &&
+                appointmentListPatients.length > 0 ? (
                   appointmentListPatients.map((appointmentListPatient) => {
                     return (
                       <li
@@ -233,7 +240,7 @@ function ExaminationsPage() {
                           </span>
                         </div>
                         <div
-                          className="text-start"
+                          className="text-end"
                           style={{ width: "10%" }}
                           data-bs-toggle="dropdown"
                           aria-expanded="false"
@@ -252,61 +259,76 @@ function ExaminationsPage() {
                         </div>
                         {!appointmentListPatient.billId && (
                           <ul className="dropdown-menu">
-                            <li className="dropdown-item">
-                              {!appointmentListPatient.appointmentRecordId && (
-                                <span
-                                  onClick={() =>
-                                    acceptHandler(appointmentListPatient)
-                                  }
-                                >
-                                  Tiếp nhận
-                                </span>
-                              )}
-                            </li>
-                            {appointmentListPatient.appointmentRecordId && (
+                            {permission?.includes("CRecord") && (
                               <li className="dropdown-item">
-                                <span
-                                  onClick={() =>
-                                    payHandler({
-                                      id: appointmentListPatient.appointmentRecordId,
-                                    })
-                                  }
-                                >
-                                  Thanh toán
-                                </span>
+                                {!appointmentListPatient.appointmentRecordId && (
+                                  <span
+                                    onClick={() =>
+                                      acceptHandler(appointmentListPatient)
+                                    }
+                                  >
+                                    Tiếp nhận
+                                  </span>
+                                )}
                               </li>
                             )}
+
+                            {appointmentListPatient.appointmentRecordId &&
+                              permission?.includes("CInvoice") && (
+                                <li className="dropdown-item">
+                                  <span
+                                    onClick={() =>
+                                      payHandler({
+                                        id: appointmentListPatient.appointmentRecordId,
+                                      })
+                                    }
+                                  >
+                                    Thanh toán
+                                  </span>
+                                </li>
+                              )}
                             {!appointmentListPatient.appointmentRecordId && (
                               <>
-                                <li className="dropdown-item">
-                                  <span
-                                    onClick={() =>
-                                      editAppointmentHandler({
-                                        data: appointmentListPatient,
-                                      })
-                                    }
-                                  >
-                                    Cập nhật
-                                  </span>
-                                </li>
-                                <li className="dropdown-item">
-                                  <span
-                                    onClick={() =>
-                                      deleteAppointmentHandler({
-                                        id: appointmentListPatient.id,
-                                      })
-                                    }
-                                  >
-                                    Hủy
-                                  </span>
-                                </li>
+                                {permission?.includes("UAppointment") && (
+                                  <li className="dropdown-item">
+                                    <span
+                                      onClick={() =>
+                                        editAppointmentHandler({
+                                          data: appointmentListPatient,
+                                        })
+                                      }
+                                    >
+                                      Cập nhật
+                                    </span>
+                                  </li>
+                                )}
+                                {permission?.includes("DAppointment") && (
+                                  <li className="dropdown-item">
+                                    <span
+                                      onClick={() =>
+                                        deleteAppointmentHandler({
+                                          id: appointmentListPatient.id,
+                                        })
+                                      }
+                                    >
+                                      Hủy
+                                    </span>
+                                  </li>
+                                )}
                               </>
                             )}
                           </ul>
                         )}
                       </li>
                     );
-                  })}
+                  })
+                ) : (
+                  <div className="position-relative w-100 h-100">
+                    <h5 className="position-absolute top-50 start-50 translate-middle fw-bold text-dark">
+                      Không có ca khám
+                    </h5>
+                  </div>
+                )}
               </TableBody>
             </div>
           </div>

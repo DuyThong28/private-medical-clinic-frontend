@@ -15,14 +15,16 @@ import MainModal from "../../components/MainModal";
 import Form from "react-bootstrap/Form";
 import { fetchAllDisease } from "../../services/diseases";
 import { fetchFeeConsult } from "../../services/argument";
-import { createBill } from "../../services/bill";
+import { createBill, fetchBillById } from "../../services/bill";
 import { queryClient } from "../../App";
 import NotificationDialog, {
   DialogAction,
 } from "../../components/NotificationDialog";
-import { message } from "antd";
+import useAuth from "../../hooks/useAuth";
 
 const InvoiceDetail = forwardRef(function InvoiceDetail({ children }, ref) {
+  const { auth } = useAuth();
+  const permission = auth?.permission || [];
   const modalRef = useRef();
   const notiDialogRef = useRef();
   modalRef.current?.isLarge();
@@ -73,10 +75,16 @@ const InvoiceDetail = forwardRef(function InvoiceDetail({ children }, ref) {
   });
 
   function calculateDrugExpense({ totalPrice }) {
-    setDialogState((prevState) => {
-      const newDrugExpense = prevState.drugExpense + totalPrice;
-      return { ...prevState, drugExpense: newDrugExpense };
-    });
+    if (!isBill) {
+      setDialogState((prevState) => {
+        const newDrugExpense = prevState.drugExpense + totalPrice;
+        return { ...prevState, drugExpense: newDrugExpense };
+      });
+    } else {
+      setDialogState((prevState) => {
+        return { ...prevState };
+      });
+    }
   }
 
   const diseaseState = diseasesQuery.data;
@@ -102,7 +110,11 @@ const InvoiceDetail = forwardRef(function InvoiceDetail({ children }, ref) {
           return { ...resData };
         });
         setIsBill(false);
-        modalRef.current.show({ isEditable: true, header: "Thanh toán", action:"add" });
+        modalRef.current.show({
+          isEditable: true,
+          header: "Thanh toán",
+          action: "add",
+        });
       },
 
       async showDetail({ bill }) {
@@ -114,13 +126,24 @@ const InvoiceDetail = forwardRef(function InvoiceDetail({ children }, ref) {
         });
 
         const resData = await fetchAppointmentRecordByBill({ bill });
-        console.log("resData", resData);
+        const billData = await fetchBillById({ id: bill.id });
         if (resData && resData[0]) {
           setAppointmentRecordData(() => {
             return { ...resData[0] };
           });
+
+          setDialogState({
+            feeconsult: billData.feeConsult,
+            drugExpense: billData.drugExpense,
+            isEditable: false,
+          });
+
           setIsBill(true);
-          modalRef.current.show({ isEditable: false, header: "Hóa đơn", action:"view" });
+          modalRef.current.show({
+            isEditable: false,
+            header: "Hóa đơn",
+            action: "view",
+          });
         }
       },
     };
@@ -132,6 +155,7 @@ const InvoiceDetail = forwardRef(function InvoiceDetail({ children }, ref) {
         patientId: appointmentRecordData?.patientId,
         appointmentListId: appointmentRecordData?.appointmentListId,
         drugExpense: dialogState?.drugExpense,
+        feeConsult: dialogState?.feeconsult,
       });
     }
 
@@ -282,7 +306,7 @@ const InvoiceDetail = forwardRef(function InvoiceDetail({ children }, ref) {
                   isBill={true}
                 />
               </div>
-              <div className="d-flex mt-3 justify-content-end">
+              <div className="d-flex mt-3 justify-content-end text-dark">
                 <div style={{ width: "20rem" }}>
                   <div className="row justify-content-around">
                     <span className="col">Tổng tiền thuốc:</span>
@@ -306,11 +330,11 @@ const InvoiceDetail = forwardRef(function InvoiceDetail({ children }, ref) {
                   </div>
                 </div>
               </div>
-              {!isBill && (
+              {!isBill && permission?.includes("CInvoice") && (
                 <div className="d-flex gap-3 mt-3 justify-content-end">
-                  <button type="button" className="btn btn-secondary fw-bold">
+                  {/* <button type="button" className="btn btn-secondary fw-bold">
                     In biên lai
-                  </button>
+                  </button> */}
 
                   <button
                     type="button"

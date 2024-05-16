@@ -2,9 +2,10 @@ import { useEffect, useRef, useState } from "react";
 import Card from "../../components/Card";
 import { Form } from "react-bootstrap";
 import { useMutation } from "@tanstack/react-query";
-import { changePassword } from "../../util/auth";
+import { changePassword } from "../../services/auth";
 import PasswordInput from "../../components/PasswordInput";
 import NotificationDialog from "../../components/NotificationDialog";
+import useAuth from "../../hooks/useAuth";
 
 function PasswordView() {
   const [dataState, setDataState] = useState({
@@ -14,11 +15,9 @@ function PasswordView() {
     isEditable: false,
     isSubmitable: false,
   });
-
+  const { auth } = useAuth();
   const [validated, setValidated] = useState(false);
-  const user = localStorage.getItem("user");
   const notiDialogRef = useRef();
-  const userData = JSON.parse(user);
 
   const changePasswordMutate = useMutation({
     mutationFn: changePassword,
@@ -48,7 +47,7 @@ function PasswordView() {
     if (
       dataState.currentpassword !== "" &&
       dataState.newpassword !== "" &&
-      dataState.currentpassword !== "" &&
+      dataState.retypepassword !== "" &&
       dataState.retypepassword === dataState.newpassword
     ) {
       setDataState((prevState) => {
@@ -97,7 +96,7 @@ function PasswordView() {
     const currentPassword = data.currentpassword;
     const newPassword = data.newpassword;
     const confirmPassword = data.retypepassword;
-    const id = userData.id;
+    const id = auth.id;
     changePasswordMutate.mutate({
       id,
       confirmPassword,
@@ -123,7 +122,7 @@ function PasswordView() {
       <NotificationDialog ref={notiDialogRef} keyQuery={[]} />
       <div
         className="h-100 position-relative"
-        style={{ backgroundColor: "#E9ECEF" }}
+        style={{ background: "#F5F6FA" }}
       >
         <div className="position-absolute top-50 mt-50 start-50 translate-middle">
           <Card>

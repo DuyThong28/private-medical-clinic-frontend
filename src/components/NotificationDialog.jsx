@@ -79,7 +79,7 @@ const NotificationDialog = forwardRef(function NotificationDialog(
         onClick={deleteHandler}
         style={{ minWidth: "70px" }}
       >
-        Xóa
+        Xác nhận
       </button>
     </div>
   );

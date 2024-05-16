@@ -18,6 +18,7 @@
     height: 100%;
     overflow: hidden;
     color: #555555;
+    background: #f5f6fa!important;
   }
 
   #root {
@@ -35,5 +36,33 @@
     --bs-gutter-x: 0rem!important;
   }
 
- 
+  /* .btn-primary {
+    background-color: #3a57e8!important;
+  }
+
+  .btn-primary:hover {
+    background-color: #0048b2!important;
+  } */
+
+  .bg-danger {
+    background-color: #ef38263d !important;
+    padding: 8px!important;
+    color: #EF3826!important;
+    border-radius: 5px!important;
+  }
+
+  .bg-success {
+    background-color: #00b69b33 !important;
+    padding: 8px!important;
+    color: #00B69B!important;
+    border-radius: 5px!important;
+  }
+
+  .list-group-item-primary {
+    padding: 11px 15px!important;
+    color: "#36383A"!important;
+    background-color: #FCFDFD!important;
+    border-bottom: 0.5px solid #D5D5D5!important;
+    color: #232D42!important;
+  }
   

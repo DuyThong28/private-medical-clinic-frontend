@@ -1,152 +1,157 @@
 .detail-header {
-    font-size: 18px;
-    color: rgb(27, 89, 248);
-    font-weight: 500;
+  font-size: 18px;
+  color: rgb(27, 89, 248);
+  font-weight: 500;
 }
 
 .detail-chart {
-    width: 100%;
-    border-radius: 5px;
+  width: 100%;
+  border-radius: 5px;
 }
 
 .detail-item {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  padding-left: 1rem;
+  background-color: #D9F7E8;
+  border-radius: 4px;
+  border: 1px solid #91E8BC;
+  p {
+    margin: 0;
+    color: #1f6d46;
+    font-weight: bold;
+  }
+  .note-content {
     display: flex;
-    flex-direction: column;
-    width: 100%;
-    // height: 40px;
-    margin: 5px 0 0 0;
-    background-color: #e1edf5;
-    border: 1px solid #CFE2FF;
+    flex-wrap: wrap;
+    height: 100%;
+    margin: 0px 10px 10px 10px;
+    background-color: white;
+    border-radius: 4px;
     p {
-        margin-top: 15px;
-        margin-left: 20px;
-        color: black;
-        font-weight: 500;
-        font-size: 18px;
+      font-weight: 300;
+      font-size: 15px;
     }
-    .note-content {
-        display: flex;
-        flex-wrap: wrap;
-        height: 100%;
-        margin: 0px 10px 10px 10px;
-        background-color: white;
-        border-radius: 4px;
-        p {
-            font-weight: 300;
-            font-size: 15px;
-        }
-    }
+  }
 }
 
 .select-box-1 {
-    position: relative;
-    display: flex;
-    align-items: center;
-    height: 30px;
-    width: 170px;
-    border-radius: 0px;
-    border: 0px;
-    .combobox {
-        height: 100%;
-        width: 100%;
-    }
-    p {
-        margin: 5px;
-        font-size: 12px;
-        font-weight: 400;
-    }
-    .icon {
-        font-size: 12px;
-        font-weight: 400;
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 30px;
+  width: 170px;
+  border-radius: 0px;
+  border: 0px;
+  .combobox {
+    height: 100%;
+    width: 100%;
+  }
+  p {
+    margin: 5px;
+    font-size: 12px;
+    font-weight: 400;
+  }
+  .icon {
+    font-size: 12px;
+    font-weight: 400;
 
-        position: absolute;
-        top: 4px;
-        right: 5px;
-    }
-    .calendar {
-        position: absolute;
-        top: 25px;
-        left: -12px;
-    }
+    position: absolute;
+    top: 4px;
+    right: 5px;
+  }
+  .calendar {
+    position: absolute;
+    top: 25px;
+    left: -12px;
+  }
 }
 .icon-view {
-    font-size: 15px;
+  font-size: 15px;
 }
 .export-button {
-    width: 100%;
-    display: flex;
-    justify-content: flex-end;
-    button {
-        width: 100px;
-        background-color: #208000;
-        border-radius: 2px;
-        .icon-export {
-            margin-right: 10px;
-            font-size: 18px;
-        }
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  button {
+    width: 100px;
+    background-color: #208000;
+    border-radius: 2px;
+    .icon-export {
+      margin-right: 10px;
+      font-size: 18px;
     }
+  }
 }
 .detail-list {
-    overflow-y: auto;
-    width: 100%;
+  // overflow-y: auto;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  gap: 0.5rem;
 }
 .select-box-4 {
-    position: relative;
-    display: flex;
-    align-items: center;
-    height: 30px;
-    width: 130px;
-    z-index: 1;
-    border: 1px solid blue;
-    border-radius: 3px;
-    .combobox {
-        height: 100%;
-        width: 100%;
-    }
-    p {
-        margin: 8px;
-        font-weight: 500;
-        font-size: 12px;
-    }
-    .icon {
-        position: absolute;
-        top: 4px;
-        right: 3px;
-        font-size: 12px;
-    }
-    .calendar {
-        position: absolute;
-        top: 40px;
-        left: -12px;
-    }
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 30px;
+  width: 130px;
+  z-index: 1;
+  border: 1px solid blue;
+  border-radius: 3px;
+  .combobox {
+    height: 100%;
+    width: 100%;
+  }
+  p {
+    margin: 8px;
+    font-weight: 500;
+    font-size: 12px;
+  }
+  .icon {
+    position: absolute;
+    top: 4px;
+    right: 3px;
+    font-size: 12px;
+  }
+  .calendar {
+    position: absolute;
+    top: 40px;
+    left: -12px;
+  }
 }
 .select-box-5 {
-    position: relative;
-    display: flex;
-    align-items: center;
-    height: 30px;
-    width: 60px;
-    z-index: 1;
-    border: 1px solid blue;
-    border-radius: 3px;
-    .combobox {
-        height: 100%;
-        width: 100%;
-    }
-    p {
-        margin: 6px;
-        font-weight: 500;
-        font-size: 12px;
-    }
-    .icon {
-        position: absolute;
-        top: 4px;
-        right: 3px;
-        font-size: 12px;
-    }
-    .calendar {
-        position: absolute;
-        top: 40px;
-        left: -12px;
-    }
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 30px;
+  width: 60px;
+  z-index: 1;
+  border: 1px solid blue;
+  border-radius: 3px;
+  .combobox {
+    height: 100%;
+    width: 100%;
+  }
+  p {
+    margin: 6px;
+    font-weight: 500;
+    font-size: 12px;
+  }
+  .icon {
+    position: absolute;
+    top: 4px;
+    right: 3px;
+    font-size: 12px;
+  }
+  .calendar {
+    position: absolute;
+    top: 40px;
+    left: -12px;
+  }
 }

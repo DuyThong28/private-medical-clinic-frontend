@@ -20,12 +20,15 @@ import { fetchAllDisease } from "../../../services/diseases";
 import NotificationDialog, {
   DialogAction,
 } from "../../../components/NotificationDialog";
+import useAuth from "../../../hooks/useAuth";
 
 export default function ExaminationDetail() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const notiDialogRef = useRef();
   const formRef = useRef();
+  const { auth } = useAuth();
+  const permission = auth?.permission || [];
   const [validated, setValidated] = useState(false);
   const { appopintmentListPatientId } = useParams();
   const [dataState, setDataState] = useState({
@@ -75,7 +78,7 @@ export default function ExaminationDetail() {
       });
       notiDialogRef.current.toastSuccess({ message: data.message });
       setTimeout(() => {
-        navigate("/systems/examinations");
+        navigate("/examinations");
         dispatch(prescriptionAction.removeAll());
       }, 1050);
     },
@@ -134,7 +137,7 @@ export default function ExaminationDetail() {
   }
 
   return (
-    <Card>
+    <Card className="p-3">
       <NotificationDialog ref={notiDialogRef} keyQuery={["patientlist"]} />
       <Form
         className="w-100 h-100 d-flex flex-row  gap-3"
@@ -245,33 +248,35 @@ export default function ExaminationDetail() {
               label={"Triệu chứng"}
             />
           </div>
-          <div className="row">
-            <MainSelect
-              name={"diagnostic"}
-              defaultValue={
-                appointmentListPatientData &&
-                appointmentListPatientData.diseaseId
-              }
-              isEditable={dataState.isEditable}
-              label={"Chuẩn đoán"}
-              options={
-                diseaseState &&
-                diseaseState.map((disease) => {
-                  return (
-                    <option key={disease.id} value={disease.id}>
-                      {disease.diseaseName}
-                    </option>
-                  );
-                })
-              }
-              text={
-                appointmentListPatientData &&
-                getDiseaseName({
-                  id: appointmentListPatientData.diseaseId,
-                })
-              }
-            />
-          </div>
+          {permission?.includes("RDrug") && (
+            <div className="row">
+              <MainSelect
+                name={"diagnostic"}
+                defaultValue={
+                  appointmentListPatientData &&
+                  appointmentListPatientData.diseaseId
+                }
+                isEditable={dataState.isEditable}
+                label={"Chuẩn đoán"}
+                options={
+                  diseaseState &&
+                  diseaseState.map((disease) => {
+                    return (
+                      <option key={disease.id} value={disease.id}>
+                        {disease.diseaseName}
+                      </option>
+                    );
+                  })
+                }
+                text={
+                  appointmentListPatientData &&
+                  getDiseaseName({
+                    id: appointmentListPatientData.diseaseId,
+                  })
+                }
+              />
+            </div>
+          )}
         </div>
         <div
           className="h-100 d-flex flex-column gap-3"
@@ -285,37 +290,43 @@ export default function ExaminationDetail() {
               className="col nav gap-3 text-start"
               style={{ width: "fit-content" }}
             >
-              <NavLink
-                className={({ isActive }) =>
-                  isActive
-                    ? "nav-link nav-bar-active  border-bottom border-3 border-primary"
-                    : "nav-link nav-bar "
-                }
-                to="prescription"
-              >
-                Đơn thuốc
-              </NavLink>
-              <NavLink
-                className={({ isActive }) =>
-                  isActive
-                    ? "nav-link  nav-bar-active  border-bottom border-3 border-primary"
-                    : "nav-link nav-bar "
-                }
-                to="examhistory"
-              >
-                Lịch sử
-              </NavLink>
+              {permission?.includes("RDrug") && (
+                <NavLink
+                  className={({ isActive }) =>
+                    isActive
+                      ? "nav-link nav-bar-active  border-bottom border-3 border-primary"
+                      : "nav-link nav-bar "
+                  }
+                  to="prescription"
+                >
+                  Đơn thuốc
+                </NavLink>
+              )}
+              {permission?.includes("RRecord") && (
+                <NavLink
+                  className={({ isActive }) =>
+                    isActive
+                      ? "nav-link  nav-bar-active  border-bottom border-3 border-primary"
+                      : "nav-link nav-bar "
+                  }
+                  to="examhistory"
+                >
+                  Lịch sử
+                </NavLink>
+              )}
             </nav>
-            <div className="col text-end">
-              <button
-                className="btn btn-primary"
-                type="button"
-                onClick={finishHandler}
-                disabled={dataState.data?.symptoms ? false : true}
-              >
-                Hoàn thành
-              </button>
-            </div>
+            {permission?.includes("CRecord") && (
+              <div className="col text-end">
+                <button
+                  className="btn btn-primary"
+                  type="button"
+                  onClick={finishHandler}
+                  disabled={dataState.data?.symptoms ? false : true}
+                >
+                  Hoàn thành
+                </button>
+              </div>
+            )}
           </div>
           <div className="row w-100 h-100 overflow-hidden">
             <Outlet />

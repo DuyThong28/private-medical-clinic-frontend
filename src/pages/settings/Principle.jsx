@@ -12,6 +12,7 @@ import { Form } from "react-bootstrap";
 import NotificationDialog, {
   DialogAction,
 } from "../../components/NotificationDialog";
+import useAuth from "../../hooks/useAuth";
 
 function PrincipleView() {
   const [dataState, setDataState] = useState({
@@ -19,6 +20,8 @@ function PrincipleView() {
     feeconsult: null,
     isEditable: false,
   });
+  const { auth } = useAuth();
+  const permission = auth?.permission || [];
   const [validated, setValidated] = useState(false);
   const notiDialogRef = useRef();
 
@@ -81,9 +84,13 @@ function PrincipleView() {
       action: DialogAction.UPDATE,
     });
     if (maxPatientsMutate.isError || feeConsultMutate.isError) {
-      notiDialogRef.current.toastError({message:"Cập nhật quy định thất bại"});
+      notiDialogRef.current.toastError({
+        message: "Cập nhật quy định thất bại",
+      });
     } else {
-      notiDialogRef.current.toastSuccess({message:"Cập nhật quy định thành công"});
+      notiDialogRef.current.toastSuccess({
+        message: "Cập nhật quy định thành công",
+      });
     }
 
     setDataState(() => {
@@ -141,7 +148,7 @@ function PrincipleView() {
       <NotificationDialog ref={notiDialogRef} keyQuery={[]} />
       <div
         className="h-100 position-relative"
-        style={{ backgroundColor: "#E9ECEF" }}
+        style={{ background: "#F5F6FA" }}
       >
         <div className="position-absolute top-50 mt-50 start-50 translate-middle">
           <Card>
@@ -195,31 +202,35 @@ function PrincipleView() {
                     required
                   />
                 </div>
-
-                <div className="d-flex gap-3 mt-3 justify-content-center">
-                  {!dataState.isEditable ? (
-                    <button
-                      type="button"
-                      className="btn btn-primary fw-bold"
-                      onClick={editHandler}
-                    >
-                      Chỉnh sửa
-                    </button>
-                  ) : (
-                    <>
+                {permission?.includes("UArgument") && (
+                  <div className="d-flex gap-3 mt-3 justify-content-center">
+                    {!dataState.isEditable ? (
                       <button
                         type="button"
-                        className="btn btn-secondary fw-bold"
-                        onClick={cancelHandler}
+                        className="btn btn-primary fw-bold"
+                        onClick={editHandler}
                       >
-                        Hủy
+                        Chỉnh sửa
                       </button>
-                      <button type="submit" className="btn btn-primary fw-bold">
-                        Lưu
-                      </button>
-                    </>
-                  )}
-                </div>
+                    ) : (
+                      <>
+                        <button
+                          type="button"
+                          className="btn btn-secondary fw-bold"
+                          onClick={cancelHandler}
+                        >
+                          Hủy
+                        </button>
+                        <button
+                          type="submit"
+                          className="btn btn-primary fw-bold"
+                        >
+                          Lưu
+                        </button>
+                      </>
+                    )}
+                  </div>
+                )}
               </Form>
             </div>
           </Card>

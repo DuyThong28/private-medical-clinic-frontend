@@ -3,6 +3,7 @@ export async function createBill(data) {
     patientId: data?.patientId,
     appointmentListId: data?.appointmentListId,
     drugExpense: data?.drugExpense,
+    feeConsult: data?.feeConsult,
   };
 
   const billId = data?.id ?? null;
@@ -10,7 +11,7 @@ export async function createBill(data) {
 
   if (billId) {
     response = await fetch(`http://localhost:8080/api/v1/bills/${billId}`, {
-      Credentials: "include",
+      credentials: "include",
       method: "PUT",
       body: JSON.stringify(bill),
       headers: {
@@ -100,7 +101,7 @@ export async function deleteBillById({ id }) {
   }
 
   const resData = await response.json();
-  const data = {...resData.data};
+  const data = { ...resData.data };
   data.message = "Xóa hóa đơn thành công";
   return data;
 }

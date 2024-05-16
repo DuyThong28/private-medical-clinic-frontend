@@ -1,0 +1,8 @@
+.scroll {
+  overflow: hidden;
+  padding-right: 11px;
+  &:hover {
+    overflow-y: scroll;
+    padding-right: 0px;
+  }
+}
