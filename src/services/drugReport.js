@@ -15,6 +15,6 @@ export async function fetchAllDrugReportData() {
     }
   
     const resData = await response.json();
-    const drugs = resData.drugs;
+    const drugs = resData.data;
     return drugs;
   }

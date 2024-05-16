@@ -26,6 +26,7 @@ import { queryClient } from "../../../App";
 import "./Medicine.scss";
 import { fetchAllDrugs, fetchDrugById } from "../../../services/drugs";
 import { fetchAllUnit } from "../../../services/units";
+import { fetchAllDrugReportData } from "../../../services/drugReport";
 import Chart from "chart.js/auto";
 import {
   Chart as ChartJS,
@@ -104,6 +105,12 @@ function Medicine() {
   });
   const bills = billsQuery.data || [];
 
+  const drugReportQuerry = useQuery({
+    queryKey: ["drugReportList"],
+    queryFn: fetchAllDrugReportData,
+  });
+  const drugReports = drugReportQuerry.data || [];
+
   const ConvernToArray = (obj) => {
     let arr = [];
     if (obj != null)
@@ -112,6 +119,7 @@ function Medicine() {
       });
     return arr;
   };
+
 
   const billList = ConvernToArray(bills) || [];
 
@@ -126,7 +134,6 @@ function Medicine() {
   const [selectItem, setSelectItem] = useState(drugs[0]);
   const setDetailItem = (item) => {
     setSelectItem(item);
-    console.log("item", item);
     if (timeOption == "Tuần") getDataForChartWeek(valueTime, item);
     else if (timeOption == "Tháng") getDataForChartMonth(valueTime, item);
     else getDataForChartYear(valueTime, item);
@@ -136,7 +143,6 @@ function Medicine() {
     getDataForChartWeek(valueTime, drugs[0]);
   }, [drugs]);
   useEffect(() => {
-    console.log("item", selectItem);
     getDataForChartWeek(valueTime, selectItem);
   }, [drugs, appointment, record, recorddt]);
   // Select Time
@@ -204,6 +210,15 @@ function Medicine() {
     }
     return count;
   };
+
+  const countDrugInReport = (date, drugSelected) => {
+    const Now = formatDate(dayjs());
+    const time = formatDate(date);
+    if(time.month == Now.month && time.year == Now.year) return drugSelected.count;
+    const drug = drugReports.filter(item => item.month == time.month && item.year == time.year && item.drugId == drugSelected.id);
+    if(drug[0]?.count) return drug[0]?.count;
+    return 0;
+  }
 
   const countDrugInRecordWeek = (time, item) => {
     let arrApt = [];
@@ -538,19 +553,20 @@ function Medicine() {
     ];
     setChartData(tmp);
   };
-  const [chartData, setChartData] = useState({
-    labels: [1, 1, 1, 1, 1, 1, 1], // Replace with your category labels
-    datasets: [
-      {
-        label: "Số lượng bán ra",
-        data: [0, 0, 0, 0, 0, 9, 0],
-        backgroundColor: "#3A57E8",
-        borderWidth: 1,
-        barThickness: 25,
-        borderRadius: 2,
-      },
-    ],
-  });
+  const [chartData, setChartData] = useState(
+    {
+        labels: [1,1,1,1,1,1,1], // Replace with your category labels
+        datasets: [
+            {label: 'Số lượng bán ra',
+                data: [0,0,0,0,0,0,0], 
+                backgroundColor: '#3A57E8',
+                borderWidth: 1,
+                barThickness: 25,
+                borderRadius: 2,
+            },
+        ],
+    }
+);
   useEffect(() => {}, [chartData]);
   // React.useEffect(()=>{
   //     console.log("medicine", appointment.length);
@@ -562,21 +578,8 @@ function Medicine() {
   //       stopInitLoad = true;
   //     }
   // }, [appointment, stopInitLoad])
-}
-    const [chartData, setChartData] = useState(
-        {
-            labels: [1,1,1,1,1,1,1], // Replace with your category labels
-            datasets: [
-                {label: 'Số lượng bán ra',
-                    data: [0,0,0,0,0,0,0], 
-                    backgroundColor: '#3A57E8',
-                    borderWidth: 1,
-                    barThickness: 25,
-                    borderRadius: 2,
-                },
-            ],
-        }
-    );
+
+    
     useEffect(() => {
 
     }, [chartData])
@@ -968,7 +971,7 @@ function Medicine() {
                 Đơn vị
               </div>
               <div className="text-start" style={{ width: "30%" }}>
-                Doanh thu
+                Số lượng tồn kho
               </div>
               <div className="text-start" style={{ width: "20%" }}>
                 Số lần dùng
@@ -1005,27 +1008,7 @@ function Medicine() {
                         data-bs-toggle=""
                         aria-expanded="false"
                       >
-                        {timeOption2 === "Tuần" &&
-                          formatMoney(
-                            countDrugInRecord(
-                              formatDate(valueTime2)?.month,
-                              formatDate(valueTime2)?.year,
-                              drug
-                            ) * drug?.price
-                          )}
-                        {timeOption2 === "Tháng" &&
-                          formatMoney(
-                            countDrugInRecordWeek(valueTime2, drug) *
-                              drug?.price
-                          )}
-                        {timeOption2 === "Năm" &&
-                          formatMoney(
-                            countDrugInRecord(
-                              -1,
-                              formatDate(valueTime2)?.year,
-                              drug
-                            ) * drug?.price
-                          )}
+                        {countDrugInReport(valueTime2, drug)} 
                       </div>
                       <div
                         className="text-start"
