@@ -7,17 +7,16 @@ export async function fetchAllDrugReportData() {
         "Content-Type": "application/json",
         authorization: "Bearer",
       },
+    });
+  
+    if (!response.ok) {
+      const error = new Error("An error occurred while fetching all the drugs");
+      error.code = response.status;
+      error.info = await response.json();
+      throw error;
     }
-  );
-
-  if (!response.ok) {
-    const error = new Error("An error occurred while fetching all the drugs");
-    error.code = response.status;
-    error.info = await response.json();
-    throw error;
+  
+    const resData = await response.json();
+    const drugs = resData.data;
+    return drugs;
   }
-
-  const resData = await response.json();
-  const drugs = resData.data;
-  return drugs;
-}
