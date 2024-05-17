@@ -198,7 +198,7 @@ export async function deleteUserById({ id }) {
   });
 
   if (!response.ok) {
-    const error = new Error("Xóa người dùng thất bại");
+    const error = new Error("Lưu trữ thành viên thành công");
     error.code = response.status;
     error.info = await response.json();
     throw error;
@@ -206,6 +206,6 @@ export async function deleteUserById({ id }) {
 
   const resData = await response.json();
   const data = { ...resData.data };
-  data.message = "Xóa người dùng thành công";
+  data.message = "Lưu trữ thành viên thành công";
   return data;
 }
