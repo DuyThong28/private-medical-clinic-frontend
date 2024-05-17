@@ -99,7 +99,6 @@ function Revenue() {
     return null;
   };
 
-
   const [valueTime, setValueTime] = React.useState(dayjs());
   const setNewTime = (value) => {
     setValueTime(value);
@@ -129,8 +128,6 @@ function Revenue() {
     else setValueTime(rememberYear);
   };
 
-
-
   const [valueTime2, setValueTime2] = React.useState(dayjs());
   const setNewTime2 = (value) => {
     setValueTime2(value);
@@ -157,7 +154,7 @@ function Revenue() {
     setIsOpenCalendar2(false);
     setIsOpenTimeOption2(value);
   };
-  
+
   const [timeOption2, setTimeOption2] = React.useState("Tuần");
   const handleSetTimeOption2 = (value) => {
     if (timeOption2 === "Tuần") rememberWeek2 = valueTime2;
@@ -187,7 +184,7 @@ function Revenue() {
       setNewDataForDonutChart(value, "Year");
     }
   };
-  
+
   const [isOpenCalendar3, setIsOpenCalendar3] = React.useState(false);
   const handlerSetNewTime3 = (value) => {
     setNewTime3(value);
@@ -203,8 +200,6 @@ function Revenue() {
     setIsOpenCalendar3(false);
     setIsOpenTimeOption3(value);
   };
-  
-  
 
   const [timeOption3, setTimeOption3] = React.useState("Tuần");
   const handleSetTimeOption3 = (value) => {
@@ -224,7 +219,6 @@ function Revenue() {
     }
   };
 
-  
   const getFirstDayOfWeek = (date) => {
     const startOfWeek = dayjs(date).startOf("week");
     if (startOfWeek.day() === 0) {
@@ -237,10 +231,6 @@ function Revenue() {
     const endOfWeek = startOfWeek.add(6, "days");
     return { start: startOfWeek, end: endOfWeek };
   };
-
-  
-  
-  
 
   const formatDate = (date) => {
     const day = getWeekStartAndEnd(date);
@@ -914,8 +904,8 @@ function Revenue() {
           ></BillDetail>
         </div>
       )}
-      <div className="col-md-8">
-        <Card style={{ padding: "0rem 1rem 0rem 0rem" }}>
+      <div className="col-md-8" style={{ padding: "0rem 1rem 0rem 0rem" }}>
+        <Card>
           <div className=" w-100 h-100 overflow-hidden">
             <div className="d-flex col-md-6 justify-content-start">
               <div className="select-box-3">
@@ -999,8 +989,8 @@ function Revenue() {
         </Card>
       </div>
       <div className="col-md-4 d-flex flex-column">
-        <div className="row">
-          <Card style={{ padding: "0rem 0rem 1rem 0rem" }}>
+        <div className="row" style={{ padding: "0rem 0rem 1rem 0rem" }}>
+          <Card>
             <div className="chartbar-area">
               <div className="option-time-chart">
                 <div className="d-flex justify-content-between">
@@ -1090,7 +1080,7 @@ function Revenue() {
         <div className="row h-100">
           <Card>
             <div className="chartdonut-area">
-            <div className="option-time-chart">
+              <div className="option-time-chart">
                 <div className="d-flex justify-content-between">
                   <label className="fw-bold text-dark">Phân bố doanh thu</label>
                   <div className="row ">

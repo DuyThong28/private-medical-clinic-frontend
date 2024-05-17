@@ -76,7 +76,10 @@ function CalendarSelectDay() {
     <div
       id="calendar"
       className=" rounded-3 p-3 w-20"
-      style={{ border: "1px solid #B9B9B9" }}
+      style={{
+        // border: "1px solid #B9B9B9",
+        boxShadow: "6px 6px 54px 0px rgba(0, 0, 0, 0.05)",
+      }}
     >
       {/* <h6 className="calendar-title">Lịch</h6> */}
       {/* <style>{css}</style> */}
@@ -111,7 +114,7 @@ function CalendarSelectDay() {
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     height="2.4rem"
-                    fill="#0177FB"
+                    fill="#0148B3"
                     className="bi bi-arrow-up-square-fill"
                     viewBox="0 0 16 16"
                   >

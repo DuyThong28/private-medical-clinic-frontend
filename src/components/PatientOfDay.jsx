@@ -89,41 +89,49 @@ function PatientOfDay() {
   }, [selectedDay]);
 
   return (
-      // <div class="e-card playing rounded-3 p-3 h-100">
-          <div
-            className="h-100 overview-number rounded-3 p-3"
-            style={{ border: "1px solid #B9B9B9" }}
-          >
-              <div >
-                <label className="fw-bold" style={{margin: 0, fontSize: "1rem"}}>Số lượng bệnh nhân trong ngày</label>
-                <h3 className="overview-number-patient ">{patientsToday.length}</h3>
-              </div>
-              <div className="overview-number-percents z-2">
-                  <div>
-                    <p className="txt-center">Bệnh nhân mới</p>
-                    <p className="txt-center">{patientsToday.length > 0 ? dataToday.newPatient : 0}</p>
-                    <p className="txt-center">{patientsToday.length > 0
-                        ? ((dataToday.newPatient / patientsToday.length) * 100).toFixed(
-                            2
-                          )
-                        : 0}%
-                    </p>
-                  </div>
-                 
-                  <div>
-                    <p className="txt-center">Bệnh nhân cũ</p>
-                    <p className="txt-center">{patientsToday.length > 0 ? dataToday.oldPatient : 0}</p>
-                    <p className="txt-center">{patientsToday.length > 0
-                        ? ((dataToday.oldPatient / patientsToday.length) * 100).toFixed(
-                            2
-                          )
-                        : 0}%
-                    </p>
-                  </div>
-                 
-              </div>
-            </div>
-      // </div>
+    // <div class="e-card playing rounded-3 p-3 h-100">
+    <div
+      className="h-100 d-flex flex-column overview-number rounded-3 p-3"
+      // style={{ border: "1px solid #B9B9B9" }}
+    >
+      <div>
+        <label
+          className="fw-bold text-dark"
+          style={{ margin: 0, fontSize: "1rem" }}
+        >
+          Số bệnh nhân trong ngày
+        </label>
+        <h3 className="overview-number-patient ">{patientsToday.length}</h3>
+      </div>
+      <div className="overview-number-percents z-2">
+        <div className="badge bg-success">
+          <p className="txt-center">Bệnh nhân mới</p>
+          <p className="txt-center fs-4">
+            {patientsToday.length > 0 ? dataToday.newPatient : 0}
+          </p>
+          <p className="txt-center fs-6">
+            {patientsToday.length > 0
+              ? ((dataToday.newPatient / patientsToday.length) * 100).toFixed(2)
+              : 0}
+            %
+          </p>
+        </div>
+
+        <div className="badge bg-danger">
+          <p className="txt-center">Bệnh nhân cũ</p>
+          <p className="txt-center fs-4">
+            {patientsToday.length > 0 ? dataToday.oldPatient : 0}
+          </p>
+          <p className="txt-center fs-6">
+            {patientsToday.length > 0
+              ? ((dataToday.oldPatient / patientsToday.length) * 100).toFixed(2)
+              : 0}
+            %
+          </p>
+        </div>
+      </div>
+    </div>
+    // </div>
   );
 }
 

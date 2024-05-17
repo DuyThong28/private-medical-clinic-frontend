@@ -128,8 +128,8 @@ function ExaminationsPage() {
       <RescordHistoryModal ref={payModalRef} />
       <InvoiceDetail ref={invoiceRef} />
       <NotificationDialog ref={notiDialogRef} keyQuery={["appointmentList"]} />
-      <div className="h-100 w-100">
-        <Card className="p-3">
+      <div className="h-100 w-100 p-3">
+        <Card>
           <div className="w-100 h-100 d-flex flex-column gap-3">
             <ExaminationModal ref={modalRef} setSearchData={setSearchData} />
             <div className=" w-100 h-100 overflow-hidden d-flex flex-column">

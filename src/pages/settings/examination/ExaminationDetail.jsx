@@ -137,202 +137,206 @@ export default function ExaminationDetail() {
   }
 
   return (
-    <Card className="p-3">
-      <NotificationDialog ref={notiDialogRef} keyQuery={["patientlist"]} />
-      <Form
-        className="w-100 h-100 d-flex flex-row  gap-3"
-        ref={formRef}
-        noValidate
-        onChange={changeFormHandler}
-        validated={validated}
-      >
-        <div style={{ width: "40%" }}>
-          <div className="row">
-            <label className="col-form-label fw-bold">
-              THÔNG TIN BỆNH NHÂN
-            </label>
-          </div>
-          <div className="row gap-3">
-            <MainInput
-              name={"patientid"}
-              isEditable={false}
-              defaultValue={
-                appointmentListPatientData &&
-                appointmentListPatientData.patientId
-              }
-              label={"Mã bệnh nhân"}
-            />
-            <MainInput
-              name={"fullname"}
-              isEditable={false}
-              defaultValue={
-                appointmentListPatientData &&
-                appointmentListPatientData.patient.fullName
-              }
-              label={"Tên bệnh nhân"}
-            />
-
-            <MainInput
-              name={"phonenumber"}
-              isEditable={false}
-              defaultValue={
-                appointmentListPatientData &&
-                appointmentListPatientData.patient.phoneNumber
-              }
-              label={"Số điện thoại"}
-            />
-          </div>
-          <div className="row gap-3">
-            <MainInput
-              name={"gender"}
-              isEditable={false}
-              defaultValue={
-                appointmentListPatientData &&
-                appointmentListPatientData.patient.gender
-              }
-              label={"Giới tính"}
-            />
-            <MainInput
-              name={"birthyear"}
-              isEditable={false}
-              defaultValue={
-                appointmentListPatientData &&
-                appointmentListPatientData.patient.birthYear
-              }
-              label={"Năm sinh"}
-            />
-            <MainInput
-              name={"address"}
-              isEditable={false}
-              defaultValue={
-                appointmentListPatientData &&
-                appointmentListPatientData.patient.address
-              }
-              label={"Địa chỉ"}
-            />
-          </div>
-          <div className="row">
-            <label className="col-form-label fw-bold">THÔNG TIN CA KHÁM</label>
-          </div>
-          <div className="row gap-3">
-            <MainInput
-              name={"appointmentid"}
-              isEditable={false}
-              defaultValue={
-                appointmentListPatientData && appointmentListPatientData.id
-              }
-              label={"Mã ca khám"}
-            />
-            <MainInput
-              name="scheduledate"
-              defaultValue={
-                appointmentListPatientData &&
-                inputDateFormat(
-                  appointmentListPatientData.appointmentList.scheduleDate
-                )
-              }
-              isEditable={false}
-              label={"Ngày khám"}
-              type={"date"}
-            />
-            <div className="col"></div>
-          </div>
-          <div className="row">
-            <MainTextarea
-              name="symptoms"
-              defaultValue={
-                appointmentListPatientData &&
-                appointmentListPatientData.symptoms
-              }
-              isEditable={dataState.isEditable}
-              label={"Triệu chứng"}
-            />
-          </div>
-          {permission?.includes("RDrug") && (
+    <div className="p-3">
+      <Card>
+        <NotificationDialog ref={notiDialogRef} keyQuery={["patientlist"]} />
+        <Form
+          className="w-100 h-100 d-flex flex-row  gap-3"
+          ref={formRef}
+          noValidate
+          onChange={changeFormHandler}
+          validated={validated}
+        >
+          <div style={{ width: "40%" }}>
             <div className="row">
-              <MainSelect
-                name={"diagnostic"}
+              <label className="col-form-label fw-bold">
+                THÔNG TIN BỆNH NHÂN
+              </label>
+            </div>
+            <div className="row gap-3">
+              <MainInput
+                name={"patientid"}
+                isEditable={false}
                 defaultValue={
                   appointmentListPatientData &&
-                  appointmentListPatientData.diseaseId
+                  appointmentListPatientData.patientId
                 }
-                isEditable={dataState.isEditable}
-                label={"Chuẩn đoán"}
-                options={
-                  diseaseState &&
-                  diseaseState.map((disease) => {
-                    return (
-                      <option key={disease.id} value={disease.id}>
-                        {disease.diseaseName}
-                      </option>
-                    );
-                  })
-                }
-                text={
+                label={"Mã bệnh nhân"}
+              />
+              <MainInput
+                name={"fullname"}
+                isEditable={false}
+                defaultValue={
                   appointmentListPatientData &&
-                  getDiseaseName({
-                    id: appointmentListPatientData.diseaseId,
-                  })
+                  appointmentListPatientData.patient.fullName
                 }
+                label={"Tên bệnh nhân"}
+              />
+
+              <MainInput
+                name={"phonenumber"}
+                isEditable={false}
+                defaultValue={
+                  appointmentListPatientData &&
+                  appointmentListPatientData.patient.phoneNumber
+                }
+                label={"Số điện thoại"}
               />
             </div>
-          )}
-        </div>
-        <div
-          className="h-100 d-flex flex-column gap-3"
-          style={{ width: "60%" }}
-        >
-          <div
-            className="row d-flex flex-row justify-content-between border-bottom appointment-navigation"
-            style={{ height: "fit-content" }}
-          >
-            <nav
-              className="col nav gap-3 text-start"
-              style={{ width: "fit-content" }}
-            >
-              {permission?.includes("RDrug") && (
-                <NavLink
-                  className={({ isActive }) =>
-                    isActive
-                      ? "nav-link nav-bar-active  border-bottom border-3 border-primary"
-                      : "nav-link nav-bar "
+            <div className="row gap-3">
+              <MainInput
+                name={"gender"}
+                isEditable={false}
+                defaultValue={
+                  appointmentListPatientData &&
+                  appointmentListPatientData.patient.gender
+                }
+                label={"Giới tính"}
+              />
+              <MainInput
+                name={"birthyear"}
+                isEditable={false}
+                defaultValue={
+                  appointmentListPatientData &&
+                  appointmentListPatientData.patient.birthYear
+                }
+                label={"Năm sinh"}
+              />
+              <MainInput
+                name={"address"}
+                isEditable={false}
+                defaultValue={
+                  appointmentListPatientData &&
+                  appointmentListPatientData.patient.address
+                }
+                label={"Địa chỉ"}
+              />
+            </div>
+            <div className="row">
+              <label className="col-form-label fw-bold">
+                THÔNG TIN CA KHÁM
+              </label>
+            </div>
+            <div className="row gap-3">
+              <MainInput
+                name={"appointmentid"}
+                isEditable={false}
+                defaultValue={
+                  appointmentListPatientData && appointmentListPatientData.id
+                }
+                label={"Mã ca khám"}
+              />
+              <MainInput
+                name="scheduledate"
+                defaultValue={
+                  appointmentListPatientData &&
+                  inputDateFormat(
+                    appointmentListPatientData.appointmentList.scheduleDate
+                  )
+                }
+                isEditable={false}
+                label={"Ngày khám"}
+                type={"date"}
+              />
+              <div className="col"></div>
+            </div>
+            <div className="row">
+              <MainTextarea
+                name="symptoms"
+                defaultValue={
+                  appointmentListPatientData &&
+                  appointmentListPatientData.symptoms
+                }
+                isEditable={dataState.isEditable}
+                label={"Triệu chứng"}
+              />
+            </div>
+            {permission?.includes("RDrug") && (
+              <div className="row">
+                <MainSelect
+                  name={"diagnostic"}
+                  defaultValue={
+                    appointmentListPatientData &&
+                    appointmentListPatientData.diseaseId
                   }
-                  to="prescription"
-                >
-                  Đơn thuốc
-                </NavLink>
-              )}
-              {permission?.includes("RRecord") && (
-                <NavLink
-                  className={({ isActive }) =>
-                    isActive
-                      ? "nav-link  nav-bar-active  border-bottom border-3 border-primary"
-                      : "nav-link nav-bar "
+                  isEditable={dataState.isEditable}
+                  label={"Chuẩn đoán"}
+                  options={
+                    diseaseState &&
+                    diseaseState.map((disease) => {
+                      return (
+                        <option key={disease.id} value={disease.id}>
+                          {disease.diseaseName}
+                        </option>
+                      );
+                    })
                   }
-                  to="examhistory"
-                >
-                  Lịch sử
-                </NavLink>
-              )}
-            </nav>
-            {permission?.includes("CRecord") && (
-              <div className="col text-end">
-                <button
-                  className="btn btn-primary"
-                  type="button"
-                  onClick={finishHandler}
-                  disabled={dataState.data?.symptoms ? false : true}
-                >
-                  Hoàn thành
-                </button>
+                  text={
+                    appointmentListPatientData &&
+                    getDiseaseName({
+                      id: appointmentListPatientData.diseaseId,
+                    })
+                  }
+                />
               </div>
             )}
           </div>
-          <div className="row w-100 h-100 overflow-hidden">
-            <Outlet />
+          <div
+            className="h-100 d-flex flex-column gap-3"
+            style={{ width: "60%" }}
+          >
+            <div
+              className="row d-flex flex-row justify-content-between border-bottom appointment-navigation"
+              style={{ height: "fit-content" }}
+            >
+              <nav
+                className="col nav gap-3 text-start"
+                style={{ width: "fit-content" }}
+              >
+                {permission?.includes("RDrug") && (
+                  <NavLink
+                    className={({ isActive }) =>
+                      isActive
+                        ? "nav-link nav-bar-active  border-bottom border-3 border-primary"
+                        : "nav-link nav-bar "
+                    }
+                    to="prescription"
+                  >
+                    Đơn thuốc
+                  </NavLink>
+                )}
+                {permission?.includes("RRecord") && (
+                  <NavLink
+                    className={({ isActive }) =>
+                      isActive
+                        ? "nav-link  nav-bar-active  border-bottom border-3 border-primary"
+                        : "nav-link nav-bar "
+                    }
+                    to="examhistory"
+                  >
+                    Lịch sử
+                  </NavLink>
+                )}
+              </nav>
+              {permission?.includes("CRecord") && (
+                <div className="col text-end">
+                  <button
+                    className="btn btn-primary"
+                    type="button"
+                    onClick={finishHandler}
+                    disabled={dataState.data?.symptoms ? false : true}
+                  >
+                    Hoàn thành
+                  </button>
+                </div>
+              )}
+            </div>
+            <div className="row w-100 h-100 overflow-hidden">
+              <Outlet />
+            </div>
           </div>
-        </div>
-      </Form>
-    </Card>
+        </Form>
+      </Card>
+    </div>
   );
 }

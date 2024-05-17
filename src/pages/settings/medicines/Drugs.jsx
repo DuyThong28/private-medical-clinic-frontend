@@ -125,9 +125,9 @@ function DrugTab() {
   }
 
   return (
-    <div className="h-100 w-100">
+    <div className="h-100 w-100 p-3">
       <NotificationDialog ref={notiDialogRef} keyQuery={["drugs"]} />
-      <Card className="p-3">
+      <Card>
         <div className="w-100 h-100 d-flex flex-column gap-3">
           <div className=" w-100  d-flex flex-row justify-content-around">
             <div className="col fw-bold fs-4 text-black">

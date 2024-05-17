@@ -21,7 +21,11 @@ import { fetchPatientById } from "../services/patients";
 import { fetchAllAppointmentListPatients } from "../services/appointmentListPatients";
 import "../pages/Home.scss";
 import { queryClient } from "../App";
-import { compareDate, convertDate, getWeek } from "../components/SelectDayContext";
+import {
+  compareDate,
+  convertDate,
+  getWeek,
+} from "../components/SelectDayContext";
 
 ChartJS.register(
   CategoryScale,
@@ -191,7 +195,10 @@ function NumberOfPatient() {
   return (
     <div
       className="overview-patient-ofday rounded-3 p-3"
-      style={{ border: "1px solid #B9B9B9", marginLeft: "16px"}}
+      style={{
+        // border: "1px solid #B9B9B9",
+        marginLeft: "16px",
+      }}
     >
       <label className="fw-bold text-dark">Số lượng bệnh nhân</label>
       <div className="overview-patient-chart">
@@ -211,7 +218,11 @@ function NumberOfPatient() {
         </div>
       </div>
       <div className="weeks-selection">
-        <p className="show-modal" onClick={toggleModal} style={{border: "1px solid #d5d5d5", color: "#555555"}}>
+        <p
+          className="show-modal"
+          onClick={toggleModal}
+          style={{ border: "1px solid #d5d5d5", color: "#555555" }}
+        >
           {convertDate(range.from, range.to)}
           <FontAwesomeIcon
             className="weeks-icon"

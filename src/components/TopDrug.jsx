@@ -15,7 +15,13 @@ import { fetchAllDrugs } from "../services/drugs";
 import { fetchAppointmentRecordById } from "../services/appointmentRecords";
 import { fetchAllBills } from "../services/bill";
 import "../pages/Home.scss";
-import { compareDate, convertDate, getWeek } from "../components/SelectDayContext";
+import {
+  compareDate,
+  convertDate,
+  getWeek,
+} from "../components/SelectDayContext";
+import TableBody from "./TableBody";
+import TableHeader from "./TableHeader";
 
 function TopDrug() {
   const [range2, setRange2] = useState(() => getWeek(new Date()));
@@ -69,7 +75,6 @@ function TopDrug() {
     });
     setIsShowModal2(false);
   };
-
 
   const handleTopDrug = () => {
     const drugInfo = drugs.map((item) => {
@@ -197,126 +202,162 @@ function TopDrug() {
 
   return (
     <div
-      className=" overview-topmedicine rounded-3 p-3 "
-      style={{ border: "1px solid #B9B9B9"}}
+      className="h-100 overview-topmedicine rounded-3 p-3 d-flex flex-column"
+      // style={{ border: "1px solid #B9B9B9" }}
+      style={{ boxShadow: "6px 6px 54px 0px rgba(0, 0, 0, 0.05)" }}
     >
-      <label className="fw-bold text-dark">Thuốc bán chạy</label>
-      <p
-        className="show-modal week-or-month-info"
-        onClick={() => setIsShowModal2(true)}
-        style={{border: "1px solid #d5d5d5"}}
-      >
-        {selectedOption
-          ? convertDate(range2.from, range2.to)
-          : `Tháng ${month.month + 1} ${month.year}`}
-        <FontAwesomeIcon
-          className="weeks-icon"
-          icon={faCaretDown}
-        ></FontAwesomeIcon>
-      </p>
-      <input id="toggle-modal-2" type="checkbox" checked={isShowModal2}></input>
-      <div className="modal-calendar">
-        <label
-          className="modal-calendar-overlay"
-          onClick={handleCloseModal}
-        ></label>
-        <div className="modal-calendar-content hg-lg">
-          <div className="option-container">
-            <p
-              className={`selected-option ${!selectedOption && "active"}`}
-              onClick={() => setOptions(false)}
-            >
-              Tháng
-            </p>
-            <p
-              className={`selected-option ${selectedOption && "active"}`}
-              onClick={() => setOptions(true)}
-            >
-              Tuần
-            </p>
-          </div>
-          {selectedOption && (
-            <DayPicker
-              locale={vi}
-              weekStartsOn={1}
-              defaultMonth={new Date()}
-              selected={range2}
-              onDayClick={handleSelectedWeek2}
-              mode="range"
-              showOutsideDays
-            />
-          )}
-          {!selectedOption && (
-            <div className="month-picker">
-              <div className="select-year">
-                <FontAwesomeIcon
-                  className="icon-month"
-                  icon={faCaretLeft}
-                  onClick={decrementYear}
-                />
-                <p>{year}</p>
-                <FontAwesomeIcon
-                  className="icon-month"
-                  icon={faCaretRight}
-                  onClick={incrementYear}
-                />
+      <div style={{ marginBottom: "0.75rem" }}>
+        <label className="fw-bold text-dark">Thuốc bán chạy</label>
+        <p
+          className="show-modal week-or-month-info"
+          onClick={() => setIsShowModal2(true)}
+          style={{ border: "1px solid #d5d5d5" }}
+        >
+          {selectedOption
+            ? convertDate(range2.from, range2.to)
+            : `Tháng ${month.month + 1} ${month.year}`}
+          <FontAwesomeIcon
+            className="weeks-icon"
+            icon={faCaretDown}
+          ></FontAwesomeIcon>
+        </p>
+        <input
+          id="toggle-modal-2"
+          type="checkbox"
+          checked={isShowModal2}
+        ></input>
+        <div className="modal-calendar">
+          <label
+            className="modal-calendar-overlay"
+            onClick={handleCloseModal}
+          ></label>
+          <div className="modal-calendar-content hg-lg">
+            <div className="option-container">
+              <p
+                className={`selected-option ${!selectedOption && "active"}`}
+                onClick={() => setOptions(false)}
+              >
+                Tháng
+              </p>
+              <p
+                className={`selected-option ${selectedOption && "active"}`}
+                onClick={() => setOptions(true)}
+              >
+                Tuần
+              </p>
+            </div>
+            {selectedOption && (
+              <DayPicker
+                locale={vi}
+                weekStartsOn={1}
+                defaultMonth={new Date()}
+                selected={range2}
+                onDayClick={handleSelectedWeek2}
+                mode="range"
+                showOutsideDays
+              />
+            )}
+            {!selectedOption && (
+              <div className="month-picker">
+                <div className="select-year">
+                  <FontAwesomeIcon
+                    className="icon-month"
+                    icon={faCaretLeft}
+                    onClick={decrementYear}
+                  />
+                  <p>{year}</p>
+                  <FontAwesomeIcon
+                    className="icon-month"
+                    icon={faCaretRight}
+                    onClick={incrementYear}
+                  />
+                </div>
+                <div className="month-container">
+                  {[...Array(12)].map((_, index) => (
+                    <p
+                      onClick={() => {
+                        setMonth({
+                          month: index,
+                          year: year,
+                        });
+                        setIsShowModal2(false);
+                      }}
+                      key={index}
+                      className={
+                        index === month.month &&
+                        year === month.year &&
+                        "month-selected"
+                      }
+                    >{`Tháng ${index + 1}`}</p>
+                  ))}
+                </div>
               </div>
-              <div className="month-container">
-                {[...Array(12)].map((_, index) => (
-                  <p
-                    onClick={() => {
-                      setMonth({
-                        month: index,
-                        year: year,
-                      });
-                      setIsShowModal2(false);
-                    }}
-                    key={index}
-                    className={
-                      index === month.month &&
-                      year === month.year &&
-                      "month-selected"
-                    }
-                  >{`Tháng ${index + 1}`}</p>
-                ))}
+            )}
+            {/* <button className="btn-modal" onClick={handleConfirmSelection}>
+                  Chọn
+                </button> */}
+          </div>
+        </div>
+      </div>
+
+      <div className="table-top-drug overflow-hidden h-100 w-100">
+        <div
+          className="row list-group-item  list-group-item-action d-flex flex-row w-100 fw-bold"
+          style={{
+            padding: "2px 15px",
+            color: "#36383A",
+            background: "#F1F4F9",
+            border: "1px solid #F1F4F9",
+            borderRadius: "6px",
+            zIndex: 0,
+          }}
+        >
+          <div className="text-start" style={{ width: "5%" }}>
+            STT
+          </div>
+          <div className="text-start" style={{ width: "49%" }}>
+            Tên Thuốc
+          </div>
+          <div className="text-start" style={{ width: "25%" }}>
+            Số lượng tồn kho
+          </div>
+          <div className="text-start" style={{ width: "20%" }}>
+            Số lượng bán ra
+          </div>
+        </div>
+        <TableBody isEditable={false}>
+          {topDrug.length > 0 ? (
+            topDrug.map((drug, index) => (
+              <li
+                className="list-group-item list-group-item-primary list-group-item-action w-100 d-flex flex-row"
+                key={index}
+              >
+                <div className="text-start" style={{ width: "5%" }}>
+                  {index + 1}
+                </div>
+                <div className="text-start" style={{ width: "50%" }}>
+                  {drug.drugName}
+                </div>
+                <div className="text-start" style={{ width: "25%" }}>
+                  {drug.count}
+                </div>
+                <div className="text-start" style={{ width: "20%" }}>
+                  {drug.soldout}
+                </div>
+              </li>
+            ))
+          ) : (
+            <div className="position-relative w-100 h-100">
+              <div className="position-absolute top-50 start-50 translate-middle fw-bold text-dark">
+                <p
+                  style={{ width: "max-content" }}
+                >{`Không có thuốc bán ra trong ${
+                  selectedOption ? "tuần" : "tháng"
+                }`}</p>
               </div>
             </div>
           )}
-          {/* <button className="btn-modal" onClick={handleConfirmSelection}>
-                  Chọn
-                </button> */}
-        </div>
-      </div>
-      <div className="table-top-drug">
-        <div className="table-header">
-          <p>STT</p>
-          <p>Tên Thuốc</p>
-          <p>Số lượng tồn kho</p>
-          <p>Số lượng bán ra</p>
-        </div>
-        <div
-          className="table-body"
-          style={{
-            scrollbarWidth: "thin",
-          }}
-        >
-          {topDrug.length > 0 ? (
-            topDrug.map((drug, index) => (
-              <div className="table-body-row" key={index}>
-                <p>{index + 1}</p>
-                <p>{drug.drugName}</p>
-                <p>{drug.count}</p>
-                <p>{drug.soldout}</p>
-              </div>
-            ))
-          ) : (
-            <p
-              style={{ textAlign: "center", marginTop: "12px" }}
-            >{`Không có thuốc bán ra trong ${
-              selectedOption ? "tuần" : "tháng"
-            }`}</p>
-          )}
-        </div>
+        </TableBody>
       </div>
     </div>
   );

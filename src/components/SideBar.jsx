@@ -3,6 +3,7 @@ import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import "./SideBar.scss";
 import { logout } from "../services/auth";
 import useAuth from "../hooks/useAuth";
+import logo from "../assets/logo.png";
 
 function SideBar() {
   const { auth } = useAuth();
@@ -29,15 +30,11 @@ function SideBar() {
     <div className="bg-white border-end border h-100 nav-bar-border">
       <div className="d-flex flex-column p-3 h-100">
         <div>
-          <Link
-            // to="home"
-            className="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none"
-          >
-            <svg className="bi pe-none me-2" width="40" height="32">
-              <use href="#bootstrap" />
-            </svg>
-            <span className="fs-4"></span>
-          </Link>
+          <div className="w-100 text-center mt-3">
+            <Link to="home" className="mb-md-0 me-md-auto link-body-emphasis">
+              <img src={logo} style={{ width: "4rem", height: "4rem" }} />
+            </Link>
+          </div>
           <ul className="nav nav-pills flex-column mb-auto mt-5">
             <li className="nav-item ">
               <NavLink
@@ -237,12 +234,12 @@ function SideBar() {
             </li>
           </ul>
         </div>
-        <div className="mt-auto " style={{ height: "fit-content" }}>
+        <div className="mt-auto logout-bar" style={{ height: "fit-content" }}>
           <hr />
           <div className="nav-link">
-            <button
+            <span
               onClick={logoutHandler}
-              className="nav-link link-body-emphasis nav-bar"
+              className="nav-link"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -256,7 +253,7 @@ function SideBar() {
                 <path d="M.146 8.354a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L1.707 7.5H10.5a.5.5 0 0 1 0 1H1.707l2.147 2.146a.5.5 0 0 1-.708.708z" />
               </svg>
               Đăng xuất
-            </button>
+            </span>
           </div>
         </div>
       </div>

@@ -34,62 +34,64 @@ export default function PatientDetail() {
   }, [patientId, patientDetailQuery.data]);
 
   return (
-    <Card className="p-3">
-      <Form className="w-100 h-100 d-flex flex-column  gap-3">
-        {permission?.includes("RPatient") && (
-          <div className="gap-3 row">
-            <div className="col">
-              <div className="row gap-3">
-                <MainInput
-                  name={"patientid"}
-                  isEditable={false}
-                  defaultValue={dataState.data && dataState.data.id}
-                  label={"Mã bệnh nhân"}
-                />
-                <MainInput
-                  name={"fullname"}
-                  isEditable={false}
-                  defaultValue={dataState.data && dataState.data.fullName}
-                  label={"Tên bệnh nhân"}
-                />
+    <div className="p-3">
+      <Card>
+        <Form className="w-100 h-100 d-flex flex-column  gap-3">
+          {permission?.includes("RPatient") && (
+            <div className="gap-3 row">
+              <div className="col">
+                <div className="row gap-3">
+                  <MainInput
+                    name={"patientid"}
+                    isEditable={false}
+                    defaultValue={dataState.data && dataState.data.id}
+                    label={"Mã bệnh nhân"}
+                  />
+                  <MainInput
+                    name={"fullname"}
+                    isEditable={false}
+                    defaultValue={dataState.data && dataState.data.fullName}
+                    label={"Tên bệnh nhân"}
+                  />
 
-                <MainInput
-                  name={"phonenumber"}
-                  isEditable={false}
-                  defaultValue={dataState.data && dataState.data.phoneNumber}
-                  label={"Số điện thoại"}
-                />
-              </div>
-              <div className="row gap-3">
-                <MainInput
-                  name={"gender"}
-                  isEditable={false}
-                  defaultValue={dataState.data && dataState.data.gender}
-                  label={"Giới tính"}
-                />
-                <MainInput
-                  name={"birthyear"}
-                  isEditable={false}
-                  defaultValue={dataState.data && dataState.data.birthYear}
-                  label={"Năm sinh"}
-                />
-                <MainInput
-                  name={"address"}
-                  isEditable={false}
-                  defaultValue={dataState.data && dataState.data.address}
-                  label={"Địa chỉ"}
-                />
+                  <MainInput
+                    name={"phonenumber"}
+                    isEditable={false}
+                    defaultValue={dataState.data && dataState.data.phoneNumber}
+                    label={"Số điện thoại"}
+                  />
+                </div>
+                <div className="row gap-3">
+                  <MainInput
+                    name={"gender"}
+                    isEditable={false}
+                    defaultValue={dataState.data && dataState.data.gender}
+                    label={"Giới tính"}
+                  />
+                  <MainInput
+                    name={"birthyear"}
+                    isEditable={false}
+                    defaultValue={dataState.data && dataState.data.birthYear}
+                    label={"Năm sinh"}
+                  />
+                  <MainInput
+                    name={"address"}
+                    isEditable={false}
+                    defaultValue={dataState.data && dataState.data.address}
+                    label={"Địa chỉ"}
+                  />
+                </div>
               </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {permission?.includes("RRecord") && (
-          <div className="w-100 h-100 overflow-hidden">
-            <HistoryTab isEditable={true} />
-          </div>
-        )}
-      </Form>
-    </Card>
+          {permission?.includes("RRecord") && (
+            <div className="w-100 h-100 overflow-hidden">
+              <HistoryTab isEditable={true} />
+            </div>
+          )}
+        </Form>
+      </Card>
+    </div>
   );
 }

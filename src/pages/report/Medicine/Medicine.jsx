@@ -120,7 +120,6 @@ function Medicine() {
     return arr;
   };
 
-
   const billList = ConvernToArray(bills) || [];
 
   function searchHandler(event) {
@@ -214,11 +213,17 @@ function Medicine() {
   const countDrugInReport = (date, drugSelected) => {
     const Now = formatDate(dayjs());
     const time = formatDate(date);
-    if(time.month == Now.month && time.year == Now.year) return drugSelected.count;
-    const drug = drugReports.filter(item => item.month == time.month && item.year == time.year && item.drugId == drugSelected.id);
-    if(drug[0]?.count) return drug[0]?.count;
+    if (time.month == Now.month && time.year == Now.year)
+      return drugSelected.count;
+    const drug = drugReports.filter(
+      (item) =>
+        item.month == time.month &&
+        item.year == time.year &&
+        item.drugId == drugSelected.id
+    );
+    if (drug[0]?.count) return drug[0]?.count;
     return 0;
-  }
+  };
 
   const countDrugInRecordWeek = (time, item) => {
     let arrApt = [];
@@ -553,20 +558,19 @@ function Medicine() {
     ];
     setChartData(tmp);
   };
-  const [chartData, setChartData] = useState(
-    {
-        labels: [1,1,1,1,1,1,1], // Replace with your category labels
-        datasets: [
-            {label: 'Số lượng bán ra',
-                data: [0,0,0,0,0,0,0], 
-                backgroundColor: '#3A57E8',
-                borderWidth: 1,
-                barThickness: 25,
-                borderRadius: 2,
-            },
-        ],
-    }
-);
+  const [chartData, setChartData] = useState({
+    labels: [1, 1, 1, 1, 1, 1, 1], // Replace with your category labels
+    datasets: [
+      {
+        label: "Số lượng bán ra",
+        data: [0, 0, 0, 0, 0, 0, 0],
+        backgroundColor: "#3A57E8",
+        borderWidth: 1,
+        barThickness: 25,
+        borderRadius: 2,
+      },
+    ],
+  });
   useEffect(() => {}, [chartData]);
   // React.useEffect(()=>{
   //     console.log("medicine", appointment.length);
@@ -579,20 +583,17 @@ function Medicine() {
   //     }
   // }, [appointment, stopInitLoad])
 
-    
-    useEffect(() => {
-
-    }, [chartData])
-    // React.useEffect(()=>{
-    //     console.log("medicine", appointment.length);
-    //     console.log("item", selectItem);
-    //     if(appointment.length > 0 && selectItem!=null)
-    //     {
-    //       console.log("on", getLabelForChartWeek(valueTime));
-    //       getDataForChartWeek(valueTime, selectItem);
-    //       stopInitLoad = true;
-    //     }
-    // }, [appointment, stopInitLoad])
+  useEffect(() => {}, [chartData]);
+  // React.useEffect(()=>{
+  //     console.log("medicine", appointment.length);
+  //     console.log("item", selectItem);
+  //     if(appointment.length > 0 && selectItem!=null)
+  //     {
+  //       console.log("on", getLabelForChartWeek(valueTime));
+  //       getDataForChartWeek(valueTime, selectItem);
+  //       stopInitLoad = true;
+  //     }
+  // }, [appointment, stopInitLoad])
 
   const optionschart1 = {
     title: {
@@ -899,8 +900,8 @@ function Medicine() {
 
   return (
     <div className="d-flex flex-row w-100 h-100 p-3">
-      <div className="col-md-8">
-        <Card style={{ padding: "0rem 1rem 0rem 0rem" }}>
+      <div className="col-md-8" style={{ padding: "0rem 1rem 0rem 0rem" }}>
+        <Card>
           <div className=" w-100 h-100 overflow-hidden d-flex flex-column">
             <div className="d-flex flex-row mb-3 justify-content-between">
               <div>
@@ -1008,7 +1009,7 @@ function Medicine() {
                         data-bs-toggle=""
                         aria-expanded="false"
                       >
-                        {countDrugInReport(valueTime2, drug)} 
+                        {countDrugInReport(valueTime2, drug)}
                       </div>
                       <div
                         className="text-start"
@@ -1058,8 +1059,8 @@ function Medicine() {
         </Card>
       </div>
       <div className="col-md-4 d-flex flex-column">
-        <div className="row">
-          <Card style={{ padding: "0rem 0rem 1rem 0rem" }}>
+        <div className="row" style={{ padding: "0rem 0rem 1rem 0rem" }}>
+          <Card>
             <div className="detail-chart">
               <div className="option-time-chart">
                 <div className="d-flex justify-content-between">

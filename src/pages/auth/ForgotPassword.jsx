@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import PasswordInput from "../../components/PasswordInput";
 import { Form } from "react-bootstrap";
 import Card from "../../components/Card";
+import logo from "../../assets/logo.png";
 import "./Login.scss";
 import { useMutation } from "@tanstack/react-query";
 import {
@@ -135,129 +136,181 @@ function ForgotPassword() {
   return (
     <>
       <NotificationDialog ref={notiDialogRef} />
-      <div className="d-flex flex-row h-100">
+      <div className="d-flex flex-row h-100" style={{ background: "#ffffff" }}>
         <div className="col h-100 position-relative">
           <div className="col h-100">
             <div className="h-100 position-relative">
               <div
                 className="position-absolute top-50 mt-50 start-50 translate-middle"
-                style={{ width: "70%" }}
+                style={{ width: "65%" }}
               >
-                <Card>
+                <div>
                   <div className="p-4">
+                    {resetState === resetStep.CHECKMAIL && (
+                      <div className="col fw-bold fs-4 mb-4 text-center text-dark">
+                        <label>Tìm Kiếm Email</label>
+                      </div>
+                    )}
+                    {resetState === resetStep.CHECKOTP && (
+                      <div className="col fw-bold fs-4 mb-4 text-center text-dark">
+                        <label>Xác Thực Mã OTP</label>
+                      </div>
+                    )}
+                    {resetState === resetStep.RESET && (
+                      <div className="col fw-bold fs-4 mb-4 text-center text-dark">
+                        <label>Thiết Lập Mật Khẩu</label>
+                      </div>
+                    )}
+                    <Form
+                      method="post"
+                      onSubmit={submitHandler}
+                      noValidate
+                      validated={validated}
+                      ref={formRef}
+                      className="h-100 mt-4"
+                    >
                       {resetState === resetStep.CHECKMAIL && (
-                        <div className="col fw-bold fs-4 mb-4 text-center text-dark">
-                          <label>Tìm Kiếm Email</label>
+                        <div className="form-floating mb-3">
+                          <input
+                            type="email"
+                            className="form-control rounded-3"
+                            id="email"
+                            placeholder="email"
+                            name="email"
+                            required
+                            style={{
+                              boxShadow: "6px 6px 54px 0px rgba(0, 0, 0, 0.08)",
+                            }}
+                          />
+                          <label htmlFor="email">Email</label>
                         </div>
                       )}
                       {resetState === resetStep.CHECKOTP && (
-                        <div className="col fw-bold fs-4 mb-4 text-center text-dark">
-                          <label>Xác Thực Mã OTP</label>
+                        <div className="form-floating mb-3">
+                          <input
+                            className="form-control rounded-3"
+                            name="code"
+                            id="code"
+                            placeholder="Mã OTP"
+                            required
+                            style={{
+                              boxShadow: "6px 6px 54px 0px rgba(0, 0, 0, 0.08)",
+                            }}
+                          ></input>
+                          <label htmlFor="code">Mã OTP</label>
                         </div>
                       )}
                       {resetState === resetStep.RESET && (
-                        <div className="col fw-bold fs-4 mb-4 text-center text-dark">
-                          <label>Thiết Lập Mật Khẩu</label>
-                        </div>
+                        <>
+                          <PasswordInput
+                            name={"newpassword"}
+                            label={"Mật khẩu mới"}
+                            value={dataState.newpassword}
+                            onChange={(event) =>
+                              onChangeHandler({ event, name: "newpassword" })
+                            }
+                            style={{
+                              boxShadow: "6px 6px 54px 0px rgba(0, 0, 0, 0.08)",
+                            }}
+                          />
+                          <PasswordInput
+                            name={"confirmpassword"}
+                            label={"Nhập lại mật khẩu mới"}
+                            value={dataState.confirmpassword}
+                            onChange={(event) =>
+                              onChangeHandler({
+                                event,
+                                name: "confirmpassword",
+                              })
+                            }
+                            style={{
+                              boxShadow: "6px 6px 54px 0px rgba(0, 0, 0, 0.08)",
+                            }}
+                          />
+                        </>
                       )}
-                      <Form
-                        method="post"
-                        onSubmit={submitHandler}
-                        noValidate
-                        validated={validated}
-                        ref={formRef}
-                        className="h-100 mt-4"
-                      >
-                        {resetState === resetStep.CHECKMAIL && (
-                          <div className="form-floating mb-3">
-                            <input
-                              type="email"
-                              className="form-control rounded-3"
-                              id="email"
-                              placeholder="email"
-                              name="email"
-                              required
-                            />
-                            <label htmlFor="email">Email</label>
-                          </div>
-                        )}
-                        {resetState === resetStep.CHECKOTP && (
-                          <div className="form-floating mb-3">
-                              <input
-                                className="form-control rounded-3"
-                                name="code"
-                                id="code"
-                                placeholder="Mã OTP"
-                                required
-                              ></input>
-                              <label htmlFor="code">Mã OTP</label>
-                          </div>
-                        )}
-                        {resetState === resetStep.RESET && (
-                          <>
-                            <PasswordInput
-                              name={"newpassword"}
-                              label={"Mật khẩu mới"}
-                              value={dataState.newpassword}
-                              onChange={(event) =>
-                                onChangeHandler({ event, name: "newpassword" })
-                              }
-                            />
-                            <PasswordInput
-                              name={"confirmpassword"}
-                              label={"Nhập lại mật khẩu mới"}
-                              value={dataState.confirmpassword}
-                              onChange={(event) =>
-                                onChangeHandler({
-                                  event,
-                                  name: "confirmpassword",
-                                })
-                              }
-                            />
-                          </>
-                        )}
-                        <div className="forgot-password">
-                          <a
-                            className="fw-bold nav-link  mt-2 text-end"
-                            onClick={navigateToLoginHandler}
-                          >
-                            Đăng nhập với mật khẩu
-                          </a>
-                        </div>
-                        {resetState === resetStep.CHECKMAIL && (
-                          <button
-                            className="w-100 mb-3 mt-4 btn rounded-3 btn-primary shadow"
-                            type="submit"
-                          >
-                            Tìm kiếm
-                          </button>
-                        )}
-                        {resetState === resetStep.CHECKOTP && (
-                          <button
-                            className="w-100 mb-3 mt-4 btn rounded-3 btn-primary shadow"
-                            type="submit"
-                          >
-                            Xác nhận
-                          </button>
-                        )}
-                        {resetState === resetStep.RESET && (
-                          <button
-                            className="w-100 mb-3 mt-4 btn rounded-3 btn-primary shadow"
-                            type="submit"
-                            disabled={!dataState.isSubmitable}
-                          >
-                            Xác nhận
-                          </button>
-                        )}
-                      </Form>
+                      <div className="forgot-password">
+                        <a
+                          className="fw-bold nav-link  mt-2 text-end"
+                          onClick={navigateToLoginHandler}
+                        >
+                          Đăng nhập với mật khẩu
+                        </a>
+                      </div>
+                      {resetState === resetStep.CHECKMAIL && (
+                        <button
+                          className="w-100 mb-3 mt-4 btn rounded-3 btn-primary shadow"
+                          type="submit"
+                        >
+                          Tìm kiếm
+                        </button>
+                      )}
+                      {resetState === resetStep.CHECKOTP && (
+                        <button
+                          className="w-100 mb-3 mt-4 btn rounded-3 btn-primary shadow"
+                          type="submit"
+                        >
+                          Xác nhận
+                        </button>
+                      )}
+                      {resetState === resetStep.RESET && (
+                        <button
+                          className="w-100 mb-3 mt-4 btn rounded-3 btn-primary shadow"
+                          type="submit"
+                          disabled={!dataState.isSubmitable}
+                        >
+                          Xác nhận
+                        </button>
+                      )}
+                    </Form>
                   </div>
-                </Card>
+                </div>
               </div>
             </div>
           </div>
         </div>
-        <div className="col w-100 h-100">
+        {/* <div className="col w-100 h-100">
           <img src={loginImage} className="w-100 h-100" />
+        </div> */}
+        <div
+          className="h-100 position-relative"
+          style={{
+            width: "57%",
+            background:
+              "linear-gradient(52deg, #022281 12.59%, #056FDF 101.37%)",
+          }}
+        >
+          <div
+            className=" position-absolute translate-middle text-white text-center"
+            style={{ top: "45%", left: "50%", marginBottom: "1rem" }}
+          >
+            <img src={logo} style={{ width: "4.5rem", height: "4.5rem" }} />
+            <p className="fs-1  fw-bold">Private Medical Clinic</p>
+            <p className="fs-5 ">Chăm sóc sức khỏe toàn diện</p>
+          </div>
+          s{" "}
+          <div
+            className=" position-absolute"
+            style={{
+              height: "400px",
+              width: "400px",
+              top: "80%",
+              left: "65%",
+              borderRadius: "50%",
+              border: "1px solid #3a78ca",
+            }}
+          ></div>
+          <div
+            className=" position-absolute"
+            style={{
+              height: "400px",
+              width: "400px",
+              top: "65%",
+              left: "80%",
+              borderRadius: "50%",
+              border: "1px solid #3a78ca",
+            }}
+          ></div>
         </div>
       </div>
     </>

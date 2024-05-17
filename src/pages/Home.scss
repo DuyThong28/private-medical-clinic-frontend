@@ -5,11 +5,11 @@
 }
 
 .overview-number-patient {
-  font-size: 6rem;
+  font-size: 5.7rem;
   text-align: center;
 }
 
-.txt-center{
+.txt-center {
   text-align: center;
   margin: 0;
 }
@@ -18,8 +18,23 @@
   display: flex;
   flex: 1;
   justify-content: space-between;
-}
+  gap: 1rem;
+  .bg-danger {
+    width: 100%;
+    background-color: #ffffff !important;
+    padding: 8px !important;
+    color: #000000e3 !important;
+    font-weight: 600;
+  }
 
+  .bg-success {
+    width: 100%;
+    background-color: #ffffff !important;
+    padding: 8px !important;
+    color: #000000e3 !important;
+    font-weight: 600;
+  }
+}
 
 .modal-calendar {
   position: fixed;
@@ -83,8 +98,8 @@
 
   .weeks-selection {
     position: absolute;
-    top: 12px;
-    right: 12px;
+    top: 0.5rem;
+    right: 0rem;
     display: flex;
     align-items: center;
     color: #63797d;
@@ -131,11 +146,13 @@
       .male {
         &::before {
           background-color: #3a57e8;
+          border-radius: 5px;
         }
       }
 
       .female {
         &::before {
+          border-radius: 5px;
           background-color: #85f4fa;
         }
       }
@@ -168,7 +185,7 @@
 
 /* Top medicine */
 .overview-topmedicine {
-  margin-top: 16px;
+  // margin-top: 16px;
   // border-radius: 12px;
   // box-shadow: 2px 2px 4px 0px rgba(0, 0, 0, 0.5);
   // height: 220px;
@@ -207,53 +224,62 @@
   }
 
   .table-top-drug {
-    width: 100%;
-    font-weight: bold;
-    margin-top: 12px;
-    p {
-      font-size: 1rem;
-      flex: 1;
-      margin-bottom: 8px;
-    }
-    .table-header {
-      color: #13a1df;
-    }
-    .table-body-row,
-    .table-header {
-      display: flex;
-      position: relative;
-      ::after {
-        content: "";
-        width: 100%;
-        border-bottom: 1px solid #999;
-        position: absolute;
-        bottom: 0;
-        right: 0;
-      }
-    }
-    .table-body {
-      height: 135px;
+    // width: 100%;
+    // font-weight: bold;
+    // margin-top: 12px;
+    // p {
+    //   font-size: 1rem;
+    //   flex: 1;
+    //   margin-bottom: 8px;
+    // }
+    // .table-header {
+    //   padding: 8px 15px;
+    //   color: #36383a;
+    //   background: #f1f4f9;
+    //   border: 1px solid #f1f4f9;
+    //   border-radius: 6px;
+    //   z-index: 0;
+    // }
+    // .table-body-row,
+    // .table-header {
+    //   display: flex;
+    //   position: relative;
+    //   ::after {
+    //     content: "";
+    //     width: 100%;
+    //     border-bottom: 1px solid #999;
+    //     position: absolute;
+    //     bottom: 0;
+    //     right: 0;
+    //   }
+    // }
+    // .table-body {
+    //   height: 135px;
 
-      overflow: hidden;
-      padding-right: 11px;
-      margin-right: -11px;
-      &:hover {
-        overflow-y: scroll;
-        padding-right: 0px;
-      }
+    //   overflow: hidden;
+    //   padding-right: 11px;
+    //   margin-right: -11px;
+    //   &:hover {
+    //     overflow-y: scroll;
+    //     padding-right: 0px;
+    //   }
 
-      p {
-        font-weight: 400;
-        padding-left: 8px;
-      }
+    //   p {
+    //     font-weight: 400;
+    //     padding-left: 8px;
+    //   }
+    // }
+
+    li.list-group-item.list-group-item-primary.list-group-item-action.w-100.d-flex.flex-row {
+      padding: 6px 15px !important;
     }
   }
 }
 
 .week-or-month-info {
   position: absolute;
-  top: 12px;
-  right: 12px;
+  top: 0.5rem;
+  right: 0rem;
 }
 
 // Calendar
@@ -314,8 +340,6 @@
 }
 
 .patient-item {
-
-
   display: flex;
   flex-direction: row;
   border-radius: 12px;
@@ -392,8 +416,8 @@
 }
 
 .e-card {
-  background-color: #0048B2;
-  box-shadow: 0px 8px 28px -9px rgba(0,0,0,0.45);
+  background-color: #0048b2;
+  // box-shadow: 0px 8px 28px -9px rgba(0, 0, 0, 0.45);
   position: relative;
   border-radius: 16px;
   overflow: hidden;
@@ -408,7 +432,7 @@
   top: 60;
   margin-left: -50%;
   margin-top: -70%;
-  background: linear-gradient(744deg,#3B8AFF,#0048B2 60%,);
+  background: linear-gradient(744deg, #3b8aff, #0048b2 60%);
 }
 
 .wave:nth-child(2),

@@ -245,12 +245,10 @@ function RoleDetail() {
   }
 
   return (
-    <div
-      className="h-100 w-100 d-flex flex-row"
-    >
+    <div className="h-100 w-100 d-flex flex-row">
       <NotificationDialog ref={notiDialogRef} keyQuery={["member"]} />
-      <div className="h-100" style={{ width: "30%" }}>
-        <Card className="p-3">
+      <div className="h-100 p-3" style={{ width: "30%" }}>
+        <Card>
           <Form className=" h-100 d-flex flex-column gap-3" ref={formRef}>
             <div className=" w-100  d-flex flex-row justify-content-around">
               <div className="col fw-bold fs-4 text-black">
@@ -316,8 +314,11 @@ function RoleDetail() {
           </Form>
         </Card>
       </div>
-      <div className="h-100" style={{ width: "70%" }}>
-        <Card style={{ padding: "1rem 1rem 1rem 0rem" }}>
+      <div
+        className="h-100"
+        style={{ width: "70%", padding: "1rem 1rem 1rem 0rem" }}
+      >
+        <Card>
           <div className="h-100 d-flex flex-column gap-3">
             <div className=" w-100  d-flex flex-row justify-content-around">
               <div className="col fw-bold fs-4 text-black">

@@ -1,6 +1,6 @@
 .nav-bar-border {
   .nav-bar-active {
-    background-color: #4880ff;
+    background: linear-gradient(90deg, #0048b2 0%, #3b8aff 100%);
     color: #ffffff;
     font-weight: bold;
   }
@@ -10,7 +10,19 @@
     font-weight: bold;
     &:hover {
       background-color: #e7eeff;
-      color: #4880ff;
+      color: #0048b2;
+    }
+  }
+}
+
+.logout-bar {
+  .nav-link {
+    color: #202224;
+    font-weight: bold;
+    background-color: white;
+    &:hover {
+      color: #0048b2;
+      background-color: white;
     }
   }
 }

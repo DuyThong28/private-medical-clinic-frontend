@@ -1,8 +1,14 @@
 .forgot-password {
-    a {
-        color: rgb(29, 100, 214);
-        &:hover {
-            color: rgb(66, 140, 244);
-        }
+  a {
+    color: rgb(29, 100, 214);
+    &:hover {
+      color: rgb(66, 140, 244);
     }
+  }
+}
+
+.login-with-google {
+  .position-absolute.top-50.start-50.translate-middle.w-100 {
+    background-color: rgb(13, 110, 253) !important;
+  }
 }
