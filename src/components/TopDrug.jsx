@@ -4,7 +4,7 @@ import {
   faCaretLeft,
   faCaretRight,
 } from "@fortawesome/free-solid-svg-icons";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
 import { useQuery } from "@tanstack/react-query";
@@ -21,7 +21,6 @@ import {
   getWeek,
 } from "../components/SelectDayContext";
 import TableBody from "./TableBody";
-import TableHeader from "./TableHeader";
 
 function TopDrug() {
   const [range2, setRange2] = useState(() => getWeek(new Date()));
@@ -173,37 +172,18 @@ function TopDrug() {
 
   const handleCloseModal = () => {
     setIsShowModal2(false);
-    // setRange2(preState.current.range);
-    // setOptions(preState.current.selectedOption);
-    // setMonth({
-    //   month: preState.current.month,
-    //   year: preState.current.year,
-    // });
-    // setYear(preState.current.year);
     setYear(month.year);
   };
 
-  // const handleConfirmSelection = () => {
-  //   setIsShowModal2(false);
-  //   if (selectedOption) {
-  //     preState.current.range = range2;
-  //   } else {
-  //     preState.current.month = month.month;
-  //     preState.current.year = month.year;
-  //     setYear(month.year);
-  //   }
-  //   preState.current.selectedOption = selectedOption;
-  //   handleTopDrug();
-  // };
 
   useEffect(() => {
     handleTopDrug();
   }, [month, range2, selectedOption]);
 
+  function changeHandler() {}
   return (
     <div
       className="h-100 overview-topmedicine rounded-3 p-3 d-flex flex-column"
-      // style={{ border: "1px solid #B9B9B9" }}
       style={{ boxShadow: "6px 6px 54px 0px rgba(0, 0, 0, 0.05)" }}
     >
       <div style={{ marginBottom: "0.75rem" }}>
@@ -225,6 +205,7 @@ function TopDrug() {
           id="toggle-modal-2"
           type="checkbox"
           checked={isShowModal2}
+          onChange={changeHandler}
         ></input>
         <div className="modal-calendar">
           <label

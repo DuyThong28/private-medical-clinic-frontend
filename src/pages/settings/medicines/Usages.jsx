@@ -6,7 +6,6 @@ import {
   deleteUsage,
   fetchAllUsage,
 } from "../../../services/usage";
-import { queryClient } from "../../../App";
 
 import TableHeader from "../../../components/TableHeader";
 import TableBody from "../../../components/TableBody";
@@ -16,6 +15,7 @@ import NotificationDialog, {
   DialogAction,
 } from "../../../components/NotificationDialog";
 import useAuth from "../../../hooks/useAuth";
+import { useRouteError } from "react-router";
 
 function UsagesTab() {
   const { auth } = useAuth();
@@ -60,14 +60,13 @@ function UsagesTab() {
     dialogRef.current.edit({ action, data: usage });
   }
 
-  async function deleteUnitHandnler(id) {
-    notiDialogRef.current.setDialogData({
-      action: DialogAction.DELETE,
-      dispatchFn: () => deleteUsage({ id }),
-    });
-    notiDialogRef.current.showDialogWarning({
-      message: "Xác nhận xóa cách dùng?",
-    });
+
+  const error = useRouteError();
+  if (auth.isPending) {
+    return <></>;
+  }
+  if (!auth.isAuth || (auth.isAuth && !permission.includes("RDrug"))) {
+    throw error;
   }
 
   return (
@@ -178,24 +177,6 @@ function UsagesTab() {
                         data-bs-toggle="dropdown"
                         aria-expanded="false"
                       >
-                        {/* <span
-                          className="p-2"
-                          onClick={() =>
-                            editUnitHandler({ usage, action: "view" })
-                          }
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="16"
-                            height="16"
-                            fill="#1B59F8"
-                            className="bi bi-eye-fill"
-                            viewBox="0 0 16 16"
-                          >
-                            <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0" />
-                            <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8m8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7" />
-                          </svg>
-                        </span> */}
                         {permission?.includes("UDrug") && (
                           <span
                             className="p-2"
@@ -216,23 +197,6 @@ function UsagesTab() {
                             </svg>
                           </span>
                         )}
-                        {/* {permission?.includes("DDrug") && (
-                          <span
-                            className="p-2"
-                            onClick={() => deleteUnitHandnler(usage.id)}
-                          >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="16"
-                              height="16"
-                              fill="#1B59F8"
-                              className="bi bi-archive-fill"
-                              viewBox="0 0 16 16"
-                            >
-                              <path d="M12.643 15C13.979 15 15 13.845 15 12.5V5H1v7.5C1 13.845 2.021 15 3.357 15zM5.5 7h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1 0-1M.8 1a.8.8 0 0 0-.8.8V3a.8.8 0 0 0 .8.8h14.4A.8.8 0 0 0 16 3V1.8a.8.8 0 0 0-.8-.8z" />
-                            </svg>
-                          </span>
-                        )} */}
                       </div>
                     </li>
                   );

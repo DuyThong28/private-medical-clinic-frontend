@@ -1,13 +1,13 @@
 import { createContext, useState } from "react";
-import Cookies from "js-cookie";
-import { jwtDecode } from "jwt-decode";
 const AuthContext = createContext({});
 
 export const AuthProvider = ({ children }) => {
-  const [auth, setAuth] = useState(
-    (Cookies.get("refreshToken") && jwtDecode(Cookies.get("refreshToken"))) ||
-      {}
-  );
+  const [auth, setAuth] = useState({
+    roleId: null,
+    permission: null,
+    isAuth: false,
+    isPending: true,
+  });
 
   return (
     <AuthContext.Provider value={{ auth, setAuth }}>

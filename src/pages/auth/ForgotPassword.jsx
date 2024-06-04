@@ -1,9 +1,7 @@
-import loginImage from "../../assets/login-background.png";
 import NotificationDialog from "../../components/NotificationDialog";
 import { useEffect, useRef, useState } from "react";
 import PasswordInput from "../../components/PasswordInput";
 import { Form } from "react-bootstrap";
-import Card from "../../components/Card";
 import logo from "../../assets/logo.png";
 import "./Login.scss";
 import { useMutation } from "@tanstack/react-query";
@@ -13,7 +11,8 @@ import {
   resetPassword,
   sendOTP,
 } from "../../services/auth";
-import { useNavigate } from "react-router";
+import { useNavigate, useRouteError } from "react-router";
+import useAuth from "../../hooks/useAuth";
 
 const resetStep = {
   CHECKMAIL: "check mail",
@@ -131,6 +130,15 @@ function ForgotPassword() {
 
   function navigateToLoginHandler() {
     navigate("/");
+  }
+
+  const error = useRouteError();
+  const { auth } = useAuth();
+  if (auth.isPending) {
+    return <></>;
+  }
+  if (auth.isAuth) {
+    throw error;
   }
 
   return (
@@ -269,9 +277,6 @@ function ForgotPassword() {
             </div>
           </div>
         </div>
-        {/* <div className="col w-100 h-100">
-          <img src={loginImage} className="w-100 h-100" />
-        </div> */}
         <div
           className="h-100 position-relative"
           style={{

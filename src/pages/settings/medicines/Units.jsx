@@ -6,7 +6,6 @@ import {
   deleteUnit,
   fetchAllUnit,
 } from "../../../services/units";
-import { queryClient } from "../../../App";
 
 import TableHeader from "../../../components/TableHeader";
 import TableBody from "../../../components/TableBody";
@@ -16,6 +15,7 @@ import NotificationDialog, {
   DialogAction,
 } from "../../../components/NotificationDialog";
 import useAuth from "../../../hooks/useAuth";
+import { useRouteError } from "react-router";
 
 function UnitsTab() {
   const { auth } = useAuth();
@@ -60,15 +60,13 @@ function UnitsTab() {
     dialogRef.current.edit({ action, data: unit });
   }
 
-  // async function deleteUnitHandnler(id) {
-  //   notiDialogRef.current.setDialogData({
-  //     action: DialogAction.DELETE,
-  //     dispatchFn: () => deleteUnit({ id }),
-  //   });
-  //   notiDialogRef.current.showDialogWarning({
-  //     message: "Xác nhận xóa đơn vị?",
-  //   });
-  // }
+  const error = useRouteError();
+  if (auth.isPending) {
+    return <></>;
+  }
+  if (!auth.isAuth || (auth.isAuth && !permission.includes("RDrug"))) {
+    throw error;
+  }
 
   return (
     <div className="h-100 w-100 p-3">

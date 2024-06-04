@@ -433,7 +433,7 @@ function GridViewRevenue({
                               });
                             }
                           }}
-                          className="icon-view"
+                          className="icon-view  action-view-btn"
                           icon={faEye}
                         />
                       </div>

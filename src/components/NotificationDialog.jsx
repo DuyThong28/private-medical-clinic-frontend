@@ -1,8 +1,8 @@
 import { useMutation } from "@tanstack/react-query";
 import { forwardRef, useImperativeHandle, useRef, useState } from "react";
 import { Modal } from "react-bootstrap";
-import { queryClient } from "../App";
 import "./NotificationDialog.scss";
+import { queryClient } from "../main";
 
 export const DialogAction = {
   DELETE: "delete",
@@ -13,7 +13,7 @@ export const DialogAction = {
 
 const icon = {
   ["warning-notification"]: (
-      <svg
+    <svg
       xmlns="http://www.w3.org/2000/svg"
       width="30"
       height="30"

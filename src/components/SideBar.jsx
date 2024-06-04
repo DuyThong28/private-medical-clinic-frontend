@@ -7,7 +7,7 @@ import logo from "../assets/logo.png";
 
 function SideBar() {
   const { auth } = useAuth();
-  const permission = auth.permission;
+  const permission = auth.permission || [];
   const location = useLocation();
   const navigate = useNavigate();
   if (location.pathname === "/medicine") {
@@ -15,6 +15,7 @@ function SideBar() {
   } else if (location.pathname === "/users") {
     navigate("users/members");
   }
+
   const logoutMutate = useMutation({
     mutationFn: logout,
     onSuccess: () => {
@@ -56,6 +57,29 @@ function SideBar() {
                 Trang chủ
               </NavLink>
             </li>
+            {permission.includes("RBookingAppointment") && (
+              <li className="nav-item ">
+                <NavLink
+                  to="booking"
+                  className={({ isActive }) =>
+                    isActive ? "nav-link  nav-bar-active" : "nav-link nav-bar"
+                  }
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    fill="currentColor"
+                    className="bi bi-calendar2-week me-2"
+                    viewBox="0 0 16 16"
+                  >
+                    <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5M2 2a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1z" />
+                    <path d="M2.5 4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5H3a.5.5 0 0 1-.5-.5zM11 7.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm-3 0a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm-5 3a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm3 0a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5z" />
+                  </svg>
+                  Lịch hẹn
+                </NavLink>
+              </li>
+            )}
             {permission.includes("RAppointment") && (
               <li className="nav-item ">
                 <NavLink
@@ -69,10 +93,11 @@ function SideBar() {
                     width="16"
                     height="16"
                     fill="currentColor"
-                    className="bi bi-calendar-event-fill me-2"
-                    viewBox="0 1 16 16"
+                    className="bi bi-clipboard-plus-fill me-2"
+                    viewBox="0 0 16 16"
                   >
-                    <path d="M4 .5a.5.5 0 0 0-1 0V1H2a2 2 0 0 0-2 2v1h16V3a2 2 0 0 0-2-2h-1V.5a.5.5 0 0 0-1 0V1H4zM16 14V5H0v9a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2m-3.5-7h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5" />
+                    <path d="M6.5 0A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0zm3 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5z" />
+                    <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1A2.5 2.5 0 0 1 9.5 5h-3A2.5 2.5 0 0 1 4 2.5zm4.5 6V9H10a.5.5 0 0 1 0 1H8.5v1.5a.5.5 0 0 1-1 0V10H6a.5.5 0 0 1 0-1h1.5V7.5a.5.5 0 0 1 1 0" />
                   </svg>
                   Ca khám
                 </NavLink>
@@ -237,10 +262,7 @@ function SideBar() {
         <div className="mt-auto logout-bar" style={{ height: "fit-content" }}>
           <hr />
           <div className="nav-link">
-            <span
-              onClick={logoutHandler}
-              className="nav-link"
-            >
+            <span onClick={logoutHandler} className="nav-link">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="16"

@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams, useRouteError } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 
@@ -13,6 +13,7 @@ import useAuth from "../../hooks/useAuth";
 export default function PatientDetail() {
   const { patientId } = useParams();
   const { auth } = useAuth();
+  const navigate = useNavigate();
   const permission = auth?.permission || [];
   const [dataState, setDataState] = useState({
     data: null,
@@ -33,9 +34,39 @@ export default function PatientDetail() {
     });
   }, [patientId, patientDetailQuery.data]);
 
+  function backHandler() {
+    navigate("/patients");
+  }
+
+  const error = useRouteError();
+  if (auth.isPending) {
+    return <></>;
+  }
+  if (!auth.isAuth || (auth.isAuth && !permission.includes("RPatient"))) {
+    throw error;
+  }
+
   return (
-    <div className="p-3">
+    <div className="p-3 h-100">
       <Card>
+      <div className="position-relative">
+          <span
+            className="position-absolute back-btn"
+            style={{ top: "0.4rem", left: "-1.9rem", padding: "1px" }}
+            onClick={backHandler}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="23"
+              height="23"
+              fill="currentColor"
+              className="bi bi-arrow-left-circle-fill"
+              viewBox="0 0 16 16"
+            >
+              <path d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0m3.5 7.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5z" />
+            </svg>
+          </span>
+        </div>
         <Form className="w-100 h-100 d-flex flex-column  gap-3">
           {permission?.includes("RPatient") && (
             <div className="gap-3 row">

@@ -166,7 +166,7 @@ export async function fetchAllUsers() {
 }
 
 export async function fetchUserById({ id }) {
-  console.log("thisi id in fetch", id);
+
   const response = await fetch(`http://localhost:8080/api/v1/users/${id}`, {
     credentials: "include",
     headers: {

@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useRouteError } from "react-router-dom";
 import { useDispatch } from "react-redux";
 
 import Card from "../../../components/Card";
@@ -13,7 +13,6 @@ import {
   fetchAllAppointmentListPatients,
 } from "../../../services/appointmentListPatients";
 import { convertDate, inputToDayFormat } from "../../../util/date";
-import { queryClient } from "../../../App";
 import { prescriptionAction } from "../../../store/prescription";
 import { fetchPatientById } from "../../../services/patients";
 import { fetchAllAppointmentListById } from "../../../services/appointmentList";
@@ -24,6 +23,7 @@ import NotificationDialog, {
   DialogAction,
 } from "../../../components/NotificationDialog";
 import useAuth from "../../../hooks/useAuth";
+import { queryClient } from "../../../main";
 
 function ExaminationsPage() {
   const navigate = useNavigate();
@@ -102,7 +102,7 @@ function ExaminationsPage() {
 
   async function deleteAppointmentHandler({ id }) {
     async function deletefunction() {
-      await deleteAppointmentListPatientById({ id });
+      return await deleteAppointmentListPatientById({ id });
     }
     notiDialogRef.current.setDialogData({
       action: DialogAction.DELETE,
@@ -121,6 +121,14 @@ function ExaminationsPage() {
         state,
       };
     });
+  }
+
+  const error = useRouteError();
+  if (auth.isPending) {
+    return <></>;
+  }
+  if (!auth.isAuth || (auth.isAuth && !permission.includes("RAppointment"))) {
+    throw error;
   }
 
   return (
@@ -143,19 +151,19 @@ function ExaminationsPage() {
                 <div className="text-start" style={{ width: "15%" }}>
                   Họ và tên
                 </div>
-                <div className="text-start" style={{ width: "15%" }}>
+                <div className="text-start" style={{ width: "14%" }}>
                   Năm sinh
                 </div>
                 <div className="text-start" style={{ width: "15%" }}>
                   Số điện thoại
                 </div>
-                <div className="text-start" style={{ width: "15%" }}>
+                <div className="text-start" style={{ width: "13%" }}>
                   Ngày khám
                 </div>
-                <div className="text-start" style={{ width: "10%" }}>
+                <div className="text-start" style={{ width: "11%" }}>
                   Trạng thái
                 </div>
-                <div className="text-end" style={{ width: "10%" }}>
+                <div className="text-start" style={{ width: "11%" }}>
                   Thanh toán
                 </div>
                 <div className="text-start" style={{ width: "1%" }}></div>
@@ -169,64 +177,29 @@ function ExaminationsPage() {
                         className=" dropdown-center list-group-item list-group-item-primary list-group-item-action w-100 d-flex flex-row"
                         key={appointmentListPatient.id}
                       >
-                        <div
-                          className="text-start"
-                          data-bs-toggle="dropdown"
-                          aria-expanded="false"
-                          style={{ width: "5%" }}
-                        >
+                        <div className="text-start" style={{ width: "5%" }}>
                           {appointmentListPatients.indexOf(
                             appointmentListPatient
                           ) + 1}
                         </div>
-                        <div
-                          className="text-start"
-                          style={{ width: "15%" }}
-                          data-bs-toggle="dropdown"
-                          aria-expanded="false"
-                        >
+                        <div className="text-start" style={{ width: "14.2%" }}>
                           {appointmentListPatient.id}
                         </div>
-                        <div
-                          className="text-start"
-                          style={{ width: "15%" }}
-                          data-bs-toggle="dropdown"
-                          aria-expanded="false"
-                        >
+                        <div className="text-start" style={{ width: "15%" }}>
                           {appointmentListPatient.patient?.fullName}
                         </div>
-                        <div
-                          className="text-start"
-                          style={{ width: "15%" }}
-                          data-bs-toggle="dropdown"
-                          aria-expanded="false"
-                        >
+                        <div className="text-start" style={{ width: "14.2%" }}>
                           {appointmentListPatient.patient?.birthYear}
                         </div>
-                        <div
-                          className="text-start"
-                          style={{ width: "15%" }}
-                          data-bs-toggle="dropdown"
-                          aria-expanded="false"
-                        >
+                        <div className="text-start" style={{ width: "15.1%" }}>
                           {appointmentListPatient.patient?.phoneNumber}
                         </div>
-                        <div
-                          className="text-start"
-                          style={{ width: "15%" }}
-                          data-bs-toggle="dropdown"
-                          aria-expanded="false"
-                        >
+                        <div className="text-start" style={{ width: "13%" }}>
                           {convertDate(
                             appointmentListPatient.appointmentList?.scheduleDate
                           )}
                         </div>
-                        <div
-                          className="text-start"
-                          style={{ width: "10%" }}
-                          data-bs-toggle="dropdown"
-                          aria-expanded="false"
-                        >
+                        <div className="text-start" style={{ width: "11%" }}>
                           <span
                             className={
                               appointmentListPatient.appointmentRecordId
@@ -239,12 +212,7 @@ function ExaminationsPage() {
                               : "Chưa khám"}
                           </span>
                         </div>
-                        <div
-                          className="text-end"
-                          style={{ width: "10%" }}
-                          data-bs-toggle="dropdown"
-                          aria-expanded="false"
-                        >
+                        <div className="text-end" style={{ width: "10%" }}>
                           <span
                             className={
                               appointmentListPatient.billId
@@ -257,62 +225,78 @@ function ExaminationsPage() {
                               : "Chưa thanh toán"}
                           </span>
                         </div>
+
+                        <div
+                          className="text-end"
+                          style={{ width: "2.5%" }}
+                          data-bs-toggle="dropdown"
+                          aria-expanded="false"
+                        >
+                          <span className="action-view-btn">
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="16"
+                              height="16"
+                              fill="currentColor"
+                              className="bi bi-three-dots-vertical"
+                              viewBox="0 0 16 16"
+                            >
+                              <path d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0" />
+                            </svg>
+                          </span>
+                        </div>
                         {!appointmentListPatient.billId && (
-                          <ul className="dropdown-menu">
+                          <ul className="dropdown-menu shadow">
                             {permission?.includes("CRecord") && (
-                              <li className="dropdown-item">
+                              <li
+                                className="dropdown-item"
+                                onClick={() =>
+                                  acceptHandler(appointmentListPatient)
+                                }
+                              >
                                 {!appointmentListPatient.appointmentRecordId && (
-                                  <span
-                                    onClick={() =>
-                                      acceptHandler(appointmentListPatient)
-                                    }
-                                  >
-                                    Tiếp nhận
-                                  </span>
+                                  <span>Tiếp nhận</span>
                                 )}
                               </li>
                             )}
 
                             {appointmentListPatient.appointmentRecordId &&
                               permission?.includes("CInvoice") && (
-                                <li className="dropdown-item">
-                                  <span
-                                    onClick={() =>
-                                      payHandler({
-                                        id: appointmentListPatient.appointmentRecordId,
-                                      })
-                                    }
-                                  >
-                                    Thanh toán
-                                  </span>
+                                <li
+                                  className="dropdown-item"
+                                  onClick={() =>
+                                    payHandler({
+                                      id: appointmentListPatient.appointmentRecordId,
+                                    })
+                                  }
+                                >
+                                  <span>Thanh toán</span>
                                 </li>
                               )}
                             {!appointmentListPatient.appointmentRecordId && (
                               <>
                                 {permission?.includes("UAppointment") && (
-                                  <li className="dropdown-item">
-                                    <span
-                                      onClick={() =>
-                                        editAppointmentHandler({
-                                          data: appointmentListPatient,
-                                        })
-                                      }
-                                    >
-                                      Cập nhật
-                                    </span>
+                                  <li
+                                    className="dropdown-item"
+                                    onClick={() =>
+                                      editAppointmentHandler({
+                                        data: appointmentListPatient,
+                                      })
+                                    }
+                                  >
+                                    <span>Cập nhật</span>
                                   </li>
                                 )}
                                 {permission?.includes("DAppointment") && (
-                                  <li className="dropdown-item">
-                                    <span
-                                      onClick={() =>
-                                        deleteAppointmentHandler({
-                                          id: appointmentListPatient.id,
-                                        })
-                                      }
-                                    >
-                                      Hủy
-                                    </span>
+                                  <li
+                                    className="dropdown-item"
+                                    onClick={() =>
+                                      deleteAppointmentHandler({
+                                        id: appointmentListPatient.id,
+                                      })
+                                    }
+                                  >
+                                    <span>Hủy</span>
                                   </li>
                                 )}
                               </>

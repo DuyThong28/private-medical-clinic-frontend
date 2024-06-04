@@ -11,6 +11,8 @@ import { fetchAllUsage } from "../../../services/usage";
 import { fetchAllDrugs } from "../../../services/drugs";
 import { fetchAllUnit } from "../../../services/units";
 import { formatNumber } from "../../../util/money";
+import { useRouteError } from "react-router";
+import useAuth from "../../../hooks/useAuth";
 
 export default function PreScriptionTab({
   recordId,
@@ -20,6 +22,8 @@ export default function PreScriptionTab({
 }) {
   const dispatch = useDispatch();
   const [currentPresciptionData, setCurrentPrescriptionData] = useState([]);
+  const { auth } = useAuth();
+  const permission = auth?.permission || [];
 
   const unitsQuery = useQuery({
     queryKey: ["units"],
@@ -108,6 +112,15 @@ export default function PreScriptionTab({
       recordDetailMutate.mutate({ id: recordId });
     }
   }, [recordId]);
+
+  const error = useRouteError();
+  if (auth.isPending) {
+    return <></>;
+  }
+  if (!auth.isAuth || (auth.isAuth && !permission.includes("RDrug"))) {
+    throw error;
+  }
+
 
   return (
     <div className="w-100 h-100 d-flex flex-column">

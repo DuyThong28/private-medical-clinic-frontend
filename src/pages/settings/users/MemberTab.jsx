@@ -18,7 +18,8 @@ import { fetchAllGroups } from "../../../services/group";
 import PasswordInput from "../../../components/PasswordInput";
 import { resetPasswordById } from "../../../services/auth";
 import useAuth from "../../../hooks/useAuth";
-import { queryClient } from "../../../App";
+import { queryClient } from "../../../main";
+import { useRouteError } from "react-router";
 
 function MemberTab() {
   const { auth } = useAuth();
@@ -91,7 +92,6 @@ function MemberTab() {
   }, [searchState]);
 
   async function editUserHandler({ id, action }) {
-    console.log("this isi id ", id);
     setIsPasswordChanged(() => false);
     await dialogRef.current.edit({ id, action });
   }
@@ -112,7 +112,7 @@ function MemberTab() {
 
       if (adminCount <= 1) {
         notiDialogRef.current.toastError({
-          message: "Không thể xóa admin duy nhất",
+          message: "Không thể lưu trữ admin duy nhất",
         });
         return;
       }
@@ -279,6 +279,14 @@ function MemberTab() {
     });
   }
 
+  const error = useRouteError();
+  if (auth.isPending) {
+    return <></>;
+  }
+  if (!auth.isAuth || (auth.isAuth && !permission.includes("RUser"))) {
+    throw error;
+  }
+
   return (
     <div className="h-100 w-100 p-3">
       <NotificationDialog ref={notiDialogRef} keyQuery={["members"]} />
@@ -439,7 +447,7 @@ function MemberTab() {
                         {permission?.includes("UUser") &&
                           user.isActive === 1 && (
                             <span
-                              className="p-2"
+                              className="p-2   action-view-btn"
                               onClick={() =>
                                 editUserHandler({ id: user.id, action: "edit" })
                               }
@@ -448,7 +456,7 @@ function MemberTab() {
                                 xmlns="http://www.w3.org/2000/svg"
                                 width="16"
                                 height="16"
-                                fill="#646565"
+                                fill="currentColor"
                                 className="bi bi-pencil-square"
                                 viewBox="0 0 16 16"
                               >
@@ -460,7 +468,7 @@ function MemberTab() {
                         {permission?.includes("UUser") &&
                           user.isActive === 1 && (
                             <span
-                              className="p-2"
+                              className="p-2   action-view-btn"
                               onClick={() =>
                                 changePasswordHandler({
                                   id: user.id,
@@ -472,7 +480,7 @@ function MemberTab() {
                                 xmlns="http://www.w3.org/2000/svg"
                                 width="16"
                                 height="16"
-                                fill="#646565"
+                                fill="currentColor"
                                 className="bi bi-lock-fill"
                                 viewBox="0 0 16 16"
                               >
@@ -482,7 +490,7 @@ function MemberTab() {
                           )}
                         {permission?.includes("DUser") && (
                           <span
-                            className="p-2"
+                            className="p-2  action-red-btn"
                             onClick={() =>
                               deActivateUserHandler({
                                 id: user.id,
@@ -491,23 +499,36 @@ function MemberTab() {
                             }
                           >
                             {user.isActive === 1 ? (
+                              <>
                               <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 width="16"
                                 height="16"
-                                fill="#EF3826"
-                                className="bi bi-trash"
+                                fill="currentColor"
+                                className="bi bi-arrow-down-short position-absolute top-50 translate-middle"
+                                style={{marginTop:"-3px"}}
                                 viewBox="0 0 16 16"
                               >
-                                <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z" />
-                                <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z" />
+                                <path d="M8 4a.5.5 0 0 1 .5.5v5.793l2.146-2.147a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 1 1 .708-.708L7.5 10.293V4.5A.5.5 0 0 1 8 4" />
                               </svg>
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="16"
+                                height="16"
+                                fill="currentColor"
+                                style={{marginTop:"1px"}}
+                                className="bi bi-inbox-fill position-absolute top-50 translate-middle"
+                                viewBox="0 0 16 16"
+                              >
+                                <path d="M4.98 4a.5.5 0 0 0-.39.188L1.54 8H6a.5.5 0 0 1 .5.5 1.5 1.5 0 1 0 3 0A.5.5 0 0 1 10 8h4.46l-3.05-3.812A.5.5 0 0 0 11.02 4zm-1.17-.437A1.5 1.5 0 0 1 4.98 3h6.04a1.5 1.5 0 0 1 1.17.563l3.7 4.625a.5.5 0 0 1 .106.374l-.39 3.124A1.5 1.5 0 0 1 14.117 13H1.883a1.5 1.5 0 0 1-1.489-1.314l-.39-3.124a.5.5 0 0 1 .106-.374z" />
+                              </svg>
+                            </>
                             ) : (
                               <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 width="16"
                                 height="16"
-                                fill="#EF3826"
+                                fill="currentColor"
                                 className="bi bi-arrow-counterclockwise"
                                 viewBox="0 0 16 16"
                               >

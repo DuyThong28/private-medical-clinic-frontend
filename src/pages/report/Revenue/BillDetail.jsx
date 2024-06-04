@@ -3,17 +3,7 @@ import "./BillDetail.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import TableHeader from "../../../components/TableHeader";
 import TableBody from "../../../components/TableBody";
-import { fetchAllAppointmentListById } from "../../../services/appointmentList";
-import {
-  convertDate,
-  compareDates,
-  inputToDayFormat,
-} from "../../../util/date";
 import { formatNumber } from "../../../util/money";
-import { queryClient } from "../../../App";
-import { fetchFeeConsult } from "../../../services/argument";
-import { useQuery } from "@tanstack/react-query";
-import { useEffect, useRef, useState } from "react";
 import { Modal } from "react-bootstrap";
 
 function BillDetail({

@@ -8,7 +8,7 @@ import { fetchAllAppointmentListById } from "../services/appointmentList";
 import { fetchPatientById } from "../services/patients";
 import { fetchAllAppointmentListPatients } from "../services/appointmentListPatients";
 import "../pages/Home.scss";
-import { queryClient } from "../App";
+import { queryClient } from "../main";
 import { Link } from "react-router-dom";
 import { useMyContext, compareDate } from "./SelectDayContext";
 

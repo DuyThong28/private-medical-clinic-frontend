@@ -20,7 +20,7 @@ import { fetchAllAppointmentListById } from "../services/appointmentList";
 import { fetchPatientById } from "../services/patients";
 import { fetchAllAppointmentListPatients } from "../services/appointmentListPatients";
 import "../pages/Home.scss";
-import { queryClient } from "../App";
+import { queryClient } from "../main";
 import {
   compareDate,
   convertDate,
@@ -183,20 +183,17 @@ function NumberOfPatient() {
     setIsShowModal(!isShowModal);
   };
 
-  // const handleShowChart = () => {
-  //   queryClient.invalidateQueries({ queryKey: ["appointmentListWeek"] });
-  //   setIsShowModal(!isShowModal);
-  //   // preRange.current = range;
-  // };
+
   useEffect(() => {
     queryClient.invalidateQueries({ queryKey: ["appointmentListWeek"] });
   }, [range]);
+
+  function changeHandler() {}
 
   return (
     <div
       className="overview-patient-ofday rounded-3 p-3"
       style={{
-        // border: "1px solid #B9B9B9",
         marginLeft: "16px",
       }}
     >
@@ -229,13 +226,17 @@ function NumberOfPatient() {
             icon={faCaretDown}
           ></FontAwesomeIcon>
         </p>
-        <input id="toggle-modal" type="checkbox" checked={isShowModal}></input>
+        <input
+          id="toggle-modal"
+          type="checkbox"
+          checked={isShowModal}
+          onChange={changeHandler}
+        ></input>
         <div className="modal-calendar">
           <label
             className="modal-calendar-overlay"
             onClick={() => {
               toggleModal();
-              // setRange(preRange.current);
             }}
           ></label>
           {isShowModal && (

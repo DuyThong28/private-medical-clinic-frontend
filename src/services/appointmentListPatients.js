@@ -185,6 +185,7 @@ export async function createAppointmentPatientList({
     const resData = await response.json();
     const data = resData.data;
     data.message = "Đăng ký lịch khám thành công";
+    data.bookingAppointment = scheduledate;
     return data;
   }
 }
@@ -231,7 +232,7 @@ export async function deleteAppointmentListPatientById({ id }) {
   }
 
   const resData = await response.json();
-  const data = {...resData.data};
+  const data = { ...resData.data };
   data.message = "Hủy lịch khám thành công";
 
   return data;

@@ -222,7 +222,7 @@ function Revenue() {
   const getFirstDayOfWeek = (date) => {
     const startOfWeek = dayjs(date).startOf("week");
     if (startOfWeek.day() === 0) {
-      return startOfWeek.add(1, "day");
+      return startOfWeek.add(-6, "day");
     }
     return startOfWeek;
   };

@@ -5,7 +5,7 @@ import { fetchAllAppointmentListById } from "../services/appointmentList";
 import { fetchPatientById } from "../services/patients";
 import { fetchAllAppointmentListPatients } from "../services/appointmentListPatients";
 import "../pages/Home.scss";
-import { queryClient } from "../App";
+import { queryClient } from "../main";
 import { useMyContext, compareDate } from "../components/SelectDayContext";
 
 function PatientOfDay() {
@@ -89,11 +89,7 @@ function PatientOfDay() {
   }, [selectedDay]);
 
   return (
-    // <div class="e-card playing rounded-3 p-3 h-100">
-    <div
-      className="h-100 d-flex flex-column overview-number rounded-3 p-3"
-      // style={{ border: "1px solid #B9B9B9" }}
-    >
+    <div className="h-100 d-flex flex-column overview-number rounded-3 p-3">
       <div>
         <label
           className="fw-bold text-dark"
@@ -131,7 +127,6 @@ function PatientOfDay() {
         </div>
       </div>
     </div>
-    // </div>
   );
 }
 

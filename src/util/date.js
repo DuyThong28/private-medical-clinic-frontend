@@ -54,3 +54,26 @@ export function localFormat(dateString) {
   }
   return "";
 }
+
+export function convertDateToLocalTime(utcDateString) {
+  const utcDate = new Date(utcDateString);
+
+  const localDate = new Date(utcDate.getTime() + utcDate.getTimezoneOffset() * 60 * 1000);
+
+  localDate.setHours( localDate.getHours());
+  localDate.setMinutes(localDate.getMinutes());
+  localDate.setSeconds(localDate.getSeconds());
+
+  const year = localDate.getFullYear();
+  const month = String(localDate.getMonth() + 1).padStart(2, '0');
+  const day = String(localDate.getDate()).padStart(2, '0');
+  const hours = localDate.getHours().toString().padStart(2, '0');
+  const minutes = localDate.getMinutes().toString().padStart(2, '0');
+  const seconds = localDate.getSeconds().toString().padStart(2, '0');
+
+  const formattedDate = `${day}/${month}/${year}`;
+
+  const formattedTime = `${hours}:${minutes}:${seconds}`;
+
+  return `${formattedDate} ${formattedTime}`;
+}

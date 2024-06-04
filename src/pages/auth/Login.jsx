@@ -1,21 +1,17 @@
-import { redirect, useNavigate } from "react-router-dom";
+import { useNavigate, useRouteError } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { useRef, useState } from "react";
 import { Form } from "react-bootstrap";
-import { jwtDecode } from "jwt-decode";
 import { login } from "../../services/auth";
 
-import loginImage from "../../assets/login-background.png";
 import logo from "../../assets/logo.png";
 import GoogleButton from "react-google-button";
 import NotificationDialog from "../../components/NotificationDialog";
 import PasswordInput from "../../components/PasswordInput";
-import Card from "../../components/Card";
 import "./Login.scss";
 import useAuth from "../../hooks/useAuth";
 
 function LoginPage() {
-  const { setAuth } = useAuth();
   const notiDialogRef = useRef();
   const navigate = useNavigate();
   const [validated, setValidated] = useState(false);
@@ -24,9 +20,7 @@ function LoginPage() {
   const { mutate } = useMutation({
     mutationKey: ["login"],
     mutationFn: login,
-    onSuccess: (data) => {
-      const refreshToken = data.user.refreshToken;
-      setAuth(jwtDecode(refreshToken));
+    onSuccess: () => {
       setValidated(false);
       window.open("http://localhost:3000/home", "_self");
     },
@@ -61,6 +55,17 @@ function LoginPage() {
 
   function navigateToForgotPassHandler() {
     navigate("/forgotpassword");
+  }
+
+  const error = useRouteError();
+  const { auth } = useAuth();
+
+  if (auth.isPending) {
+    return <></>;
+  }
+
+  if (auth.isAuth) {
+    throw error;
   }
 
   return (
@@ -108,7 +113,6 @@ function LoginPage() {
               border: "1px solid #3a78ca",
             }}
           ></div>
-          {/* <img src={loginImage} className="w-100 h-100" /> */}
         </div>
 
         <div className="col h-100 position-relative">

@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { useParams } from "react-router-dom";
+import { useParams, useRouteError } from "react-router-dom";
 import { useRef } from "react";
 
 import TableBody from "../../../components/TableBody";
@@ -68,6 +68,14 @@ export default function HistoryTab({ isEditable }) {
     notiDialogRef.current.showDialogWarning({
       message: "Xác nhận xóa phiếu khám bệnh?",
     });
+  }
+
+  const error = useRouteError();
+  if (auth.isPending) {
+    return <></>;
+  }
+  if (!auth.isAuth || (auth.isAuth && !permission.includes("RRecord"))) {
+    throw error;
   }
 
   return (

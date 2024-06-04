@@ -16,11 +16,12 @@ import Form from "react-bootstrap/Form";
 import { fetchAllDisease } from "../../services/diseases";
 import { fetchFeeConsult } from "../../services/argument";
 import { createBill, fetchBillById } from "../../services/bill";
-import { queryClient } from "../../App";
+
 import NotificationDialog, {
   DialogAction,
 } from "../../components/NotificationDialog";
 import useAuth from "../../hooks/useAuth";
+import { queryClient } from "../../main";
 
 const InvoiceDetail = forwardRef(function InvoiceDetail({ children }, ref) {
   const { auth } = useAuth();

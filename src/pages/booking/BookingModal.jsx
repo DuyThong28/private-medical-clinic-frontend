@@ -1,11 +1,15 @@
-import MainDialog from "../../../components/MainDialog";
-import { createAppointmentPatientList } from "../../../services/appointmentListPatients";
-import { fetchOnePatient } from "../../../services/patients";
-import { useRef, useState, forwardRef, useImperativeHandle } from "react";
-import { inputDateFormat, inputToDayFormat } from "../../../util/date";
-import useAuth from "../../../hooks/useAuth";
+import { forwardRef, useImperativeHandle, useRef, useState } from "react";
+import useAuth from "../../hooks/useAuth";
+import { fetchOnePatient } from "../../services/patients";
+import MainDialog from "../../components/MainDialog";
+import {
+  inputDateFormat,
+  inputToDayFormat,
+  localFormat,
+} from "../../util/date";
+import { createAppointmentPatientList } from "../../services/appointmentListPatients";
 
-const ExaminationModal = forwardRef(function ExaminationModal(
+const BookingModal = forwardRef(function BookingModal(
   { children, setSearchData },
   ref
 ) {
@@ -19,24 +23,46 @@ const ExaminationModal = forwardRef(function ExaminationModal(
     isEditable: true,
   });
 
+  const [searchState, setSearchState] = useState({
+    name: "",
+    phonenumber: "",
+    isDisable: false,
+  });
+
   useImperativeHandle(
     ref,
     () => {
       return {
         edit({ data }) {
-          const appointmentInfo = {
-            scheduleDate: data?.appointmentList?.scheduleDate,
+          const bookingInfo = {
+            scheduleDate: data?.bookingAppointment,
             patientId: data?.patientId,
-            fullName: data?.patient?.fullName,
-            phoneNumber: data?.patient?.phoneNumber,
-            address: data?.patient?.address,
-            birthYear: data?.patient?.birthYear,
-            gender: data?.patient?.gender,
+            fullName: data?.fullName,
+            phoneNumber: data?.phone,
+            address: data?.address,
+            birthYear: data?.birthYear,
+            gender: data?.gender,
             id: data?.id,
           };
           dialogRef.current.edit({
             action: "edit",
-            data: appointmentInfo,
+            data: bookingInfo,
+          });
+        },
+        accept({ data }) {
+          const bookingInfo = {
+            scheduleDate: data?.bookingAppointment,
+            patientId: data?.patientId,
+            fullName: data?.fullName,
+            phoneNumber: data?.phone,
+            address: data?.address,
+            birthYear: data?.birthYear,
+            gender: data?.gender,
+            bookingId: data?.id,
+          };
+          dialogRef.current.accept({
+            action: "accept",
+            data: bookingInfo,
           });
         },
       };
@@ -77,24 +103,21 @@ const ExaminationModal = forwardRef(function ExaminationModal(
     });
 
     if (resData && resData[0]) {
+      dialogRef.current.setCurrentData();
       setDialogState((prevState) => {
-        resData[0].patientId = resData[0].id;
         return {
           ...prevState,
-          data: resData[0],
+          data: {
+            ...resData[0],
+            patientId: resData[0].id,
+            scheduleDate: prevState.data?.scheduleDate,
+          },
           isEditable: false,
         };
       });
-      return;
+    } else {
+      dialogRef.current.setDialogData();
     }
-
-    setDialogState((prevState) => {
-      return {
-        ...prevState,
-        data: null,
-        isEditable: true,
-      };
-    });
   }
 
   function setData({ data, isEditable }) {
@@ -103,6 +126,15 @@ const ExaminationModal = forwardRef(function ExaminationModal(
         ...prevState,
         data: data,
         isEditable: isEditable,
+      };
+    });
+  }
+
+  function changeSearchInputHandler({ state, event }) {
+    setSearchState((prevState) => {
+      return {
+        ...prevState,
+        [state]: event.target.value,
       };
     });
   }
@@ -135,6 +167,11 @@ const ExaminationModal = forwardRef(function ExaminationModal(
                 className="form-control"
                 placeholder="Tên bệnh nhân"
                 aria-describedby="addon-wrapping"
+                disabled={searchState.isDisable}
+                value={searchState.name}
+                onChange={(event) =>
+                  changeSearchInputHandler({ state: "name", event: event })
+                }
               />
             </div>
             <div className="col input-group flex-nowrap">
@@ -161,6 +198,14 @@ const ExaminationModal = forwardRef(function ExaminationModal(
                 placeholder="Số điện thoại"
                 aria-label="medicine"
                 aria-describedby="addon-wrapping"
+                disabled={searchState.isDisable}
+                onChange={(event) =>
+                  changeSearchInputHandler({
+                    state: "phonenumber",
+                    event: event,
+                  })
+                }
+                value={searchState.phonenumber}
               />
             </div>
           </form>
@@ -200,14 +245,12 @@ const ExaminationModal = forwardRef(function ExaminationModal(
     });
   }
 
-  function changeHandler(){
-    
-  }
+  function changeHandler() {}
 
   return (
     <div className=" w-100  d-flex flex-row justify-content-around">
       <div className="col fw-bold fs-4 text-black">
-        <label>Danh sách ca khám</label>
+        <label>Danh sách lịch hẹn</label>
       </div>
       <div className="row gap-3">
         <div className="col">
@@ -252,10 +295,15 @@ const ExaminationModal = forwardRef(function ExaminationModal(
               />
             </div>
             <div className="col input-group flex-nowrap">
-              <select className="form-select" name="state" defaultValue="1">
-                <option value="1">Chưa hoàn thành</option>
-                <option value="2">Hoàn thành</option>
-                <option value="3">Tất cả</option>
+              <select
+                className="form-select"
+                name="state"
+                defaultValue="NotAccepted"
+              >
+                <option value="NotAccepted">Chưa duyệt</option>
+                <option value="Accepted">Đã duyệt</option>
+                <option value="Cancelled">Đã hủy</option>
+                <option value="All">Tất cả</option>
               </select>
             </div>
           </form>
@@ -269,7 +317,8 @@ const ExaminationModal = forwardRef(function ExaminationModal(
             onChange={changeFormHandler}
             keyQuery={["appointmentList"]}
             searchElement={searchElement}
-            addButton={permission?.includes("CAppointment") ? true : false}
+            setSearchState={setSearchState}
+            addButton={false}
           >
             <div className="row">
               <label className="col-form-label fw-bold">
@@ -424,4 +473,4 @@ const ExaminationModal = forwardRef(function ExaminationModal(
   );
 });
 
-export default ExaminationModal;
+export default BookingModal;

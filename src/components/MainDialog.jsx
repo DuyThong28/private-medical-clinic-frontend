@@ -1,6 +1,7 @@
 import { useRef, forwardRef, useImperativeHandle, useState } from "react";
 import MainModal from "./MainModal";
 import "./MainModal.scss";
+import { fetchOnePatient } from "../services/patients";
 
 const MainDialog = forwardRef(function MainDialog(
   {
@@ -15,6 +16,7 @@ const MainDialog = forwardRef(function MainDialog(
     isPasswordChanged,
     setIsPasswordChanged,
     addButton,
+    setSearchState,
   },
   ref
 ) {
@@ -48,7 +50,6 @@ const MainDialog = forwardRef(function MainDialog(
           let editData;
           if (id && editFn) {
             editData = await editFn({ id });
-            console.log("edit data", id);
           }
 
           if (data) {
@@ -73,6 +74,32 @@ const MainDialog = forwardRef(function MainDialog(
             });
           }
         },
+        async accept({ action, data }) {
+          actionRef.current = action;
+          let editData;
+
+          if (data) {
+            editData = data;
+          }
+
+          if (action === "accept") {
+            onEdit({ data: editData, isEditable: true });
+
+            modalRef.current.show({
+              isEditable: true,
+              header: "Tạo ca khám",
+              action: "accept",
+              phoneNumber: data?.phoneNumber,
+              bookingId: data?.bookingId
+            });
+          }
+        },
+        setCurrentData() {
+          modalRef.current.setCurrentData();
+        },
+        setDialogData() {
+          modalRef.current.setDialogData();
+        },
       };
     },
     []
@@ -89,6 +116,8 @@ const MainDialog = forwardRef(function MainDialog(
         searchElement={searchElement}
         isPasswordChanged={isPasswordChanged}
         setIsSubmitable={setIsSubmitable}
+        onEdit={onEdit}
+        setSearchState={setSearchState}
       >
         {children}
         <div

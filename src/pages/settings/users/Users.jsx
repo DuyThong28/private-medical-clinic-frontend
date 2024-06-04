@@ -1,8 +1,17 @@
-import { NavLink, Outlet } from "react-router-dom";
+import { NavLink, Outlet, useRouteError } from "react-router-dom";
 import "./Users.scss";
+import useAuth from "../../../hooks/useAuth";
 
 function UsersView() {
-  
+  const { auth } = useAuth();
+  const permission = auth?.permission || [];
+  const error = useRouteError();
+  if (auth.isPending) {
+    return <></>;
+  }
+  if (!auth.isAuth || (auth.isAuth && !permission.includes("RUser"))) {
+    throw error;
+  }
   return (
     // <div className="col h-100">
       <div className="d-flex flex-column w-100 h-100 user-navigation">

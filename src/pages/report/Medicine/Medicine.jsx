@@ -22,7 +22,6 @@ import { fetchAllAppointmentRecords } from "../../../services/appointmentRecords
 import { useRef, useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useSelector } from "react-redux";
-import { queryClient } from "../../../App";
 import "./Medicine.scss";
 import { fetchAllDrugs, fetchDrugById } from "../../../services/drugs";
 import { fetchAllUnit } from "../../../services/units";
@@ -38,6 +37,7 @@ import {
 } from "chart.js";
 import { Bar, Doughnut } from "react-chartjs-2";
 import { da } from "date-fns/locale";
+import { fetchAllBills } from "../../../services/bill";
 ChartJS.register(CategoryScale, LinearScale, Title, Tooltip, Legend);
 
 let rememberWeek = dayjs();
@@ -49,6 +49,28 @@ let rememberYear2 = dayjs();
 let stopInitLoad = false;
 let setFirstDrug = false;
 function Medicine() {
+  const [listState, setListState] = useState([]);
+  const [valueTime, setValueTime] = React.useState(dayjs());
+  const [selectItem, setSelectItem] = useState(null);
+  const [isOpenCalendar, setIsOpenCalendar] = React.useState(false);
+  const [timeOption, setTimeOption] = React.useState("Tháng");
+  const [isOpenTimeOption, setIsOpenTimeOption] = React.useState(false);
+
+
+  const [chartData, setChartData] = useState({
+    labels: [1, 1, 1, 1, 1, 1, 1], // Replace with your category labels
+    datasets: [
+      {
+        label: "Số lượng bán ra",
+        data: [0, 0, 0, 0, 0, 0, 0],
+        backgroundColor: "#3A57E8",
+        borderWidth: 1,
+        barThickness: 25,
+        borderRadius: 2,
+      },
+    ],
+  });
+
   const drugsQuery = useQuery({
     queryKey: ["drugs"],
     queryFn: () => {
@@ -56,9 +78,9 @@ function Medicine() {
     },
   });
 
+
   const drugs = drugsQuery.data || [];
 
-  const [listState, setListState] = useState([]);
 
   const unitsQuery = useQuery({
     queryKey: ["units"],
@@ -66,6 +88,7 @@ function Medicine() {
   });
 
   const unitState = unitsQuery.data || [];
+
   function getUnitName({ id }) {
     if (unitState == null) return;
     const res = unitState.filter((unit) => unit.id === id)[0];
@@ -83,6 +106,7 @@ function Medicine() {
     },
   });
   const recorddt = recorddtQuery.data || [];
+
   const recordQuery = useQuery({
     queryKey: ["recordlist"],
     queryFn: () => {
@@ -90,6 +114,7 @@ function Medicine() {
     },
   });
   const record = recordQuery.data || [];
+
   const appointmentQuery = useQuery({
     queryKey: ["appointmentlist"],
     queryFn: () => {
@@ -97,13 +122,6 @@ function Medicine() {
     },
   });
   const appointment = appointmentQuery.data || [];
-  const billsQuery = useQuery({
-    queryKey: ["billlist"],
-    queryFn: () => {
-      return fetchAllBills();
-    },
-  });
-  const bills = billsQuery.data || [];
 
   const drugReportQuerry = useQuery({
     queryKey: ["drugReportList"],
@@ -111,41 +129,23 @@ function Medicine() {
   });
   const drugReports = drugReportQuerry.data || [];
 
-  const ConvernToArray = (obj) => {
-    let arr = [];
-    if (obj != null)
-      obj.map((apt) => {
-        arr.push(apt);
-      });
-    return arr;
-  };
-
-  const billList = ConvernToArray(bills) || [];
-
-  function searchHandler(event) {
-    const textSearch = event.target.value.toLowerCase().trim();
-    const result = drugs.filter((drug) =>
-      drug.drugName.toLowerCase().includes(textSearch)
-    );
-    setListState(() => result);
-  }
-
-  const [selectItem, setSelectItem] = useState(drugs[0]);
   const setDetailItem = (item) => {
     setSelectItem(item);
     if (timeOption == "Tuần") getDataForChartWeek(valueTime, item);
     else if (timeOption == "Tháng") getDataForChartMonth(valueTime, item);
     else getDataForChartYear(valueTime, item);
   };
+
+
   useEffect(() => {
-    setSelectItem(drugs[0]);
-    getDataForChartWeek(valueTime, drugs[0]);
-  }, [drugs]);
-  useEffect(() => {
-    getDataForChartWeek(valueTime, selectItem);
-  }, [drugs, appointment, record, recorddt]);
+    if (drugs.length > 0) {
+      setSelectItem(drugs[0]);
+      getDataForChartMonth(valueTime, drugs[0]);
+    }
+  }, [drugs, recorddt]);
+
+
   // Select Time
-  const [valueTime, setValueTime] = React.useState(dayjs());
   const setNewTime = (value) => {
     setValueTime(value);
     if (timeOption == "Tuần") getDataForChartWeek(value, selectItem);
@@ -155,8 +155,9 @@ function Medicine() {
   const getFirstDayOfWeek = (date) => {
     const startOfWeek = dayjs(date).startOf("week");
     if (startOfWeek.day() === 0) {
-      return startOfWeek.add(1, "day");
+      return startOfWeek.add(-6, "day");
     }
+    
     return startOfWeek;
   };
   const getWeekStartAndEnd = (selectedDay) => {
@@ -164,12 +165,10 @@ function Medicine() {
     const endOfWeek = startOfWeek.add(6, "days");
     return { start: startOfWeek, end: endOfWeek };
   };
-  const [isOpenCalendar, setIsOpenCalendar] = React.useState(false);
   const handleOpenCalendar = (value) => {
     setIsOpenCalendar(value);
     setIsOpenTimeOption(false);
   };
-  const [timeOption, setTimeOption] = React.useState("Tháng");
   const handleSetTimeOption = (value) => {
     if (timeOption === "Tuần") rememberWeek = valueTime;
     else if (timeOption === "Tháng") rememberMonth = valueTime;
@@ -182,7 +181,6 @@ function Medicine() {
     else if (value === "Tháng") getDataForChartMonth(rememberMonth, selectItem);
     else getDataForChartYear(rememberYear, selectItem);
   };
-  const [isOpenTimeOption, setIsOpenTimeOption] = React.useState(false);
   const handleOpenTimeOption = (value) => {
     setIsOpenCalendar(false);
     setIsOpenTimeOption(value);
@@ -558,42 +556,10 @@ function Medicine() {
     ];
     setChartData(tmp);
   };
-  const [chartData, setChartData] = useState({
-    labels: [1, 1, 1, 1, 1, 1, 1], // Replace with your category labels
-    datasets: [
-      {
-        label: "Số lượng bán ra",
-        data: [0, 0, 0, 0, 0, 0, 0],
-        backgroundColor: "#3A57E8",
-        borderWidth: 1,
-        barThickness: 25,
-        borderRadius: 2,
-      },
-    ],
-  });
-  useEffect(() => {}, [chartData]);
-  // React.useEffect(()=>{
-  //     console.log("medicine", appointment.length);
-  //     console.log("item", selectItem);
-  //     if(appointment.length > 0 && selectItem!=null)
-  //     {
-  //       console.log("on", getLabelForChartWeek(valueTime));
-  //       getDataForChartWeek(valueTime, selectItem);
-  //       stopInitLoad = true;
-  //     }
-  // }, [appointment, stopInitLoad])
 
   useEffect(() => {}, [chartData]);
-  // React.useEffect(()=>{
-  //     console.log("medicine", appointment.length);
-  //     console.log("item", selectItem);
-  //     if(appointment.length > 0 && selectItem!=null)
-  //     {
-  //       console.log("on", getLabelForChartWeek(valueTime));
-  //       getDataForChartWeek(valueTime, selectItem);
-  //       stopInitLoad = true;
-  //     }
-  // }, [appointment, stopInitLoad])
+
+  useEffect(() => {}, [chartData]);
 
   const optionschart1 = {
     title: {
@@ -1040,7 +1006,7 @@ function Medicine() {
                       >
                         <FontAwesomeIcon
                           onClick={() => setDetailItem(drug)}
-                          className="icon-view"
+                          className="icon-view  action-view-btn"
                           icon={faEye}
                         />
                       </div>

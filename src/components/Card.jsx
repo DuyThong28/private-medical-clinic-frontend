@@ -7,12 +7,7 @@ export default function Card({ children }) {
         boxShadow: "6px 6px 54px 0px rgba(0, 0, 0, 0.05)",
       }}
     >
-      <div
-        className="w-100 h-100  rounded-3 p-3 bg-white"
-        // style={{ border: "1px solid #B9B9B9" }}
-      >
-        {children}
-      </div>
+      <div className="w-100 h-100  rounded-3 p-3 bg-white">{children}</div>
     </div>
   );
 }

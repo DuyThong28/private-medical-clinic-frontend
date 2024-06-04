@@ -1,18 +1,10 @@
-import { useRouteError } from "react-router-dom";
+import { Navigate, useRouteError } from "react-router-dom";
 
 export default function ErrorPage() {
   const error = useRouteError();
-  let title = "An error occurred!";
-  let message = "Something went wrong!";
 
-  if (error.status === 500) {
-    message = error.message;
-  }
-
-  if (error.status === 404) {
-    title = "Not found!";
-    message = "Could not find resource or page.";
-  }
+  let title = "Không Tìm Thấy!";
+  let message = "Không thể tìm thấy tài nguyên hay trang!";
 
   return (
     <div className="col h-100">

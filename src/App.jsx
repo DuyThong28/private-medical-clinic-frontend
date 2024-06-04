@@ -1,5 +1,5 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import LoginPage from "./pages/auth/Login";
 import RootLayout from "./pages/Root";
 import HomePage from "./pages/Home";
@@ -14,25 +14,31 @@ import DrugTab from "./pages/settings/medicines/Drugs";
 import UnitsTab from "./pages/settings/medicines/Units";
 import UsagesTab from "./pages/settings/medicines/Usages";
 import DiseasesTab from "./pages/settings/medicines/Diseases";
-import LoginSuccess from "./pages/auth/LoginSuccess";
 import PatientDetail from "./pages/patients/PatientDetail";
 import ExaminationDetail from "./pages/settings/examination/ExaminationDetail";
 import PreScriptionTab from "./pages/settings/examination/PrescriptionTab";
 import HistoryTab from "./pages/settings/examination/HistoryTab";
 import Invoice from "./pages/Invoice/Invoice";
-import ForgotPassword from "./pages/auth/ForgotPassword";
 import ErrorPage from "./pages/Error";
-import MemberTab from "./pages/settings/users/MemberTab";
-import RoleTab from "./pages/settings/users/RoleTab";
+import ForgotPassword from "./pages/auth/ForgotPassword";
 import RoleDetail from "./pages/settings/users/RoleDetail";
+import RoleTab from "./pages/settings/users/RoleTab";
+import MemberTab from "./pages/settings/users/MemberTab";
+import LoginSuccess from "./pages/auth/LoginSuccess";
 import useAuth from "./hooks/useAuth";
+import { jwtDecode } from "jwt-decode";
+import Cookies from "js-cookie";
+import { fetchGroupById } from "./services/group";
+import { fetchUserById } from "./services/users";
+import { elements } from "chart.js";
+import BookingPage from "./pages/booking/Booking";
 
 const allRouter = [
   {
     path: "/",
     children: [
       { index: true, element: <LoginPage />, isPrivate: false },
-      { path: "/login/success", element: <LoginSuccess />, isPrivate: false },
+      { path: "/success", element: <LoginSuccess />, isPrivate: false },
       {
         path: "/forgotpassword",
         element: <ForgotPassword />,
@@ -80,6 +86,12 @@ const allRouter = [
             element: <ExaminationsPage />,
             isPrivate: true,
             permission: "RAppointment",
+          },
+          {
+            path:"/booking",
+            element:<BookingPage/>,
+            isPrivate: true,
+            permission:"RBookingAppointment"
           },
           {
             path: "/examinations/:appopintmentListPatientId",
@@ -172,73 +184,57 @@ const allRouter = [
   },
 ];
 
-export const queryClient = new QueryClient();
-
 function App() {
-  const { auth } = useAuth();
-  const permission = auth?.permission || [];
-  const isAuth = auth?.roleId || false;
-  const authRoutes = [
-    {
-      ...allRouter[0],
-      children: getRoute({
-        children: allRouter[0].children,
-        isAuth,
-        permission,
-      }),
-    },
-  ];
-  const router = createBrowserRouter(authRoutes);
+  const { setAuth } = useAuth();
+  const authQuery = useQuery({
+    queryKey: ["auth"],
+    queryFn: async () => {
+      const jwtToken = Cookies.get("refreshToken");
+      if (jwtToken !== undefined) {
+        const userData = jwtDecode(jwtToken);
+        let authorizeData = [];
+        let isAuth = false;
+        const user = await fetchUserById({ id: userData.id });
+        if (user.isActive == 1) {
+          const group = await fetchGroupById({ id: userData.roleId });
+          if (group.groupUser.isActive == 1) {
+            authorizeData = group.allowedPermissionElements;
+          }
 
-  return (
-    <QueryClientProvider client={queryClient}>
-      <RouterProvider router={router} />
-    </QueryClientProvider>
-  );
+          isAuth =
+            group.groupUser && group.groupUser.isActive == 1 ? true : false;
+        }
+
+        setAuth({
+          roleId: userData.roleId,
+          permission: authorizeData,
+          isAuth: isAuth,
+          isPending: false,
+        });
+        return {
+          roleId: userData.roleId,
+          permission: authorizeData,
+          isAuth: isAuth,
+        };
+      } else {
+        setAuth({
+          roleId: null,
+          permission: null,
+          isAuth: false,
+          isPending: false,
+        });
+        return {
+          roleId: null,
+          permission: null,
+          isAuth: false,
+        };
+      }
+    },
+  });
+
+  const router = createBrowserRouter(allRouter);
+
+  return <RouterProvider router={router} />;
 }
 
 export default App;
-
-function getRoute({ children, isAuth, permission }) {
-  const accessRoutes = children.map((route) => {
-    if (!route.isPrivate && !isAuth) {
-      if (route?.children) {
-        return {
-          ...route,
-          children: getRoute({ children: route.children, isAuth, permission }),
-        };
-      }
-      return route;
-    } else if (route.isPrivate && isAuth) {
-      if (route?.permission && permission.includes(route.permission)) {
-        if (route?.children)
-          return {
-            ...route,
-            children: getRoute({
-              children: route.children,
-              isAuth,
-              permission,
-            }),
-          };
-        return route;
-      } else if (route?.permission && !permission.includes(route.permission)) {
-        return null;
-      } else {
-        if (route?.children)
-          return {
-            ...route,
-            children: getRoute({
-              children: route.children,
-              isAuth,
-              permission,
-            }),
-          };
-        return route;
-      }
-    } else {
-      return null;
-    }
-  });
-  const nonNullRoutes = accessRoutes.filter((route) => route !== null);
-  return nonNullRoutes;
-}

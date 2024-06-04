@@ -7,12 +7,13 @@ import {
 } from "../../services/argument";
 import Card from "../../components/Card";
 import { useRef, useState } from "react";
-import { queryClient } from "../../App";
+import { queryClient } from "../../main";
 import { Form } from "react-bootstrap";
 import NotificationDialog, {
   DialogAction,
 } from "../../components/NotificationDialog";
 import useAuth from "../../hooks/useAuth";
+import { useRouteError } from "react-router";
 
 function PrincipleView() {
   const [dataState, setDataState] = useState({
@@ -142,6 +143,15 @@ function PrincipleView() {
       });
     }
   }
+
+  const error = useRouteError();
+  if (auth.isPending) {
+    return <></>;
+  }
+  if (!auth.isAuth || (auth.isAuth && !permission.includes("RArgument"))) {
+    throw error;
+  }
+
 
   return (
     <div className="col h-100">

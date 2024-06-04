@@ -1,7 +1,19 @@
 import SideBar from "../components/SideBar";
-import { Outlet } from "react-router";
+import { Outlet, useRouteError } from "react-router";
+import useAuth from "../hooks/useAuth";
+
 
 function RootLayout() {
+  const { auth } = useAuth();
+  const error = useRouteError();
+
+  if (auth.isPending) {
+    return <></>;
+  }
+  if (!auth.isAuth) {
+    throw error;
+  }
+
   return (
     <>
       <div className="d-flex felx-row h-100">
