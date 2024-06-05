@@ -1,4 +1,10 @@
-import { NavLink, Outlet, useParams, useNavigate, useRouteError } from "react-router-dom";
+import {
+  NavLink,
+  Outlet,
+  useParams,
+  useNavigate,
+  useRouteError,
+} from "react-router-dom";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useSelector, useDispatch } from "react-redux";
 import { useRef, useState } from "react";
@@ -150,7 +156,7 @@ export default function ExaminationDetail() {
   return (
     <div className="p-3 h-100">
       <Card>
-      <div className="position-relative">
+        <div className="position-relative">
           <span
             className="position-absolute back-btn"
             style={{ top: "0.4rem", left: "-1.9rem", padding: "1px" }}

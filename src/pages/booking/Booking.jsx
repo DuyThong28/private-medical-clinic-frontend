@@ -49,6 +49,7 @@ function BookingPage() {
 
   const myFunction = () => {
     fetchData();
+    console.log("fetch data booking");
   };
 
   useEffect(() => {

@@ -11,6 +11,7 @@ import "../pages/Home.scss";
 import { queryClient } from "../main";
 import { Link } from "react-router-dom";
 import { useMyContext, compareDate } from "./SelectDayContext";
+import useAuth from "../hooks/useAuth";
 
 const css = `
         .my-today { 
@@ -21,6 +22,8 @@ const css = `
 
 function CalendarSelectDay() {
   const { selectedDay, setSelectedDay } = useMyContext();
+  const { auth } = useAuth();
+  const permission = auth.permission || [];
 
   const optionQuery = function (queryKey, optionFilter = (data) => data) {
     return {
@@ -101,9 +104,11 @@ function CalendarSelectDay() {
         <h6 className="fw-bold text-dark" style={{ flex: 1, margin: 0 }}>
           Ca khám sắp tới
         </h6>
-        <Link to="/examinations" className="link-all">
-          Xem tất cả
-        </Link>
+        {permission.includes("RAppointment") && (
+          <Link to="/examinations" className="link-all">
+            Xem tất cả
+          </Link>
+        )}
       </div>
       <div className="patients-list">
         {appointmentListUpcoming.length > 0 ? (

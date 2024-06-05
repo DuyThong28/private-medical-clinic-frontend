@@ -121,7 +121,6 @@ export default function PreScriptionTab({
     throw error;
   }
 
-
   return (
     <div className="w-100 h-100 d-flex flex-column">
       {!recordId && <SearchDrugInput />}
@@ -147,7 +146,7 @@ export default function PreScriptionTab({
               Đơn giá
             </div>
             <div className="text-start" style={{ width: "10%" }}>
-              Thành tiền
+              <div style={{ width: "10rem" }}>Thành tiền</div>
             </div>
           </>
         )}

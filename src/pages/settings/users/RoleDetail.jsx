@@ -290,9 +290,16 @@ function RoleDetail() {
           </div>
           <Form className=" h-100 d-flex flex-column gap-3" ref={formRef}>
             <div className=" w-100  d-flex flex-row justify-content-around">
-              <div className="col fw-bold fs-4 text-black">
-                <label>Thêm mới vai trò</label>
-              </div>
+              {roleId && (
+                <div className="col fw-bold fs-4 text-black">
+                  <label>Chi tiết vai trò</label>
+                </div>
+              )}
+              {!roleId && (
+                <div className="col fw-bold fs-4 text-black">
+                  <label>Thêm mới vai trò</label>
+                </div>
+              )}
             </div>
             <div className=" w-100 h-100 d-flex flex-column gap-3">
               <div className="row">

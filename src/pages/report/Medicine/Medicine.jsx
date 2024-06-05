@@ -56,7 +56,6 @@ function Medicine() {
   const [timeOption, setTimeOption] = React.useState("Tháng");
   const [isOpenTimeOption, setIsOpenTimeOption] = React.useState(false);
 
-
   const [chartData, setChartData] = useState({
     labels: [1, 1, 1, 1, 1, 1, 1], // Replace with your category labels
     datasets: [
@@ -78,9 +77,7 @@ function Medicine() {
     },
   });
 
-
   const drugs = drugsQuery.data || [];
-
 
   const unitsQuery = useQuery({
     queryKey: ["units"],
@@ -136,14 +133,12 @@ function Medicine() {
     else getDataForChartYear(valueTime, item);
   };
 
-
   useEffect(() => {
     if (drugs.length > 0) {
       setSelectItem(drugs[0]);
       getDataForChartMonth(valueTime, drugs[0]);
     }
   }, [drugs, recorddt]);
-
 
   // Select Time
   const setNewTime = (value) => {
@@ -155,9 +150,8 @@ function Medicine() {
   const getFirstDayOfWeek = (date) => {
     const startOfWeek = dayjs(date).startOf("week");
     if (startOfWeek.day() === 0) {
-      return startOfWeek.add(-6, "day");
+      return startOfWeek.add(1, "day");
     }
-    
     return startOfWeek;
   };
   const getWeekStartAndEnd = (selectedDay) => {
