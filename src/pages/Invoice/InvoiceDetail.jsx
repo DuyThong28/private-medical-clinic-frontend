@@ -28,8 +28,11 @@ import NotificationDialog, {
 } from "../../components/NotificationDialog";
 import useAuth from "../../hooks/useAuth";
 import { queryClient } from "../../main";
-import logo from "../../assets/logo.png";
+import logo from "../../assets/logo.svg";
+import billtop from "../../assets/billtop.svg";
+import billbottom from "../../assets/billbottom.svg";
 import { useReactToPrint } from "react-to-print";
+import "./InvoiceDetail.scss";
 
 const InvoiceDetail = forwardRef(function InvoiceDetail({ children }, ref) {
   const { auth } = useAuth();
@@ -45,7 +48,7 @@ const InvoiceDetail = forwardRef(function InvoiceDetail({ children }, ref) {
   const [appointmentRecordData, setAppointmentRecordData] = useState(null);
 
   const [isBill, setIsBill] = useState(false);
-  const [titleSTate, setTitleState] = useState("Phiếu Khám Bệnh");
+  const [titleSTate, setTitleState] = useState("Hóa đơn");
   const contentToPrint = useRef(null);
 
   const handlePrint = useReactToPrint({
@@ -65,12 +68,12 @@ const InvoiceDetail = forwardRef(function InvoiceDetail({ children }, ref) {
     if (appointmentRecordData != null) {
       setTitleState(
         () =>
-          `Phiếu Khám Bệnh-${appointmentRecordData.id}-${
+          `Hóa đơn-${appointmentRecordData.id}-${
             appointmentRecordData.patient.fullName
           }-${localFormat(appointmentRecordData.appointmentList.scheduleDate)}`
       );
     } else {
-      setTitleState(() => "Phiếu Khám Bệnh");
+      setTitleState(() => "Hóa đơn");
     }
   }, [appointmentRecordData]);
 
@@ -209,7 +212,7 @@ const InvoiceDetail = forwardRef(function InvoiceDetail({ children }, ref) {
   const formBody = (
     <div>
       <div className="row  gap-3">
-        <div className="col">
+        <div className="col  examination-info-container">
           <div className="row gap-3">
             <MainInput
               name={"patientid"}
@@ -225,7 +228,7 @@ const InvoiceDetail = forwardRef(function InvoiceDetail({ children }, ref) {
               defaultValue={
                 appointmentRecordData && appointmentRecordData.patient.fullName
               }
-              label={"Tên bệnh nhân"}
+              label={"Họ và tên"}
             />
 
             <MainInput
@@ -360,40 +363,75 @@ const InvoiceDetail = forwardRef(function InvoiceDetail({ children }, ref) {
   const printContent = (
     <div
       ref={contentToPrint}
-      style={{
-        padding: "1.5rem",
-        background: "white",
-        height: "100%",
-      }}
+      className="d-flex flex-column h-100 bg-white position-relative print-content"
     >
+      <img
+        src={billtop}
+        className="w-100 position-absolute"
+        style={{
+          zIndex: "0",
+          opacity: "0.9",
+        }}
+      />
       <div
         style={{
-          marginBottom: "2rem",
+          marginBottom: "1rem",
+          zIndex: "1",
+          padding: "2rem",
+          marginTop: "1.5rem",
         }}
       >
         <div className="d-flex flex-row">
           <img src={logo} style={{ width: "4rem", height: "4rem" }} />
           <div
             style={{
-              fontSize: "0.9rem",
               paddingLeft: "0.5rem",
               fontWeight: "600",
-              color: "#555555",
             }}
           >
-            <p style={{ padding: 0, margin: 0 }}>Private Medical Clinic</p>
-            <p style={{ padding: 0, margin: 0 }}>Địa chỉ: Tp.HCM</p>
-            <p style={{ padding: 0, margin: 0 }}>SDT: 0343855777</p>
+            <p
+              style={{
+                padding: 0,
+                margin: 0,
+                color: "#022281",
+                fontSize: "1rem",
+              }}
+            >
+              PRIVATE MEDICAL CLINIC
+            </p>
+            <p
+              style={{
+                padding: 0,
+                margin: 0,
+                fontSize: "0.8rem",
+                color: "#021d6e",
+              }}
+            >
+              Địa chỉ: Tp.HCM
+            </p>
+            <p
+              style={{
+                padding: 0,
+                margin: 0,
+                fontSize: "0.9rem",
+                color: "#021d6e",
+              }}
+            >
+              SDT: 0343855777
+            </p>
           </div>
         </div>
-        <div className="fw-bold mt-3 fs-4 text-black text-center">
-          <label>PHIẾU KHÁM BỆNH</label>
+        <div className="fw-bold mt-3 fs-4 text-center">
+          <label style={{ color: "#022281" }}>PHIẾU KHÁM BỆNH</label>
         </div>
       </div>
-      {formBody}
+      <div style={{ zIndex: "1", paddingLeft: "2rem", paddingRight: "2rem" }}>
+        {formBody}
+      </div>
       <div
         style={{
-          marginTop: "2rem",
+          zIndex: "1",
+          padding: "2rem",
         }}
       >
         <div className="text-end text-dark" style={{ fontStyle: "italic" }}>
@@ -404,7 +442,7 @@ const InvoiceDetail = forwardRef(function InvoiceDetail({ children }, ref) {
             <label
               style={{
                 fontWeight: "600",
-                color: "#000000",
+                color: "#022281",
               }}
             >
               BÁC SĨ KHÁM
@@ -415,7 +453,7 @@ const InvoiceDetail = forwardRef(function InvoiceDetail({ children }, ref) {
             <label
               style={{
                 fontWeight: "600",
-                color: "#000000",
+                color: "#022281",
               }}
             >
               NGƯỜI NỘP TIỀN
@@ -426,7 +464,7 @@ const InvoiceDetail = forwardRef(function InvoiceDetail({ children }, ref) {
             <label
               style={{
                 fontWeight: "600",
-                color: "#000000",
+                color: "#022281",
               }}
             >
               NGƯỜI THU TIỀN
@@ -435,6 +473,14 @@ const InvoiceDetail = forwardRef(function InvoiceDetail({ children }, ref) {
           </div>
         </div>
       </div>
+      <img
+        src={billbottom}
+        className="w-100 position-absolute bottom-0 start-0"
+        style={{
+          zIndex: "0",
+          opacity: "0.8",
+        }}
+      />
     </div>
   );
 
@@ -447,7 +493,7 @@ const InvoiceDetail = forwardRef(function InvoiceDetail({ children }, ref) {
       <MainModal ref={modalRef}>
         <div tabIndex="-1" className="h-100">
           <div className="modal-body h-100">
-            <Form className="w-100 h-100  gap-3">
+            <Form className="w-100 h-100  gap-3 examination-info">
               {formBody}
               {!isBill && permission?.includes("CInvoice") && (
                 <div className="d-flex gap-3 mt-3 justify-content-end">
@@ -455,13 +501,15 @@ const InvoiceDetail = forwardRef(function InvoiceDetail({ children }, ref) {
                     type="button"
                     className="btn btn-secondary fw-bold"
                     onClick={handlePrint}
+                    style={{ minWidth: "100px" }}
                   >
-                    In biên lai
+                    In
                   </button>
                   <button
                     type="button"
                     className="btn btn-primary fw-bold"
                     onClick={submitHandler}
+                    style={{ minWidth: "100px" }}
                   >
                     Thanh toán
                   </button>

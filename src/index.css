@@ -81,6 +81,11 @@ ul {
 
 .back-btn {
   color: #0b4090;
+  border-radius: 50%;
+  width: 2rem;
+  height: 2rem;
+  text-align: center;
+  background: white;
 }
 
 .back-btn:hover {
@@ -115,4 +120,56 @@ ul {
   color: #941408;
 }
 
+.bg-linear-blue {
+  background: linear-gradient(90deg, #0048b2, #3b8aff 100%);
+  padding: 0 1rem;
+  border-radius: 8px;
+  color: white !important;
+}
 
+.bg-linear-blue label {
+  color: white !important;
+}
+
+.table-header-blue {
+  background: linear-gradient(90deg, #0048b2, #3b8aff 100%) !important;
+  color: white !important;
+}
+
+.title-section {
+  padding: 0.5rem 1rem;
+  background: #0048b2;
+  color: white;
+  border-radius: 8px 0;
+}
+
+.title-section label {
+  width: max-content;
+}
+
+.feature-section {
+  background: linear-gradient(90deg, #0048b2, #3bb4ff 100%) !important;
+  height: 100%;
+  width: -webkit-fill-available;
+  border-radius: 0px 8px 0px 0px;
+}
+
+.feature-section .white-section {
+  background: #ffffff;
+  height: 100%;
+  width: 100%;
+  margin-top: 0.5rem;
+  border-radius: 8px 0px 0px 0px;
+  position: relative;
+}
+
+.scroll {
+  overflow: hidden;
+  padding-right: 11px;
+}
+
+.scroll:hover {
+  overflow-y: scroll;
+  padding-right: 0px;
+  scrollbar-width: thin;
+}

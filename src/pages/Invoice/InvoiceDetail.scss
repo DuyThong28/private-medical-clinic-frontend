@@ -1,0 +1,23 @@
+.print-content {
+    .row.list-group-item.list-group-item-action.d-flex.flex-row.w-100.fw-bold {
+      background: #056fdf !important;
+      color: white !important;
+    }
+  }
+
+  .examination-info {
+    .examination-info-container {
+      background: linear-gradient(90deg, #0048B2, #3b8aff 100%);
+      padding: 0 1rem;
+      padding-top: 0.5rem !important;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      color: white !important;
+      font-weight: 600;
+      label {
+        color: white !important;
+      }
+    }
+  }
+  
+  

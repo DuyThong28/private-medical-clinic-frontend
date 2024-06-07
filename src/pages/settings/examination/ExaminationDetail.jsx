@@ -35,7 +35,7 @@ export default function ExaminationDetail() {
   const formRef = useRef();
   const { auth } = useAuth();
   const permission = auth?.permission || [];
-  const [validated, setValidated] = useState(false);
+  // const [validated, setValidated] = useState(false);
   const { appopintmentListPatientId } = useParams();
   const [dataState, setDataState] = useState({
     data: null,
@@ -114,7 +114,7 @@ export default function ExaminationDetail() {
     function finishExamHandler() {
       const form = formRef.current;
       if (form.checkValidity() === false) {
-        setValidated(true);
+        // setValidated(true);
         return;
       }
 
@@ -130,7 +130,7 @@ export default function ExaminationDetail() {
         patientId,
         appointmentListId,
       });
-      setValidated(false);
+      // setValidated(false);
     }
     notiDialogRef.current.setDialogData({
       action: DialogAction.FINISH,
@@ -164,8 +164,8 @@ export default function ExaminationDetail() {
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              width="23"
-              height="23"
+             width="25"
+                height="25"
               fill="currentColor"
               className="bi bi-arrow-left-circle-fill"
               viewBox="0 0 16 16"
@@ -180,7 +180,7 @@ export default function ExaminationDetail() {
           ref={formRef}
           noValidate
           onChange={changeFormHandler}
-          validated={validated}
+          // validated={validated}
         >
           <div style={{ width: "40%" }}>
             <div className="row">
@@ -205,7 +205,7 @@ export default function ExaminationDetail() {
                   appointmentListPatientData &&
                   appointmentListPatientData.patient.fullName
                 }
-                label={"Tên bệnh nhân"}
+                label={"Họ và tên"}
               />
 
               <MainInput

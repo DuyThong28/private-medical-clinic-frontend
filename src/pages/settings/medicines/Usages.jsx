@@ -60,7 +60,6 @@ function UsagesTab() {
     dialogRef.current.edit({ action, data: usage });
   }
 
-
   const error = useRouteError();
   if (auth.isPending) {
     return <></>;
@@ -72,68 +71,87 @@ function UsagesTab() {
   return (
     <div className="h-100 w-100 p-3">
       <NotificationDialog ref={notiDialogRef} keyQuery={["usages"]} />
-      <Card>
+      <Card className="w-100 h-100  rounded-3 bg-white">
         <div className="w-100 h-100 d-flex flex-column gap-3">
           <div className=" w-100  d-flex flex-row justify-content-around">
-            <div className="col fw-bold fs-4 text-black">
-              <label>Cách dùng</label>
-            </div>
-            <div className="row gap-3">
-              <div className="col input-group flex-nowrap">
-                <span
-                  className="input-group-text"
-                  id="addon-wrapping"
-                  style={{ backgroundColor: "white" }}
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="16"
-                    height="16"
-                    fill="currentColor"
-                    className="bi bi-search"
-                    viewBox="0 0 16 16"
-                  >
-                    <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
-                  </svg>
-                </span>
-                <input
-                  name="name"
-                  type="search"
-                  className="form-control"
-                  placeholder="Dùng thuốc"
-                  aria-describedby="addon-wrapping"
-                  onInput={searchHandler}
-                />
+            <div className=" w-100 d-flex flex-row">
+              <div className="fw-bold fs-4 title-section">
+                <label>Cách dùng</label>
               </div>
-              <div style={{ width: "fit-content" }}>
-                <MainDialog
-                  ref={dialogRef}
-                  addFn={createNewUsage}
-                  keyQuery={["usages"]}
-                  onEdit={setData}
-                  addButton={permission?.includes("CDrug") ? true : false}
-                >
-                  <div className="mb-3">
-                    <label
-                      htmlFor="drugname"
-                      className="col-form-label  text-dark"
-                    >
-                      Cách dùng
-                    </label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      id="usagedes"
-                      name="usagedes"
-                      defaultValue={dialogState.data?.usageDes ?? ""}
-                      disabled={!dialogState.isEditable}
-                    />
+              <div className="feature-section">
+                <div className="white-section">
+                  <div
+                    className="d-flex flex-row gap-3 float-end position-absolute top-50"
+                    style={{
+                      right: "1rem",
+                      transform: "translate(0%, -50%)",
+                    }}
+                  >
+                    <div className="row gap-3">
+                      <div className="col input-group flex-nowrap">
+                        <span
+                          className="input-group-text"
+                          id="addon-wrapping"
+                          style={{ backgroundColor: "white" }}
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="16"
+                            height="16"
+                            fill="currentColor"
+                            className="bi bi-search"
+                            viewBox="0 0 16 16"
+                          >
+                            <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
+                          </svg>
+                        </span>
+                        <input
+                          name="name"
+                          type="search"
+                          className="form-control"
+                          placeholder="Dùng thuốc"
+                          aria-describedby="addon-wrapping"
+                          onInput={searchHandler}
+                        />
+                      </div>
+                      <div style={{ width: "fit-content" }}>
+                        <MainDialog
+                          ref={dialogRef}
+                          addFn={createNewUsage}
+                          keyQuery={["usages"]}
+                          onEdit={setData}
+                          addButton={
+                            permission?.includes("CDrug") ? true : false
+                          }
+                        >
+                          <div className="mb-3">
+                            <label
+                              htmlFor="drugname"
+                              className="col-form-label  text-dark"
+                            >
+                              Cách dùng
+                            </label>
+                            <input
+                              type="text"
+                              className="form-control"
+                              id="usagedes"
+                              name="usagedes"
+                              defaultValue={dialogState.data?.usageDes ?? ""}
+                              disabled={!dialogState.isEditable}
+                            />
+                          </div>
+                        </MainDialog>
+                      </div>
+                    </div>
                   </div>
-                </MainDialog>
+                </div>
               </div>
             </div>
           </div>
-          <div className=" w-100 h-100 overflow-hidden d-flex flex-column">
+          <div
+            className=" w-100 h-100 overflow-hidden d-flex flex-column"
+            style={{ padding: "0rem 1rem 1rem 1rem" }}
+          >
             <TableHeader>
               <div className="text-start" style={{ width: "5%" }}>
                 STT

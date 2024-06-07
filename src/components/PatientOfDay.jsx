@@ -89,8 +89,11 @@ function PatientOfDay() {
   }, [selectedDay]);
 
   return (
-    <div className="h-100 d-flex flex-column overview-number rounded-3 p-3">
-      <div>
+    <div className="h-100 overview-number rounded-3 position-relative">
+      <div
+        style={{ background: "transparent" }}
+        className="position-absolute  p-3 w-100"
+      >
         <label
           className="fw-bold text-dark"
           style={{ margin: 0, fontSize: "1rem" }}
@@ -99,7 +102,7 @@ function PatientOfDay() {
         </label>
         <h3 className="overview-number-patient ">{patientsToday.length}</h3>
       </div>
-      <div className="overview-number-percents z-2">
+      <div className="overview-number-percents position-absolute z-2 bottom-0 m-2">
         <div className="badge bg-success">
           <p className="txt-center">Bệnh nhân mới</p>
           <p className="txt-center fs-4">

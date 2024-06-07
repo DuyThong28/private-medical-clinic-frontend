@@ -187,7 +187,8 @@ function ForgotPassword() {
                             name="email"
                             required
                             style={{
-                              boxShadow: "6px 6px 54px 0px rgba(0, 0, 0, 0.08)",
+                              boxShadow:
+                                "rgb(14 111 253 / 10%) 4px 4px 40px 0px",
                             }}
                           />
                           <label htmlFor="email">Email</label>
@@ -202,7 +203,8 @@ function ForgotPassword() {
                             placeholder="Mã OTP"
                             required
                             style={{
-                              boxShadow: "6px 6px 54px 0px rgba(0, 0, 0, 0.08)",
+                              boxShadow:
+                                "rgb(14 111 253 / 10%) 4px 4px 40px 0px",
                             }}
                           ></input>
                           <label htmlFor="code">Mã OTP</label>
@@ -218,7 +220,8 @@ function ForgotPassword() {
                               onChangeHandler({ event, name: "newpassword" })
                             }
                             style={{
-                              boxShadow: "6px 6px 54px 0px rgba(0, 0, 0, 0.08)",
+                              boxShadow:
+                                "rgb(14 111 253 / 10%) 4px 4px 40px 0px",
                             }}
                           />
                           <PasswordInput
@@ -232,7 +235,8 @@ function ForgotPassword() {
                               })
                             }
                             style={{
-                              boxShadow: "6px 6px 54px 0px rgba(0, 0, 0, 0.08)",
+                              boxShadow:
+                                "rgb(14 111 253 / 10%) 4px 4px 40px 0px",
                             }}
                           />
                         </>

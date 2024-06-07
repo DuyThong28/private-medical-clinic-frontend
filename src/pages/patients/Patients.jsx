@@ -73,197 +73,212 @@ function PatientsPage() {
   return (
     <div className="h-100 w-100 p-3">
       <NotificationDialog ref={notiDialogRef} keyQuery={["patientlist"]} />
-      <Card>
+      <Card className="w-100 h-100  rounded-3 bg-white">
         <div className="w-100 h-100 d-flex flex-column gap-3">
           <div className=" w-100  d-flex flex-row justify-content-around">
-            <div className="col fw-bold fs-4 text-black">
-              <label>Bệnh nhân</label>
-            </div>
-            <div className="col">
-              <div className="row">
-                <form
-                  ref={searchRef}
-                  className="row gap-3"
-                  onChange={searchHandler}
-                >
-                  <div className="col input-group flex-nowrap">
-                    <span
-                      className="input-group-text"
-                      id="addon-wrapping"
-                      style={{ backgroundColor: "white" }}
+            <div className=" w-100 d-flex flex-row">
+              <div className="fw-bold fs-4 title-section">
+                <label>Bệnh nhân</label>
+              </div>
+              <div className="feature-section">
+                <div className="white-section">
+                  <div
+                    className="d-flex flex-row gap-3 float-end position-absolute top-50"
+                    style={{
+                      right: "1rem",
+                      transform: "translate(0%, -50%)",
+                    }}
+                  >
+                    <form
+                      ref={searchRef}
+                      className="row gap-3"
+                      onChange={searchHandler}
                     >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="16"
-                        height="16"
-                        fill="currentColor"
-                        className="bi bi-search"
-                        viewBox="0 0 16 16"
-                      >
-                        <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
-                      </svg>
-                    </span>
-                    <input
-                      name="name"
-                      type="search"
-                      className="form-control"
-                      placeholder="Tên bệnh nhân"
-                      aria-describedby="addon-wrapping"
-                    />
-                  </div>
+                      <div className="col input-group flex-nowrap">
+                        <span
+                          className="input-group-text"
+                          id="addon-wrapping"
+                          style={{ backgroundColor: "white" }}
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="16"
+                            height="16"
+                            fill="currentColor"
+                            className="bi bi-search"
+                            viewBox="0 0 16 16"
+                          >
+                            <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
+                          </svg>
+                        </span>
+                        <input
+                          name="name"
+                          type="search"
+                          className="form-control"
+                          placeholder="Tên bệnh nhân"
+                          aria-describedby="addon-wrapping"
+                        />
+                      </div>
 
-                  <div className="col input-group flex-nowrap">
-                    <span
-                      className="input-group-text"
-                      id="addon-wrapping"
-                      style={{ backgroundColor: "white" }}
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="16"
-                        height="16"
-                        fill="currentColor"
-                        className="bi bi-search"
-                        viewBox="0 0 16 16"
-                      >
-                        <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
-                      </svg>
-                    </span>
-                    <input
-                      type="search"
-                      name="phonenumber"
-                      className="form-control"
-                      placeholder="Số điện thoại"
-                      aria-label="medicine"
-                      aria-describedby="addon-wrapping"
-                    />
-                  </div>
-                  <div style={{ width: "fit-content" }}>
-                    <MainDialog
-                      ref={dialogRef}
-                      addFn={addPatient}
-                      editFn={fetchPatientById}
-                      onEdit={setData}
-                      keyQuery={["patientlist"]}
-                      addButton={
-                        permission?.includes("CPatient") ? true : false
-                      }
-                    >
-                      <div className="row gap-3">
-                        {dialogState.data?.id && (
-                          <div className="col">
-                            <label
-                              htmlFor="patientId"
-                              className="col-form-label fw-bold"
-                            >
-                              Mã bệnh nhân
-                            </label>
-                            <input
-                              type="text"
-                              className="form-control"
-                              id="patientId"
-                              name="patientId"
-                              defaultValue={dialogState.data?.id ?? ""}
-                              disabled={true}
-                            />
+                      <div className="col input-group flex-nowrap">
+                        <span
+                          className="input-group-text"
+                          id="addon-wrapping"
+                          style={{ backgroundColor: "white" }}
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="16"
+                            height="16"
+                            fill="currentColor"
+                            className="bi bi-search"
+                            viewBox="0 0 16 16"
+                          >
+                            <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
+                          </svg>
+                        </span>
+                        <input
+                          type="search"
+                          name="phonenumber"
+                          className="form-control"
+                          placeholder="Số điện thoại"
+                          aria-label="medicine"
+                          aria-describedby="addon-wrapping"
+                        />
+                      </div>
+                      <div style={{ width: "fit-content" }}>
+                        <MainDialog
+                          ref={dialogRef}
+                          addFn={addPatient}
+                          editFn={fetchPatientById}
+                          onEdit={setData}
+                          keyQuery={["patientlist"]}
+                          addButton={
+                            permission?.includes("CPatient") ? true : false
+                          }
+                        >
+                          <div className="row gap-3">
+                            {dialogState.data?.id && (
+                              <div className="col">
+                                <label
+                                  htmlFor="patientId"
+                                  className="col-form-label fw-bold"
+                                >
+                                  Mã bệnh nhân
+                                </label>
+                                <input
+                                  type="text"
+                                  className="form-control"
+                                  id="patientId"
+                                  name="patientId"
+                                  defaultValue={dialogState.data?.id ?? ""}
+                                  disabled={true}
+                                />
+                              </div>
+                            )}
+
+                            <div className="col">
+                              <label
+                                htmlFor="fullname"
+                                className="col-form-label fw-bold"
+                              >
+                                Tên bệnh nhân
+                              </label>
+                              <input
+                                type="text"
+                                className="form-control"
+                                id="fullname"
+                                name="fullname"
+                                defaultValue={dialogState.data?.fullName ?? ""}
+                                disabled={!dialogState.isEditable || false}
+                                required
+                              />
+                            </div>
+                            <div className="col">
+                              <label
+                                htmlFor="phonenumber"
+                                className="col-form-label fw-bold"
+                              >
+                                Số điện thoại
+                              </label>
+                              <input
+                                className="form-control"
+                                id="phonenumber"
+                                name="phonenumber"
+                                defaultValue={
+                                  dialogState.data?.phoneNumber ?? ""
+                                }
+                                disabled={!dialogState.isEditable || false}
+                                required
+                              ></input>
+                            </div>
                           </div>
-                        )}
-
-                        <div className="col">
-                          <label
-                            htmlFor="fullname"
-                            className="col-form-label fw-bold"
-                          >
-                            Tên bệnh nhân
-                          </label>
-                          <input
-                            type="text"
-                            className="form-control"
-                            id="fullname"
-                            name="fullname"
-                            defaultValue={dialogState.data?.fullName ?? ""}
-                            disabled={!dialogState.isEditable || false}
-                            required
-                          />
-                        </div>
-                        <div className="col">
-                          <label
-                            htmlFor="phonenumber"
-                            className="col-form-label fw-bold"
-                          >
-                            Số điện thoại
-                          </label>
-                          <input
-                            className="form-control"
-                            id="phonenumber"
-                            name="phonenumber"
-                            defaultValue={dialogState.data?.phoneNumber ?? ""}
-                            disabled={!dialogState.isEditable || false}
-                            required
-                          ></input>
-                        </div>
+                          <div className="row gap-3">
+                            <div className="col">
+                              <label
+                                htmlFor="gender"
+                                className="col-form-label fw-bold"
+                              >
+                                Giới tính
+                              </label>
+                              <select
+                                className="form-select"
+                                id="gender"
+                                name="gender"
+                                defaultValue={dialogState.data?.gender ?? ""}
+                                disabled={!dialogState.isEditable || false}
+                                required
+                              >
+                                <option value="Nam">Nam</option>
+                                <option value="Nữ">Nữ</option>
+                              </select>
+                            </div>
+                            <div className="col">
+                              <label
+                                htmlFor="birthyear"
+                                className="col-form-label fw-bold"
+                              >
+                                Năm sinh
+                              </label>
+                              <input
+                                className="form-control"
+                                id="birthyear"
+                                name="birthyear"
+                                defaultValue={dialogState.data?.birthYear ?? ""}
+                                disabled={!dialogState.isEditable || false}
+                                required
+                              ></input>
+                            </div>
+                            <div className="col">
+                              <label
+                                htmlFor="address"
+                                className="col-form-label fw-bold"
+                              >
+                                Địa chỉ
+                              </label>
+                              <input
+                                className="form-control"
+                                id="address"
+                                name="address"
+                                defaultValue={dialogState.data?.address ?? ""}
+                                disabled={!dialogState.isEditable || false}
+                                required
+                              ></input>
+                            </div>
+                          </div>
+                        </MainDialog>
                       </div>
-                      <div className="row gap-3">
-                        <div className="col">
-                          <label
-                            htmlFor="gender"
-                            className="col-form-label fw-bold"
-                          >
-                            Giới tính
-                          </label>
-                          <select
-                            className="form-select"
-                            id="gender"
-                            name="gender"
-                            defaultValue={dialogState.data?.gender ?? ""}
-                            disabled={!dialogState.isEditable || false}
-                            required
-                          >
-                            <option value="Nam">Nam</option>
-                            <option value="Nữ">Nữ</option>
-                          </select>
-                        </div>
-                        <div className="col">
-                          <label
-                            htmlFor="birthyear"
-                            className="col-form-label fw-bold"
-                          >
-                            Năm sinh
-                          </label>
-                          <input
-                            className="form-control"
-                            id="birthyear"
-                            name="birthyear"
-                            defaultValue={dialogState.data?.birthYear ?? ""}
-                            disabled={!dialogState.isEditable || false}
-                            required
-                          ></input>
-                        </div>
-                        <div className="col">
-                          <label
-                            htmlFor="address"
-                            className="col-form-label fw-bold"
-                          >
-                            Địa chỉ
-                          </label>
-                          <input
-                            className="form-control"
-                            id="address"
-                            name="address"
-                            defaultValue={dialogState.data?.address ?? ""}
-                            disabled={!dialogState.isEditable || false}
-                            required
-                          ></input>
-                        </div>
-                      </div>
-                    </MainDialog>
+                    </form>
                   </div>
-                </form>
+                </div>
               </div>
             </div>
           </div>
 
-          <div className=" w-100 h-100 overflow-hidden d-flex flex-column">
+          <div
+            className=" w-100 h-100 overflow-hidden d-flex flex-column"
+            style={{ padding: "0rem 1rem 1rem 1rem" }}
+          >
             <TableHeader>
               <div className="text-start" style={{ width: "5%" }}>
                 STT

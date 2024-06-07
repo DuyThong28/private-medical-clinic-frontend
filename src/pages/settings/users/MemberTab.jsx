@@ -290,73 +290,97 @@ function MemberTab() {
   return (
     <div className="h-100 w-100 p-3">
       <NotificationDialog ref={notiDialogRef} keyQuery={["members"]} />
-      <Card>
+      <Card className="w-100 h-100  rounded-3 bg-white">
         <div className="w-100 h-100 d-flex flex-column gap-3">
           <div className=" w-100  d-flex flex-row justify-content-around">
-            <div className="col fw-bold fs-4 text-black">
-              <label>Quản lý thành viên</label>
-            </div>
-            <div className="row gap-3">
-              <form className="col" onChange={changeFormHandler} ref={formRef}>
-                <div className="row gap-3" style={{ width: "fit-content" }}>
-                  <div className="col input-group flex-nowrap">
-                    <span
-                      className="input-group-text"
-                      id="addon-wrapping"
-                      style={{ backgroundColor: "white" }}
+            <div className=" w-100 d-flex flex-row">
+              <div className="fw-bold fs-4 title-section">
+                <label>Thành viên</label>
+              </div>
+              <div className="feature-section">
+                <div className="white-section">
+                  <div
+                    className="d-flex flex-row gap-3 float-end position-absolute top-50"
+                    style={{
+                      right: "1rem",
+                      transform: "translate(0%, -50%)",
+                    }}
+                  >
+                    <form
+                      className="col"
+                      onChange={changeFormHandler}
+                      ref={formRef}
                     >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="16"
-                        height="16"
-                        fill="currentColor"
-                        className="bi bi-search"
-                        viewBox="0 0 16 16"
+                      <div
+                        className="row gap-3"
+                        style={{ width: "fit-content" }}
                       >
-                        <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
-                      </svg>
-                    </span>
-                    <input
-                      name="name"
-                      type="search"
-                      className="form-control"
-                      placeholder="Họ và tên"
-                      aria-describedby="addon-wrapping"
-                    />
-                  </div>
-                  <div className="col input-group flex-nowrap">
-                    <select
-                      className="form-select"
-                      name="state"
-                      defaultValue={1}
-                    >
-                      <option value="1">Hoạt động</option>
-                      <option value="2">Nghỉ việc</option>
-                      <option value="3">Tất cả</option>
-                    </select>
+                        <div className="col input-group flex-nowrap">
+                          <span
+                            className="input-group-text"
+                            id="addon-wrapping"
+                            style={{ backgroundColor: "white" }}
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="16"
+                              height="16"
+                              fill="currentColor"
+                              className="bi bi-search"
+                              viewBox="0 0 16 16"
+                            >
+                              <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
+                            </svg>
+                          </span>
+                          <input
+                            name="name"
+                            type="search"
+                            className="form-control"
+                            placeholder="Họ và tên"
+                            aria-describedby="addon-wrapping"
+                          />
+                        </div>
+                        <div className="col input-group flex-nowrap">
+                          <select
+                            className="form-select"
+                            name="state"
+                            defaultValue={1}
+                          >
+                            <option value="1">Hoạt động</option>
+                            <option value="2">Nghỉ việc</option>
+                            <option value="3">Tất cả</option>
+                          </select>
+                        </div>
+                      </div>
+                    </form>
+                    <div style={{ width: "fit-content" }}>
+                      <MainDialog
+                        ref={dialogRef}
+                        addFn={
+                          isPasswordChanged ? resetPasswordById : createUser
+                        }
+                        editFn={fetchUserById}
+                        onEdit={setData}
+                        keyQuery={["members"]}
+                        isPasswordChanged={isPasswordChanged}
+                        setIsPasswordChanged={setIsPasswordChanged}
+                        onSubmit={isPasswordChanged ? onSubmitPassword : null}
+                        addButton={permission?.includes("CUser") ? true : false}
+                      >
+                        {isPasswordChanged
+                          ? changePasswordElement
+                          : editUserInfoElement}
+                      </MainDialog>
+                    </div>
                   </div>
                 </div>
-              </form>
-              <div style={{ width: "fit-content" }}>
-                <MainDialog
-                  ref={dialogRef}
-                  addFn={isPasswordChanged ? resetPasswordById : createUser}
-                  editFn={fetchUserById}
-                  onEdit={setData}
-                  keyQuery={["members"]}
-                  isPasswordChanged={isPasswordChanged}
-                  setIsPasswordChanged={setIsPasswordChanged}
-                  onSubmit={isPasswordChanged ? onSubmitPassword : null}
-                  addButton={permission?.includes("CUser") ? true : false}
-                >
-                  {isPasswordChanged
-                    ? changePasswordElement
-                    : editUserInfoElement}
-                </MainDialog>
               </div>
             </div>
           </div>
-          <div className=" w-100 h-100 overflow-hidden d-flex flex-column">
+          <div
+            className=" w-100 h-100 overflow-hidden d-flex flex-column"
+            style={{ padding: "0rem 1rem 1rem 1rem" }}
+          >
             <TableHeader>
               <div className="text-start" style={{ width: "5%" }}>
                 STT
@@ -500,29 +524,29 @@ function MemberTab() {
                           >
                             {user.isActive === 1 ? (
                               <>
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="16"
-                                height="16"
-                                fill="currentColor"
-                                className="bi bi-arrow-down-short position-absolute top-50 translate-middle"
-                                style={{marginTop:"-3px"}}
-                                viewBox="0 0 16 16"
-                              >
-                                <path d="M8 4a.5.5 0 0 1 .5.5v5.793l2.146-2.147a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 1 1 .708-.708L7.5 10.293V4.5A.5.5 0 0 1 8 4" />
-                              </svg>
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="16"
-                                height="16"
-                                fill="currentColor"
-                                style={{marginTop:"1px"}}
-                                className="bi bi-inbox-fill position-absolute top-50 translate-middle"
-                                viewBox="0 0 16 16"
-                              >
-                                <path d="M4.98 4a.5.5 0 0 0-.39.188L1.54 8H6a.5.5 0 0 1 .5.5 1.5 1.5 0 1 0 3 0A.5.5 0 0 1 10 8h4.46l-3.05-3.812A.5.5 0 0 0 11.02 4zm-1.17-.437A1.5 1.5 0 0 1 4.98 3h6.04a1.5 1.5 0 0 1 1.17.563l3.7 4.625a.5.5 0 0 1 .106.374l-.39 3.124A1.5 1.5 0 0 1 14.117 13H1.883a1.5 1.5 0 0 1-1.489-1.314l-.39-3.124a.5.5 0 0 1 .106-.374z" />
-                              </svg>
-                            </>
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  width="16"
+                                  height="16"
+                                  fill="currentColor"
+                                  className="bi bi-arrow-down-short position-absolute top-50 translate-middle"
+                                  style={{ marginTop: "-3px" }}
+                                  viewBox="0 0 16 16"
+                                >
+                                  <path d="M8 4a.5.5 0 0 1 .5.5v5.793l2.146-2.147a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 1 1 .708-.708L7.5 10.293V4.5A.5.5 0 0 1 8 4" />
+                                </svg>
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  width="16"
+                                  height="16"
+                                  fill="currentColor"
+                                  style={{ marginTop: "1px" }}
+                                  className="bi bi-inbox-fill position-absolute top-50 translate-middle"
+                                  viewBox="0 0 16 16"
+                                >
+                                  <path d="M4.98 4a.5.5 0 0 0-.39.188L1.54 8H6a.5.5 0 0 1 .5.5 1.5 1.5 0 1 0 3 0A.5.5 0 0 1 10 8h4.46l-3.05-3.812A.5.5 0 0 0 11.02 4zm-1.17-.437A1.5 1.5 0 0 1 4.98 3h6.04a1.5 1.5 0 0 1 1.17.563l3.7 4.625a.5.5 0 0 1 .106.374l-.39 3.124A1.5 1.5 0 0 1 14.117 13H1.883a1.5 1.5 0 0 1-1.489-1.314l-.39-3.124a.5.5 0 0 1 .106-.374z" />
+                                </svg>
+                              </>
                             ) : (
                               <svg
                                 xmlns="http://www.w3.org/2000/svg"

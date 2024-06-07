@@ -237,3 +237,28 @@ export async function deleteAppointmentListPatientById({ id }) {
 
   return data;
 }
+
+export async function moveAppointmentListPatientToTheEnd({ id }) {
+  const response = await fetch(
+    `http://localhost:8080/api/v1/appointmentlistpatients/${id}/update`,
+    {
+      credentials: "include",
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        authorization: "Bearer",
+      },
+    }
+  );
+  if (!response.ok) {
+    const error = new Error("Cập nhật lịch khám thất bại");
+    error.code = response.status;
+    error.info = await response.json();
+    throw error;
+  }
+
+  const resData = await response.json();
+  const data = resData.data;
+  data.message = "Lịch khám đã được chuyển xuống cuối";
+  return data;
+}

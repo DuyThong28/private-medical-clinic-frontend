@@ -60,7 +60,6 @@ function DiseasesTab() {
     dialogRef.current.edit({ action, data: disease });
   }
 
-
   const error = useRouteError();
   if (auth.isPending) {
     return <></>;
@@ -72,69 +71,88 @@ function DiseasesTab() {
   return (
     <div className="h-100 w-100 p-3">
       <NotificationDialog ref={notiDialogRef} keyQuery={["diseases"]} />
-      <Card>
+      <Card className="w-100 h-100  rounded-3 bg-white">
         <div className="w-100 h-100 d-flex flex-column gap-3">
           <div className=" w-100  d-flex flex-row justify-content-around">
-            <div className="col fw-bold fs-4 text-black">
-              <label>Bệnh</label>
-            </div>
-            <div className="row gap-3">
-              <div className="col input-group flex-nowrap">
-                <span
-                  className="input-group-text"
-                  id="addon-wrapping"
-                  style={{ backgroundColor: "white" }}
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="16"
-                    height="16"
-                    fill="currentColor"
-                    className="bi bi-search"
-                    viewBox="0 0 16 16"
-                  >
-                    <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
-                  </svg>
-                </span>
-                <input
-                  name="name"
-                  type="search"
-                  className="form-control"
-                  placeholder="Loại bệnh"
-                  aria-describedby="addon-wrapping"
-                  onInput={searchHandler}
-                />
+            <div className=" w-100 d-flex flex-row">
+              <div className="fw-bold fs-4 title-section">
+                <label>Bệnh</label>
               </div>
-              <div style={{ width: "fit-content" }}>
-                <MainDialog
-                  ref={dialogRef}
-                  addFn={createNewDisease}
-                  keyQuery={["diseases"]}
-                  onEdit={setData}
-                  addButton={permission?.includes("CDrug") ? true : false}
-                >
-                  <div>
-                    <label
-                      htmlFor="drugname"
-                      className="col-form-label  text-dark"
-                    >
-                      Bệnh
-                    </label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      id="diseasename"
-                      name="diseasename"
-                      defaultValue={dialogState.data?.diseaseName ?? ""}
-                      disabled={!dialogState.isEditable}
-                      required
-                    />
+              <div className="feature-section">
+                <div className="white-section">
+                  <div
+                    className="d-flex flex-row gap-3 float-end position-absolute top-50"
+                    style={{
+                      right: "1rem",
+                      transform: "translate(0%, -50%)",
+                    }}
+                  >
+                    <div className="row gap-3">
+                      <div className="col input-group flex-nowrap">
+                        <span
+                          className="input-group-text"
+                          id="addon-wrapping"
+                          style={{ backgroundColor: "white" }}
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="16"
+                            height="16"
+                            fill="currentColor"
+                            className="bi bi-search"
+                            viewBox="0 0 16 16"
+                          >
+                            <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
+                          </svg>
+                        </span>
+                        <input
+                          name="name"
+                          type="search"
+                          className="form-control"
+                          placeholder="Loại bệnh"
+                          aria-describedby="addon-wrapping"
+                          onInput={searchHandler}
+                        />
+                      </div>
+                      <div style={{ width: "fit-content" }}>
+                        <MainDialog
+                          ref={dialogRef}
+                          addFn={createNewDisease}
+                          keyQuery={["diseases"]}
+                          onEdit={setData}
+                          addButton={
+                            permission?.includes("CDrug") ? true : false
+                          }
+                        >
+                          <div>
+                            <label
+                              htmlFor="drugname"
+                              className="col-form-label  text-dark"
+                            >
+                              Bệnh
+                            </label>
+                            <input
+                              type="text"
+                              className="form-control"
+                              id="diseasename"
+                              name="diseasename"
+                              defaultValue={dialogState.data?.diseaseName ?? ""}
+                              disabled={!dialogState.isEditable}
+                              required
+                            />
+                          </div>
+                        </MainDialog>
+                      </div>
+                    </div>
                   </div>
-                </MainDialog>
+                </div>
               </div>
             </div>
           </div>
-          <div className=" w-100 h-100 overflow-hidden d-flex flex-column">
+          <div
+            className=" w-100 h-100 overflow-hidden d-flex flex-column"
+            style={{ padding: "0rem 1rem 1rem 1rem" }}
+          >
             <TableHeader>
               <div className="text-start" style={{ width: "5%" }}>
                 STT
@@ -182,7 +200,10 @@ function DiseasesTab() {
                           <span
                             className="p-2"
                             onClick={() =>
-                              editDiseaseHandler({ disease, action: "edit" })
+                              editDiseaseHandler({
+                                disease,
+                                action: "edit",
+                              })
                             }
                           >
                             <svg

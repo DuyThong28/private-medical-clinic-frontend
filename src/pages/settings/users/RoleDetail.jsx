@@ -278,8 +278,8 @@ function RoleDetail() {
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                width="23"
-                height="23"
+                width="25"
+                height="25"
                 fill="currentColor"
                 className="bi bi-arrow-left-circle-fill"
                 viewBox="0 0 16 16"
@@ -291,12 +291,12 @@ function RoleDetail() {
           <Form className=" h-100 d-flex flex-column gap-3" ref={formRef}>
             <div className=" w-100  d-flex flex-row justify-content-around">
               {roleId && (
-                <div className="col fw-bold fs-4 text-black">
+                <div className="col fw-bold fs-4 role-header">
                   <label>Chi tiết vai trò</label>
                 </div>
               )}
               {!roleId && (
-                <div className="col fw-bold fs-4 text-black">
+                <div className="col fw-bold fs-4 text-black role-header">
                   <label>Thêm mới vai trò</label>
                 </div>
               )}
@@ -361,17 +361,20 @@ function RoleDetail() {
         </Card>
       </div>
       <div
-        className="h-100"
+        className="h-100 position-relative"
         style={{ width: "70%", padding: "1rem 1rem 1rem 0rem" }}
       >
-        <Card>
+        <Card className="w-100 h-100  rounded-3 bg-white">
           <div className="h-100 d-flex flex-column gap-3">
-            <div className=" w-100  d-flex flex-row justify-content-around">
-              <div className="col fw-bold fs-4 text-black">
+            <div className=" w-100 d-flex flex-row">
+              <div className="fw-bold fs-4 title-section">
                 <label>Phân quyền chi tiết</label>
               </div>
+              <div className="feature-section">
+                <div className="white-section"></div>
+              </div>
             </div>
-            <div className=" w-100 h-100 overflow-y-scroll gap-3">
+            <div className=" w-100 h-100 scroll gap-3">
               <PermissionArea
                 data={permissionState.Booking}
                 onChange={changeHandler}

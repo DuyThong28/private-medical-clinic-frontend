@@ -147,10 +147,13 @@ function BookingPage() {
       <InvoiceDetail ref={invoiceRef} />
       <NotificationDialog ref={notiDialogRef} keyQuery={["booking"]} />
       <div className="h-100 w-100 p-3">
-        <Card>
+        <Card className="w-100 h-100  rounded-3 bg-white">
           <div className="w-100 h-100 d-flex flex-column gap-3">
             <BookingModal ref={modalRef} setSearchData={setSearchData} />
-            <div className=" w-100 h-100 overflow-hidden d-flex flex-column">
+            <div
+              className=" w-100 h-100 overflow-hidden d-flex flex-column"
+              style={{ padding: "0rem 1rem 1rem 1rem" }}
+            >
               <TableHeader>
                 <div className="text-start" style={{ width: "5%" }}>
                   STT

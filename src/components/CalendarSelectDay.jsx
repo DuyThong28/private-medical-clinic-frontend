@@ -70,7 +70,6 @@ function CalendarSelectDay() {
   const appointmentListUpcoming = appointmentListPatientSelectedDay.filter(
     (item) => !item.appointmentRecordId
   );
-
   useEffect(() => {
     queryClient.invalidateQueries({ queryKey: ["appointmentListSelectedDay"] });
   }, [selectedDay]);
@@ -80,12 +79,9 @@ function CalendarSelectDay() {
       id="calendar"
       className=" rounded-3 p-3 w-20"
       style={{
-        // border: "1px solid #B9B9B9",
         boxShadow: "6px 6px 54px 0px rgba(0, 0, 0, 0.05)",
       }}
     >
-      {/* <h6 className="calendar-title">Lịch</h6> */}
-      {/* <style>{css}</style> */}
       <div className="calendar-container mb-2">
         <DayPicker
           locale={vi}
@@ -114,17 +110,21 @@ function CalendarSelectDay() {
         {appointmentListUpcoming.length > 0 ? (
           appointmentListUpcoming.map((item) => {
             return (
-              <div className="patient-item gap-2" key={item.id}>
-                <div className="image">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    height="2.4rem"
-                    fill="#0148B3"
-                    className="bi bi-arrow-up-square-fill"
-                    viewBox="0 0 16 16"
-                  >
-                    <path d="M2 16a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2zm6.5-4.5V5.707l2.146 2.147a.5.5 0 0 0 .708-.708l-3-3a.5.5 0 0 0-.708 0l-3 3a.5.5 0 1 0 .708.708L7.5 5.707V11.5a.5.5 0 0 0 1 0" />
-                  </svg>
+              <div className="patient-item gap-2 " key={item.id}>
+                <div
+                  style={{
+                    height: "2.4rem",
+                    width: "2.4rem",
+                    borderRadius: "0.5rem",
+                    color: "white",
+                    textAlign: "center",
+                    fontSize: "1.25rem",
+                  }}
+                  className="position-relative order"
+                >
+                  <div className="position-absolute translate-middle top-50 start-50">
+                    {item.orderNumber}
+                  </div>
                 </div>
                 <div className="d-flex flex-column justify-content-between">
                   <h6 className="patient-name row">{item.patient?.fullName}</h6>

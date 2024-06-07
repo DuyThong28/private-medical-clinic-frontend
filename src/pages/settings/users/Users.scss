@@ -1,12 +1,19 @@
 .user-navigation {
-    .nav-bar-active {
-        color: #1B59F8;
-        font-weight: bold;
-    }
-    
-    .nav-bar {
-        color: #555555;
-        font-weight: bold;
-    }
-    
+  .nav-bar-active {
+    color: #1b59f8;
+    font-weight: bold;
+  }
+
+  .nav-bar {
+    color: #555555;
+    font-weight: bold;
+  }
+}
+
+.role-header {
+  background: linear-gradient(90deg, #0048b2, #115bc8 100%);
+  border-radius: 8px 8px 0 0;
+  color: white !important;
+  margin: -1rem;
+  padding: 0.5rem 2rem;
 }

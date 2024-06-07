@@ -10,6 +10,7 @@ import { fetchPatientById } from "../../services/patients";
 import MainInput from "../../components/MainInput";
 import useAuth from "../../hooks/useAuth";
 
+
 export default function PatientDetail() {
   const { patientId } = useParams();
   const { auth } = useAuth();
@@ -49,16 +50,16 @@ export default function PatientDetail() {
   return (
     <div className="p-3 h-100">
       <Card>
-      <div className="position-relative">
+        <div className="position-relative">
           <span
             className="position-absolute back-btn"
-            style={{ top: "0.4rem", left: "-1.9rem", padding: "1px" }}
+            style={{ top: "0.4rem", left: "-1.9rem", padding: "2px" }}
             onClick={backHandler}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              width="23"
-              height="23"
+              width="25"
+              height="25"
               fill="currentColor"
               className="bi bi-arrow-left-circle-fill"
               viewBox="0 0 16 16"
@@ -69,7 +70,10 @@ export default function PatientDetail() {
         </div>
         <Form className="w-100 h-100 d-flex flex-column  gap-3">
           {permission?.includes("RPatient") && (
-            <div className="gap-3 row">
+            <div
+              className="gap-3 row  bg-linear-blue"
+              style={{ margin: "-8px", paddingTop: "0.5rem" }}
+            >
               <div className="col">
                 <div className="row gap-3">
                   <MainInput
@@ -82,7 +86,7 @@ export default function PatientDetail() {
                     name={"fullname"}
                     isEditable={false}
                     defaultValue={dataState.data && dataState.data.fullName}
-                    label={"Tên bệnh nhân"}
+                    label={"Họ và tên"}
                   />
 
                   <MainInput
@@ -118,6 +122,9 @@ export default function PatientDetail() {
 
           {permission?.includes("RRecord") && (
             <div className="w-100 h-100 overflow-hidden">
+              <div className="fw-bold  text-black mt-2 mb-3">
+                LỊCH SỬ KHÁM BỆNH
+              </div>
               <HistoryTab isEditable={true} />
             </div>
           )}

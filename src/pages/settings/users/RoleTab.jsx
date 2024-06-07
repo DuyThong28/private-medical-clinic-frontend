@@ -89,48 +89,65 @@ function RoleTab() {
   return (
     <div className="h-100 w-100 p-3">
       <NotificationDialog ref={notiDialogRef} keyQuery={["groups"]} />
-      <Card>
+      <Card className="w-100 h-100  rounded-3 bg-white">
         <div className="w-100 h-100 d-flex flex-column gap-3">
           <div className=" w-100  d-flex flex-row justify-content-around">
-            <div className="col fw-bold fs-4 text-black">
-              <label>Quản lý vai trò</label>
-            </div>
-            <form
-              className="d-flex flex-row gap-3 float-end"
-              onChange={changeFormHandler}
-              ref={formRef}
-            >
-              <div className="col" style={{ width: "fit-content" }}>
-                <div className="col input-group flex-nowrap">
-                  <select className="form-select" name="state" defaultValue={1}>
-                    <option value="1">Hoạt động</option>
-                    <option value="2">Ngưng hoạt động</option>
-                    <option value="3">Tất cả</option>
-                  </select>
+            <div className=" w-100 d-flex flex-row">
+              <div className="fw-bold fs-4 title-section">
+                <label>Vai trò</label>
+              </div>
+              <div className="feature-section">
+                <div className="white-section">
+                  <form
+                    className="d-flex flex-row gap-3 float-end position-absolute top-50"
+                    style={{
+                      right: "1rem",
+                      transform: "translate(0%, -50%)",
+                    }}
+                    onChange={changeFormHandler}
+                    ref={formRef}
+                  >
+                    <div className="col" style={{ width: "fit-content" }}>
+                      <div className="col input-group flex-nowrap">
+                        <select
+                          className="form-select"
+                          name="state"
+                          defaultValue={1}
+                        >
+                          <option value="1">Hoạt động</option>
+                          <option value="2">Ngưng hoạt động</option>
+                          <option value="3">Tất cả</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div>
+                      <button
+                        type="button"
+                        className="col btn btn-primary float-end"
+                        onClick={viewGroupHandler}
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="16"
+                          height="16"
+                          fill="currentColor"
+                          className="bi bi-plus-lg me-2"
+                          viewBox="0 2 16 16"
+                        >
+                          <path d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2" />
+                        </svg>
+                        Thêm mới
+                      </button>
+                    </div>
+                  </form>
                 </div>
               </div>
-              <div>
-                <button
-                  type="button"
-                  className="col btn btn-primary float-end"
-                  onClick={viewGroupHandler}
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="16"
-                    height="16"
-                    fill="currentColor"
-                    className="bi bi-plus-lg me-2"
-                    viewBox="0 2 16 16"
-                  >
-                    <path d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2" />
-                  </svg>
-                  Thêm mới
-                </button>
-              </div>
-            </form>
+            </div>
           </div>
-          <div className=" w-100 h-100 overflow-hidden d-flex flex-column">
+          <div
+            className=" w-100 h-100 overflow-hidden d-flex flex-column"
+            style={{ padding: "0rem 1rem 1rem 1rem" }}
+          >
             <TableHeader>
               <div className="text-start" style={{ width: "5%" }}>
                 STT
@@ -241,7 +258,7 @@ function RoleTab() {
                                     width="16"
                                     height="16"
                                     fill="currentColor"
-                                    style={{marginTop:"1px"}}
+                                    style={{ marginTop: "1px" }}
                                     className="bi bi-inbox-fill position-absolute top-50 translate-middle"
                                     viewBox="0 0 16 16"
                                   >

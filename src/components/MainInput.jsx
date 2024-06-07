@@ -9,7 +9,11 @@ export default function MainInput({
 }) {
   return (
     <div className="col">
-      <label htmlFor={name} className="col-form-label fw-bold  text-dark">
+      <label
+        htmlFor={name}
+        className="col-form-label  text-dark"
+        style={{ fontWeight: 600 }}
+      >
         {label}
       </label>
       <div className={isEditable ? "" : "input-visible"}>

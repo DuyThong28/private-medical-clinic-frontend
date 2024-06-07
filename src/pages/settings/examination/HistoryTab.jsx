@@ -86,9 +86,9 @@ export default function HistoryTab({ isEditable }) {
       />
       <RescordHistoryModal ref={modalRef} />
       <div className="w-100 h-100 d-flex flex-column gap-3">
-        <TableHeader>
+        <TableHeader className="table-header-blue">
           <div className="text-start" style={{ width: "20%" }}>
-            Mã ca khám
+            Mã phiếu khám
           </div>
           <div className="text-start" style={{ width: "29%" }}>
             Ngày khám

@@ -11,6 +11,7 @@ import ExaminationModal from "./ExaminationModal";
 import {
   deleteAppointmentListPatientById,
   fetchAllAppointmentListPatients,
+  moveAppointmentListPatientToTheEnd,
 } from "../../../services/appointmentListPatients";
 import { convertDate, inputToDayFormat } from "../../../util/date";
 import { prescriptionAction } from "../../../store/prescription";
@@ -109,7 +110,7 @@ function ExaminationsPage() {
       dispatchFn: deletefunction,
     });
     notiDialogRef.current.showDialogWarning({
-      message: "Xác nhận hủy ca khám?",
+      message: "Xác nhận hủy lịch khám?",
     });
   }
 
@@ -120,6 +121,19 @@ function ExaminationsPage() {
         date,
         state,
       };
+    });
+  }
+
+  async function moveToTheEndHandler({ id }) {
+    async function moveToEnd() {
+      return moveAppointmentListPatientToTheEnd({ id });
+    }
+    notiDialogRef.current.setDialogData({
+      action: DialogAction.DELETE,
+      dispatchFn: moveToEnd,
+    });
+    notiDialogRef.current.showDialogWarning({
+      message: "Xác nhận chuyển lịch khám xuống cuối?",
     });
   }
 
@@ -137,10 +151,10 @@ function ExaminationsPage() {
       <InvoiceDetail ref={invoiceRef} />
       <NotificationDialog ref={notiDialogRef} keyQuery={["appointmentList"]} />
       <div className="h-100 w-100 p-3">
-        <Card>
+        <Card   className="w-100 h-100  rounded-3 bg-white">
           <div className="w-100 h-100 d-flex flex-column gap-3">
             <ExaminationModal ref={modalRef} setSearchData={setSearchData} />
-            <div className=" w-100 h-100 overflow-hidden d-flex flex-column">
+            <div className=" w-100 h-100 overflow-hidden d-flex flex-column"        style={{ padding: "0rem 1rem 1rem 1rem" }}>
               <TableHeader>
                 <div className="text-start" style={{ width: "5%" }}>
                   STT
@@ -178,9 +192,7 @@ function ExaminationsPage() {
                         key={appointmentListPatient.id}
                       >
                         <div className="text-start" style={{ width: "5%" }}>
-                          {appointmentListPatients.indexOf(
-                            appointmentListPatient
-                          ) + 1}
+                          {appointmentListPatient.orderNumber}
                         </div>
                         <div className="text-start" style={{ width: "14.2%" }}>
                           {appointmentListPatient.id}
@@ -279,16 +291,28 @@ function ExaminationsPage() {
                             {!appointmentListPatient.appointmentRecordId && (
                               <>
                                 {permission?.includes("UAppointment") && (
-                                  <li
-                                    className="dropdown-item"
-                                    onClick={() =>
-                                      editAppointmentHandler({
-                                        data: appointmentListPatient,
-                                      })
-                                    }
-                                  >
-                                    <span>Cập nhật</span>
-                                  </li>
+                                  <>
+                                    <li
+                                      className="dropdown-item"
+                                      onClick={() =>
+                                        editAppointmentHandler({
+                                          data: appointmentListPatient,
+                                        })
+                                      }
+                                    >
+                                      <span>Cập nhật</span>
+                                    </li>
+                                    <li
+                                      className="dropdown-item"
+                                      onClick={() =>
+                                        moveToTheEndHandler({
+                                          id: appointmentListPatient.id,
+                                        })
+                                      }
+                                    >
+                                      <span>Chuyển xuống cuối</span>
+                                    </li>
+                                  </>
                                 )}
                                 {permission?.includes("DAppointment") && (
                                   <li

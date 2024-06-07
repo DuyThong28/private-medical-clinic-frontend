@@ -136,161 +136,189 @@ function DrugTab() {
   return (
     <div className="h-100 w-100 p-3">
       <NotificationDialog ref={notiDialogRef} keyQuery={["drugs"]} />
-      <Card>
+      <Card className="w-100 h-100  rounded-3 bg-white">
         <div className="w-100 h-100 d-flex flex-column gap-3">
           <div className=" w-100  d-flex flex-row justify-content-around">
-            <div className="col fw-bold fs-4 text-black">
-              <label>Thuốc</label>
-            </div>
-            <div className="row gap-3">
-              <form className="col" onChange={changeFormHandler} ref={formRef}>
-                <div className="row gap-3" style={{ width: "fit-content" }}>
-                  <div className="col input-group flex-nowrap">
-                    <span
-                      className="input-group-text"
-                      id="addon-wrapping"
-                      style={{ backgroundColor: "white" }}
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="16"
-                        height="16"
-                        fill="currentColor"
-                        className="bi bi-search"
-                        viewBox="0 0 16 16"
+            <div className=" w-100 d-flex flex-row">
+              <div className="fw-bold fs-4 title-section">
+                <label>Thuốc</label>
+              </div>
+              <div className="feature-section">
+                <div className="white-section">
+                  <div
+                    className="d-flex flex-row gap-3 float-end position-absolute top-50"
+                    style={{
+                      right: "1rem",
+                      transform: "translate(0%, -50%)",
+                    }}
+                  >
+                    {" "}
+                    <div className="row gap-3">
+                      <form
+                        className="col"
+                        onChange={changeFormHandler}
+                        ref={formRef}
                       >
-                        <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
-                      </svg>
-                    </span>
-                    <input
-                      name="name"
-                      type="search"
-                      className="form-control"
-                      placeholder="Tên thuốc"
-                      aria-describedby="addon-wrapping"
-                    />
-                  </div>
-                  <div className="col input-group flex-nowrap">
-                    <select
-                      className="form-select"
-                      name="state"
-                      defaultValue={1}
-                    >
-                      <option value="1">Còn bán</option>
-                      <option value="2">Ngưng bán</option>
-                      <option value="3">Tất cả</option>
-                    </select>
+                        <div
+                          className="row gap-3"
+                          style={{ width: "fit-content" }}
+                        >
+                          <div className="col input-group flex-nowrap">
+                            <span
+                              className="input-group-text"
+                              id="addon-wrapping"
+                              style={{ backgroundColor: "white" }}
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="16"
+                                height="16"
+                                fill="currentColor"
+                                className="bi bi-search"
+                                viewBox="0 0 16 16"
+                              >
+                                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
+                              </svg>
+                            </span>
+                            <input
+                              name="name"
+                              type="search"
+                              className="form-control"
+                              placeholder="Tên thuốc"
+                              aria-describedby="addon-wrapping"
+                            />
+                          </div>
+                          <div className="col input-group flex-nowrap">
+                            <select
+                              className="form-select"
+                              name="state"
+                              defaultValue={1}
+                            >
+                              <option value="1">Còn bán</option>
+                              <option value="2">Ngưng bán</option>
+                              <option value="3">Tất cả</option>
+                            </select>
+                          </div>
+                        </div>
+                      </form>
+                      <div style={{ width: "fit-content" }}>
+                        <MainDialog
+                          ref={dialogRef}
+                          addFn={createNewDrug}
+                          editFn={fetchDrugById}
+                          onEdit={setData}
+                          keyQuery={["drugs"]}
+                          addButton={
+                            permission?.includes("CDrug") ? true : false
+                          }
+                        >
+                          <div className="row gap-3">
+                            <div className="col">
+                              <label
+                                htmlFor="drugname"
+                                className="col-form-label  text-dark"
+                              >
+                                Tên thuốc
+                              </label>
+                              <input
+                                type="text"
+                                className="form-control"
+                                id="drugname"
+                                name="drugname"
+                                defaultValue={dialogState.data?.drugName ?? ""}
+                                disabled={!dialogState.isEditable}
+                                required
+                              />
+                            </div>
+                            <div className="col">
+                              <label
+                                htmlFor="note"
+                                className="col-form-label  text-dark"
+                              >
+                                Hoạt chất
+                              </label>
+                              <input
+                                className="form-control"
+                                id="note"
+                                name="note"
+                                defaultValue={dialogState.data?.note ?? ""}
+                                disabled={!dialogState.isEditable}
+                                required
+                              ></input>
+                            </div>
+                          </div>
+                          <div className="row gap-3">
+                            <div className="col">
+                              <label
+                                htmlFor="count"
+                                className="col-form-label  text-dark"
+                              >
+                                Số lượng
+                              </label>
+                              <input
+                                className="form-control"
+                                id="count"
+                                name="count"
+                                defaultValue={dialogState.data?.count ?? ""}
+                                disabled={!dialogState.isEditable}
+                                required
+                              ></input>
+                            </div>
+                            <div className="col">
+                              <label
+                                htmlFor="diagnostic"
+                                className="col-form-label fw-bold  text-dark"
+                              >
+                                Đơn vị
+                              </label>
+                              <select
+                                className="form-select"
+                                name="unitid"
+                                id="unitid"
+                                required
+                                disabled={!dialogState.isEditable}
+                                defaultValue={dialogState.data?.unitId ?? ""}
+                              >
+                                {unitState &&
+                                  unitState.map((unit) => {
+                                    return (
+                                      <option key={unit.id} value={unit.id}>
+                                        {unit.unitName}
+                                      </option>
+                                    );
+                                  })}
+                              </select>
+                            </div>
+                            <div className="col">
+                              <label
+                                htmlFor="price"
+                                className="col-form-label  text-dark"
+                              >
+                                Giá bán
+                              </label>
+                              <input
+                                className="form-control"
+                                id="price"
+                                name="price"
+                                defaultValue={dialogState.data?.price ?? ""}
+                                disabled={!dialogState.isEditable}
+                                required
+                              ></input>
+                            </div>
+                          </div>
+                        </MainDialog>
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </form>
-              <div style={{ width: "fit-content" }}>
-                <MainDialog
-                  ref={dialogRef}
-                  addFn={createNewDrug}
-                  editFn={fetchDrugById}
-                  onEdit={setData}
-                  keyQuery={["drugs"]}
-                  addButton={permission?.includes("CDrug") ? true : false}
-                >
-                  <div className="row gap-3">
-                    <div className="col">
-                      <label
-                        htmlFor="drugname"
-                        className="col-form-label  text-dark"
-                      >
-                        Tên thuốc
-                      </label>
-                      <input
-                        type="text"
-                        className="form-control"
-                        id="drugname"
-                        name="drugname"
-                        defaultValue={dialogState.data?.drugName ?? ""}
-                        disabled={!dialogState.isEditable}
-                        required
-                      />
-                    </div>
-                    <div className="col">
-                      <label
-                        htmlFor="note"
-                        className="col-form-label  text-dark"
-                      >
-                        Hoạt chất
-                      </label>
-                      <input
-                        className="form-control"
-                        id="note"
-                        name="note"
-                        defaultValue={dialogState.data?.note ?? ""}
-                        disabled={!dialogState.isEditable}
-                        required
-                      ></input>
-                    </div>
-                  </div>
-                  <div className="row gap-3">
-                    <div className="col">
-                      <label
-                        htmlFor="count"
-                        className="col-form-label  text-dark"
-                      >
-                        Số lượng
-                      </label>
-                      <input
-                        className="form-control"
-                        id="count"
-                        name="count"
-                        defaultValue={dialogState.data?.count ?? ""}
-                        disabled={!dialogState.isEditable}
-                        required
-                      ></input>
-                    </div>
-                    <div className="col">
-                      <label
-                        htmlFor="diagnostic"
-                        className="col-form-label fw-bold  text-dark"
-                      >
-                        Đơn vị
-                      </label>
-                      <select
-                        className="form-select"
-                        name="unitid"
-                        id="unitid"
-                        required
-                        disabled={!dialogState.isEditable}
-                        defaultValue={dialogState.data?.unitId ?? ""}
-                      >
-                        {unitState &&
-                          unitState.map((unit) => {
-                            return (
-                              <option key={unit.id} value={unit.id}>
-                                {unit.unitName}
-                              </option>
-                            );
-                          })}
-                      </select>
-                    </div>
-                    <div className="col">
-                      <label
-                        htmlFor="price"
-                        className="col-form-label  text-dark"
-                      >
-                        Giá bán
-                      </label>
-                      <input
-                        className="form-control"
-                        id="price"
-                        name="price"
-                        defaultValue={dialogState.data?.price ?? ""}
-                        disabled={!dialogState.isEditable}
-                        required
-                      ></input>
-                    </div>
-                  </div>
-                </MainDialog>
               </div>
             </div>
           </div>
-          <div className=" w-100 h-100 overflow-hidden d-flex flex-column">
+
+          <div
+            className=" w-100 h-100 overflow-hidden d-flex flex-column"
+            style={{ padding: "0rem 1rem 1rem 1rem" }}
+          >
             <TableHeader>
               <div className="text-start" style={{ width: "5%" }}>
                 STT
@@ -453,7 +481,7 @@ function DrugTab() {
                                   height="16"
                                   fill="currentColor"
                                   className="bi bi-arrow-down-short position-absolute top-50 translate-middle"
-                                  style={{marginTop:"-3px"}}
+                                  style={{ marginTop: "-3px" }}
                                   viewBox="0 0 16 16"
                                 >
                                   <path d="M8 4a.5.5 0 0 1 .5.5v5.793l2.146-2.147a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 1 1 .708-.708L7.5 10.293V4.5A.5.5 0 0 1 8 4" />
@@ -463,7 +491,7 @@ function DrugTab() {
                                   width="16"
                                   height="16"
                                   fill="currentColor"
-                                  style={{marginTop:"1px"}}
+                                  style={{ marginTop: "1px" }}
                                   className="bi bi-inbox-fill position-absolute top-50 translate-middle"
                                   viewBox="0 0 16 16"
                                 >

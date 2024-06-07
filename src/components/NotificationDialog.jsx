@@ -69,7 +69,7 @@ const NotificationDialog = forwardRef(function NotificationDialog(
         type="button"
         className="btn button-outline  shadow-sm"
         onClick={closeHandler}
-        style={{ minWidth: "70px" }}
+        style={{ minWidth: "100px" }}
       >
         Hủy
       </button>
@@ -77,7 +77,7 @@ const NotificationDialog = forwardRef(function NotificationDialog(
         type="button"
         className="btn button  shadow-sm"
         onClick={deleteHandler}
-        style={{ minWidth: "70px" }}
+        style={{ minWidth: "100px" }}
       >
         Xác nhận
       </button>

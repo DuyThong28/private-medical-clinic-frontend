@@ -72,7 +72,7 @@ function LoginPage() {
     <>
       <NotificationDialog ref={notiDialogRef} />
       <div
-        className="d-flex flex-row h-100 w-100"
+        className="d-flex flex-row h-100 w-100 "
         style={{ background: "#ffffff" }}
       >
         <div
@@ -170,7 +170,7 @@ function LoginPage() {
                               required
                               style={{
                                 boxShadow:
-                                  "6px 6px 54px 0px rgba(0, 0, 0, 0.08)",
+                                  "rgb(14 111 253 / 10%) 4px 4px 40px 0px",
                               }}
                             ></input>
                           </div>
@@ -180,7 +180,7 @@ function LoginPage() {
                           name={"password"}
                           label={"Mật khẩu"}
                           style={{
-                            boxShadow: "6px 6px 54px 0px rgba(0, 0, 0, 0.05)",
+                            boxShadow: "rgb(14 111 253 / 10%) 4px 4px 40px 0px",
                           }}
                         />
                         <div className="forgot-password">

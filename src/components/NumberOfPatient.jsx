@@ -91,8 +91,8 @@ function NumberOfPatient() {
   const [dataFemale, setDataFemale] = useState([]);
 
   useEffect(() => {
-    const dataMale = [];
-    const dataFemale = [];
+    const dataMaleInner = [];
+    const dataFemaleInner = [];
     for (let i = 0; i < 7; ++i) {
       const cloneDay = new Date(range.from);
       // new Date(preRange.current.from);
@@ -113,16 +113,16 @@ function NumberOfPatient() {
           finalDayData.push(item);
         }
       });
-      dataMale.push(
+      dataMaleInner.push(
         finalDayData.filter((item) => item?.patient?.gender === "Nam").length
       );
-      dataFemale.push(
+      dataFemaleInner.push(
         finalDayData.filter((item) => item?.patient?.gender === "Nữ").length
       );
     }
-    setDataMale(dataMale);
-    setDataFemale(dataFemale);
-  }, [appointmentListPatientWeek]);
+    setDataMale(dataMaleInner);
+    setDataFemale(dataFemaleInner);
+  }, [appointmentListPatientWeek, range.from]);
 
   const dataOfChart = {
     labels: ["Hai", "Ba", "Tư", "Năm", "Sáu", "Bảy", "CN"],
@@ -182,7 +182,6 @@ function NumberOfPatient() {
   const toggleModal = () => {
     setIsShowModal(!isShowModal);
   };
-
 
   useEffect(() => {
     queryClient.invalidateQueries({ queryKey: ["appointmentListWeek"] });

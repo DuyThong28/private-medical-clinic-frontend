@@ -86,28 +86,46 @@ function PatientsPage() {
       <InvoiceDetail ref={dialogRef} />
       <NotificationDialog ref={notiDialogRef} keyQuery={["bills"]} />
       <div className="h-100 w-100 p-3">
-        <Card>
+        <Card className="w-100 h-100  rounded-3 bg-white">
           <div className="w-100 h-100 d-flex flex-column gap-3">
             <div className=" w-100  d-flex flex-row justify-content-around">
-              <div className="col fw-bold fs-4 text-black">
-                <label>Hóa đơn</label>
+              <div className=" w-100 d-flex flex-row">
+                <div className="fw-bold fs-4 title-section">
+                  <label>Hóa đơn</label>
+                </div>
+                <div className="feature-section">
+                  <div className="white-section">
+                    <div
+                      className="d-flex flex-row gap-3 float-end position-absolute top-50"
+                      style={{
+                        right: "1rem",
+                        transform: "translate(0%, -50%)",
+                      }}
+                    >
+                      {" "}
+                      <form
+                        ref={searchRef}
+                        onChange={searchHandler}
+                        style={{ width: "fit-content" }}
+                      >
+                        <input
+                          type="date"
+                          defaultValue={inputToDayFormat()}
+                          name="date"
+                          className="form-control"
+                          aria-describedby="addon-wrapping"
+                        />
+                      </form>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <form
-                ref={searchRef}
-                onChange={searchHandler}
-                style={{ width: "fit-content" }}
-              >
-                <input
-                  type="date"
-                  defaultValue={inputToDayFormat()}
-                  name="date"
-                  className="form-control"
-                  aria-describedby="addon-wrapping"
-                />
-              </form>
             </div>
 
-            <div className=" w-100 h-100 overflow-hidden d-flex flex-column">
+            <div
+              className=" w-100 h-100 overflow-hidden d-flex flex-column"
+              style={{ padding: "0rem 1rem 1rem 1rem" }}
+            >
               <TableHeader>
                 <div className="text-start" style={{ width: "5%" }}>
                   STT
