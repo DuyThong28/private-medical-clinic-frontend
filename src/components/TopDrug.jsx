@@ -175,7 +175,6 @@ function TopDrug() {
     setYear(month.year);
   };
 
-
   useEffect(() => {
     handleTopDrug();
   }, [month, range2, selectedOption]);
@@ -283,14 +282,15 @@ function TopDrug() {
 
       <div className="table-top-drug overflow-hidden h-100 w-100">
         <div
-          className="row list-group-item  list-group-item-action d-flex flex-row w-100 fw-bold"
+          className="row list-group-item  list-group-item-action d-flex flex-row w-100"
           style={{
             padding: "2px 15px",
-            color: "#36383A",
-            background: "#F1F4F9",
+            color: "#000000",
+            background: "#d8e8ff",
             border: "1px solid #F1F4F9",
             borderRadius: "6px",
             zIndex: 0,
+            fontWeight: 500,
           }}
         >
           <div className="text-start" style={{ width: "5%" }}>

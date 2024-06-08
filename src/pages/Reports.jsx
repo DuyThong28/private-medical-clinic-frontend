@@ -32,7 +32,7 @@ function ReportsPage() {
         {page != 0 ? (
           <label
             className={cx("payment") + " nav-link"}
-            style={{ color: "#1B59F8" }}
+            style={{ color: "#0048b2" }}
             onClick={() => handleSetPage(0)}
           >
             Doanh thu
@@ -48,7 +48,7 @@ function ReportsPage() {
         {page != 1 ? (
           <label
             className={cx("medicine") + " nav-link"}
-            style={{ color: "#1B59F8" }}
+            style={{ color: "#0048b2" }}
             onClick={() => handleSetPage(1)}
           >
             Thuốc

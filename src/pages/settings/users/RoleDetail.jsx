@@ -325,7 +325,7 @@ function RoleDetail() {
                   <div className="d-flex gap-3 mt-3 justify-content-center">
                     <button
                       type="button"
-                      className="btn btn-outline-secondary shadow-sm"
+                      className="btn btn-secondary shadow-sm"
                       style={{ minWidth: "100px" }}
                       onClick={cancelHandler}
                     >

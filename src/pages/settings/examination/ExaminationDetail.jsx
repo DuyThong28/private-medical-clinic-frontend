@@ -164,8 +164,8 @@ export default function ExaminationDetail() {
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
-             width="25"
-                height="25"
+              width="25"
+              height="25"
               fill="currentColor"
               className="bi bi-arrow-left-circle-fill"
               viewBox="0 0 16 16"
@@ -184,75 +184,91 @@ export default function ExaminationDetail() {
         >
           <div style={{ width: "40%" }}>
             <div className="row">
-              <label className="col-form-label fw-bold">
+              <label className="col-form-label fw-bold text-dark">
                 THÔNG TIN BỆNH NHÂN
               </label>
             </div>
-            <div className="row gap-3">
-              <MainInput
-                name={"patientid"}
-                isEditable={false}
-                defaultValue={
-                  appointmentListPatientData &&
-                  appointmentListPatientData.patientId
-                }
-                label={"Mã bệnh nhân"}
-              />
-              <MainInput
-                name={"fullname"}
-                isEditable={false}
-                defaultValue={
-                  appointmentListPatientData &&
-                  appointmentListPatientData.patient.fullName
-                }
-                label={"Họ và tên"}
-              />
+            <div
+              style={{
+                background: "#d8e8ff",
+                borderRadius: "8px",
+                padding: "0.5rem 1rem 0rem 1rem",
+              }}
+            >
+              <div className="row gap-3">
+                <MainInput
+                  name={"patientid"}
+                  isEditable={false}
+                  defaultValue={
+                    appointmentListPatientData &&
+                    appointmentListPatientData.patientId
+                  }
+                  label={"Mã bệnh nhân"}
+                />
+                <MainInput
+                  name={"fullname"}
+                  isEditable={false}
+                  defaultValue={
+                    appointmentListPatientData &&
+                    appointmentListPatientData.patient.fullName
+                  }
+                  label={"Họ và tên"}
+                />
 
-              <MainInput
-                name={"phonenumber"}
-                isEditable={false}
-                defaultValue={
-                  appointmentListPatientData &&
-                  appointmentListPatientData.patient.phoneNumber
-                }
-                label={"Số điện thoại"}
-              />
+                <MainInput
+                  name={"phonenumber"}
+                  isEditable={false}
+                  defaultValue={
+                    appointmentListPatientData &&
+                    appointmentListPatientData.patient.phoneNumber
+                  }
+                  label={"Số điện thoại"}
+                />
+              </div>
+              <div className="row gap-3">
+                <MainInput
+                  name={"gender"}
+                  isEditable={false}
+                  defaultValue={
+                    appointmentListPatientData &&
+                    appointmentListPatientData.patient.gender
+                  }
+                  label={"Giới tính"}
+                />
+                <MainInput
+                  name={"birthyear"}
+                  isEditable={false}
+                  defaultValue={
+                    appointmentListPatientData &&
+                    appointmentListPatientData.patient.birthYear
+                  }
+                  label={"Năm sinh"}
+                />
+                <MainInput
+                  name={"address"}
+                  isEditable={false}
+                  defaultValue={
+                    appointmentListPatientData &&
+                    appointmentListPatientData.patient.address
+                  }
+                  label={"Địa chỉ"}
+                />
+              </div>
             </div>
-            <div className="row gap-3">
-              <MainInput
-                name={"gender"}
-                isEditable={false}
-                defaultValue={
-                  appointmentListPatientData &&
-                  appointmentListPatientData.patient.gender
-                }
-                label={"Giới tính"}
-              />
-              <MainInput
-                name={"birthyear"}
-                isEditable={false}
-                defaultValue={
-                  appointmentListPatientData &&
-                  appointmentListPatientData.patient.birthYear
-                }
-                label={"Năm sinh"}
-              />
-              <MainInput
-                name={"address"}
-                isEditable={false}
-                defaultValue={
-                  appointmentListPatientData &&
-                  appointmentListPatientData.patient.address
-                }
-                label={"Địa chỉ"}
-              />
-            </div>
+
             <div className="row">
-              <label className="col-form-label fw-bold">
+              <label className="col-form-label fw-bold text-dark">
                 THÔNG TIN CA KHÁM
               </label>
             </div>
-            <div className="row gap-3">
+            <div
+              className="row gap-3"
+              style={{
+                background: "#d8e8ff",
+                borderRadius: "8px",
+                padding: "0.5rem 1rem 0rem 1rem",
+              }}
+            >
               <MainInput
                 name={"appointmentid"}
                 isEditable={false}

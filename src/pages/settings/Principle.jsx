@@ -152,7 +152,6 @@ function PrincipleView() {
     throw error;
   }
 
-
   return (
     <div className="col h-100">
       <NotificationDialog ref={notiDialogRef} keyQuery={[]} />
@@ -160,6 +159,15 @@ function PrincipleView() {
         className="h-100 position-relative"
         style={{ background: "#F5F6FA" }}
       >
+        <div
+          className="position-absolute h"
+          style={{
+            height: "35%",
+            width: "100%",
+            background: "linear-gradient(90deg, #0048b2, #3b8aff 100%)",
+            bottom: 0,
+          }}
+        ></div>
         <div className="position-absolute top-50 mt-50 start-50 translate-middle">
           <Card>
             <div className="col fw-bold fs-4 text-center text-black">

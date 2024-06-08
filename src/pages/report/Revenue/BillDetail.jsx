@@ -84,7 +84,7 @@ function BillDetail({
         <div className="linee"></div>
         <div className="body">
           <div className=" w-100 h-100 overflow-hidden d-flex flex-column gap-3">
-            <TableHeader>
+            <TableHeader  className="table-header-blue">
               <div className="text-start" style={{ width: "10%" }}>
                 STT
               </div>

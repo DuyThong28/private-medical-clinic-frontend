@@ -29,8 +29,8 @@ function PasswordView() {
 
   const jwtToken = Cookies.get("refreshToken");
   let userData = {};
-  if(jwtToken!=undefined){
-    userData = jwtDecode(jwtToken)
+  if (jwtToken != undefined) {
+    userData = jwtDecode(jwtToken);
   }
 
   const changePasswordMutate = useMutation({
@@ -139,6 +139,15 @@ function PasswordView() {
         className="col h-100 position-relative"
         style={{ background: "#F5F6FA" }}
       >
+        <div
+          className="position-absolute h"
+          style={{
+            height: "35%",
+            width: "100%",
+            background: "linear-gradient(90deg, #0048b2, #3b8aff 100%)",
+            bottom: 0,
+          }}
+        ></div>
         <div className="col h-100">
           <div className="h-100 position-relative">
             <div
@@ -197,7 +206,7 @@ function PasswordView() {
                                 boxShadow:
                                   "6px 6px 54px 0px rgba(0, 0, 0, 0.08)",
                               }}
-                              value={userData?.role|| ""}
+                              value={userData?.role || ""}
                             ></input>
                           </div>
                         </>

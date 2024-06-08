@@ -71,7 +71,7 @@ export default function PermissionArea({ data, onChange, disabled }) {
   }
 
   return dataState !== undefined ? (
-    <div style={{ margin: "1rem" }}>
+    <div className="permisson-container" style={{ margin: "1rem" }}>
       <div className="row form-check">
         <input
           type="checkbox"

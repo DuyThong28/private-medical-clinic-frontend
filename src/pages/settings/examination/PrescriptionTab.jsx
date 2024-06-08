@@ -124,7 +124,7 @@ export default function PreScriptionTab({
   return (
     <div className="w-100 h-100 d-flex flex-column">
       {!recordId && <SearchDrugInput />}
-      <TableHeader>
+      <TableHeader className="table-header-blue">
         <div className="text-start" style={{ width: "5%" }}>
           STT
         </div>
