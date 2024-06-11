@@ -205,6 +205,7 @@ function PatientsPage() {
                                 className="form-control"
                                 id="phonenumber"
                                 name="phonenumber"
+                                type="number"
                                 defaultValue={
                                   dialogState.data?.phoneNumber ?? ""
                                 }
@@ -244,6 +245,7 @@ function PatientsPage() {
                                 className="form-control"
                                 id="birthyear"
                                 name="birthyear"
+                                type="number"
                                 defaultValue={dialogState.data?.birthYear ?? ""}
                                 disabled={!dialogState.isEditable || false}
                                 required

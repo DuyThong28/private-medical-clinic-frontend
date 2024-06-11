@@ -380,7 +380,7 @@ const BookingModal = forwardRef(function BookingModal(
                       className="form-control"
                       id="phonenumber"
                       name="phonenumber"
-                      type="tel"
+                      type="number"
                       value={dialogState.data?.phoneNumber ?? ""}
                       readOnly={
                         dialogState.data?.patientId || !dialogState.isEditable

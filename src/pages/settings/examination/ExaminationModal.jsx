@@ -329,7 +329,7 @@ const ExaminationModal = forwardRef(function ExaminationModal(
                       className="form-control"
                       id="phonenumber"
                       name="phonenumber"
-                      type="tel"
+                      type="number"
                       value={dialogState.data?.phoneNumber ?? ""}
                       readOnly={
                         dialogState.data?.patientId || !dialogState.isEditable

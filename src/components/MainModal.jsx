@@ -312,6 +312,7 @@ const MainModal = forwardRef(function MainModal(
       }
     }
   }
+  
   const switchElement = (
     <div
       className="form-check form-switch mt-3 mb-1"

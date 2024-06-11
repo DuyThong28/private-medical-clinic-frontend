@@ -68,7 +68,7 @@ export async function addPatient(patientData) {
   const existedPatient = await findExistedPatientByPhoneNumber({ phoneNumber });
 
   if (patientID) {
-    if (existedPatient !== null && existedPatient.fullName !== fullName) {
+    if (existedPatient !== null && existedPatient.id != patientID) {
       const error = new Error(
         "Số điện thoại đã tồn tại vui lòng chọn số điện thoại khác"
       );

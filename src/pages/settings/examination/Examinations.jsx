@@ -151,10 +151,13 @@ function ExaminationsPage() {
       <InvoiceDetail ref={invoiceRef} />
       <NotificationDialog ref={notiDialogRef} keyQuery={["appointmentList"]} />
       <div className="h-100 w-100 p-3">
-        <Card   className="w-100 h-100  rounded-3 bg-white">
+        <Card className="w-100 h-100  rounded-3 bg-white">
           <div className="w-100 h-100 d-flex flex-column gap-3">
             <ExaminationModal ref={modalRef} setSearchData={setSearchData} />
-            <div className=" w-100 h-100 overflow-hidden d-flex flex-column"        style={{ padding: "0rem 1rem 1rem 1rem" }}>
+            <div
+              className=" w-100 h-100 overflow-hidden d-flex flex-column"
+              style={{ padding: "0rem 1rem 1rem 1rem" }}
+            >
               <TableHeader>
                 <div className="text-start" style={{ width: "5%" }}>
                   STT

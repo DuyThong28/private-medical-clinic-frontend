@@ -84,6 +84,7 @@ function PasswordView() {
       return {
         ...prevState,
         isEditable: true,
+        isSubmitable: false,
       };
     });
   }

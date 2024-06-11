@@ -259,6 +259,7 @@ function DrugTab() {
                                 className="form-control"
                                 id="count"
                                 name="count"
+                                type="number"
                                 defaultValue={dialogState.data?.count ?? ""}
                                 disabled={!dialogState.isEditable}
                                 required
@@ -300,6 +301,7 @@ function DrugTab() {
                                 className="form-control"
                                 id="price"
                                 name="price"
+                                type="number"
                                 defaultValue={dialogState.data?.price ?? ""}
                                 disabled={!dialogState.isEditable}
                                 required
