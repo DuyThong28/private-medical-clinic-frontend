@@ -107,7 +107,9 @@ const RescordHistoryModal = forwardRef(function RescordHistoryModal(
             <MainInput
               name={"patientid"}
               isEditable={dialogState.isEditable}
-              defaultValue={appointmentRecordData && appointmentRecordData.id}
+              defaultValue={
+                appointmentRecordData && appointmentRecordData.patient.id
+              }
               label={"Mã bệnh nhân"}
             />
             <MainInput

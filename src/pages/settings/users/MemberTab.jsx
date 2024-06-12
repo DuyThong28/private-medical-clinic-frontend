@@ -20,6 +20,7 @@ import { resetPasswordById } from "../../../services/auth";
 import useAuth from "../../../hooks/useAuth";
 import { queryClient } from "../../../main";
 import { useRouteError } from "react-router";
+import { normalizeString } from "../../../util/compare";
 
 function MemberTab() {
   const { auth } = useAuth();
@@ -41,11 +42,14 @@ function MemberTab() {
     queryKey: ["members"],
     queryFn: async () => {
       const data = await fetchAllUsers();
+      const normalizedTextSearch = normalizeString(searchState.textSearch);
+      const searchWords = normalizedTextSearch.split(" ");
 
       const searchData = data.filter(
         (item) =>
-          item?.fullName.toLowerCase().includes(searchState.textSearch) &&
-          checkSearchState({ state: searchState.state, user: item })
+          searchWords.every((word) =>
+            normalizeString(item?.fullName).includes(word)
+          ) && checkSearchState({ state: searchState.state, user: item })
       );
 
       return searchData;

@@ -20,6 +20,7 @@ import { formatNumber } from "../../../util/money";
 import useAuth from "../../../hooks/useAuth";
 import { queryClient } from "../../../main";
 import { useRouteError } from "react-router";
+import { normalizeString } from "../../../util/compare";
 
 function DrugTab() {
   const { auth } = useAuth();
@@ -45,11 +46,14 @@ function DrugTab() {
     queryKey: ["drugs"],
     queryFn: async () => {
       const data = await fetchAllDrugs();
+      const normalizedTextSearch = normalizeString(searchState.textSearch);
+      const searchWords = normalizedTextSearch.split(" ");
 
       const searchData = data.filter(
         (item) =>
-          item?.drugName.toLowerCase().includes(searchState.textSearch) &&
-          checkSearchState({ state: searchState.state, drug: item })
+          searchWords.every((word) =>
+            normalizeString(item?.drugName).includes(word)
+          ) && checkSearchState({ state: searchState.state, drug: item })
       );
 
       return searchData;

@@ -5,6 +5,7 @@ import { fetchAllUnit } from "../../../services/units";
 import { fetchAllUsage } from "../../../services/usage";
 import { fetchAllDrugs } from "../../../services/drugs";
 import { useQuery } from "@tanstack/react-query";
+import { normalizeString } from "../../../util/compare";
 
 export default function SearchDrugInput() {
   const dispatch = useDispatch();
@@ -25,7 +26,9 @@ export default function SearchDrugInput() {
     queryKey: ["drugs"],
     queryFn: async () => {
       const data = await fetchAllDrugs();
-      const activeDrugs = data.filter((item) => item.isActive === 1);
+      const activeDrugs = data.filter(
+        (item) => item.isActive === 1 && item.count > 0
+      );
       return activeDrugs;
     },
   });
@@ -46,9 +49,11 @@ export default function SearchDrugInput() {
       setDrugs(() => []);
       return;
     }
+    const normalizedTextSearch = normalizeString(textSearch);
+    const searchWords = normalizedTextSearch.split(" ");
 
     const drugResult = drugState.filter((drug) =>
-      drug.drugName.toLowerCase().includes(textSearch)
+      searchWords.every((word) => normalizeString(drug.drugName).includes(word))
     );
     setDrugs(() => drugResult);
   }

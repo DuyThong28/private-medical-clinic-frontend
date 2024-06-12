@@ -25,6 +25,7 @@ import {
   getBookingAppointmentListByDate,
 } from "../../services/booking";
 import { useLocation, useRouteError } from "react-router";
+import { normalizeString } from "../../util/compare";
 
 function BookingPage() {
   const modalRef = useRef();
@@ -76,10 +77,15 @@ function BookingPage() {
       } else {
         bookingDateDate = await getAllBookingAppointmentList();
       }
+
+      const normalizedFullName = normalizeString(examState.name);
+      const searchWords = normalizedFullName.split(" ");
+
       const searchData = bookingDateDate.filter(
         (item) =>
-          item?.fullName.toLowerCase().includes(examState.name) &&
-          checkExamState(examState.state, item?.status)
+          searchWords.every((word) =>
+            normalizeString(item?.fullName).includes(word)
+          ) && checkExamState(examState.state, item?.status)
       );
       return searchData;
     },

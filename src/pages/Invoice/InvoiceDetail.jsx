@@ -365,6 +365,13 @@ const InvoiceDetail = forwardRef(function InvoiceDetail({ children }, ref) {
       ref={contentToPrint}
       className="d-flex flex-column h-100 bg-white position-relative print-content"
     >
+      <style type="text/css" media="print">
+        {
+          "\
+  @page { size: 210mm 297mm; }\
+"
+        }
+      </style>
       <img
         src={billtop}
         className="w-100 position-absolute"

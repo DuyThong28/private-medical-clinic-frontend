@@ -16,6 +16,7 @@ import NotificationDialog, {
 } from "../../../components/NotificationDialog";
 import useAuth from "../../../hooks/useAuth";
 import { useRouteError } from "react-router";
+import { normalizeString } from "../../../util/compare";
 
 function DiseasesTab() {
   const { auth } = useAuth();
@@ -50,8 +51,13 @@ function DiseasesTab() {
 
   function searchHandler(event) {
     const textSearch = event.target.value.toLowerCase().trim();
+    const normalizedTextSearch = normalizeString(textSearch);
+    const searchWords = normalizedTextSearch.split(" ");
+
     const result = diseases.filter((disease) =>
-      disease.diseaseName.toLowerCase().includes(textSearch)
+      searchWords.every((word) =>
+        normalizeString(disease.diseaseName).includes(word)
+      )
     );
     setListState(() => result);
   }

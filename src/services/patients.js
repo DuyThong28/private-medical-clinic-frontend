@@ -1,3 +1,5 @@
+import { normalizeString } from "../util/compare";
+
 export async function fetchAllPatients({ name, phoneNumber }) {
   const fullName = name.toLowerCase().trim();
   const phone = phoneNumber.trim();
@@ -16,10 +18,14 @@ export async function fetchAllPatients({ name, phoneNumber }) {
   const resData = await response.json();
   let patients;
   if (fullName !== "" || phone !== "") {
+    const normalizedFullName = normalizeString(fullName);
+    const searchWords = normalizedFullName.split(" ");
     patients = resData.data.filter(
       (patient) =>
-        patient.fullName.toLowerCase().includes(fullName) &&
-        patient.phoneNumber.toLowerCase().includes(phone)
+        patient.phoneNumber.toLowerCase().includes(phone) &&
+        searchWords.every((word) =>
+          normalizeString(patient.fullName).includes(word)
+        )
     );
   } else {
     patients = resData.data;

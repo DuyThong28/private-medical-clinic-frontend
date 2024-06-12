@@ -16,6 +16,7 @@ import NotificationDialog, {
 } from "../../../components/NotificationDialog";
 import useAuth from "../../../hooks/useAuth";
 import { useRouteError } from "react-router";
+import { normalizeString } from "../../../util/compare";
 
 function UsagesTab() {
   const { auth } = useAuth();
@@ -50,8 +51,13 @@ function UsagesTab() {
 
   function searchHandler(event) {
     const textSearch = event.target.value.toLowerCase().trim();
+    const normalizedTextSearch = normalizeString(textSearch);
+    const searchWords = normalizedTextSearch.split(" ");
+
     const result = usages.filter((usage) =>
-      usage.usageDes.toLowerCase().includes(textSearch)
+      searchWords.every((word) =>
+        normalizeString(usage.usageDes).includes(word)
+      )
     );
     setListState(() => result);
   }

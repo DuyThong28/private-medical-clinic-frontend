@@ -13,7 +13,7 @@ import {
   fetchAllAppointmentListPatients,
   moveAppointmentListPatientToTheEnd,
 } from "../../../services/appointmentListPatients";
-import { convertDate, inputToDayFormat } from "../../../util/date";
+import { convertDate, inputToDayFormat, localFormat } from "../../../util/date";
 import { prescriptionAction } from "../../../store/prescription";
 import { fetchPatientById } from "../../../services/patients";
 import { fetchAllAppointmentListById } from "../../../services/appointmentList";
@@ -25,6 +25,11 @@ import NotificationDialog, {
 } from "../../../components/NotificationDialog";
 import useAuth from "../../../hooks/useAuth";
 import { queryClient } from "../../../main";
+import logo from "../../../assets/logo.svg";
+import billtop from "../../../assets/billtop.svg";
+import billbottom from "../../../assets/billbottom.svg";
+import { useReactToPrint } from "react-to-print";
+import { normalizeString } from "../../../util/compare";
 
 function ExaminationsPage() {
   const navigate = useNavigate();
@@ -39,6 +44,24 @@ function ExaminationsPage() {
     name: "",
     date: inputToDayFormat(),
     state: 1,
+  });
+
+  const titleRef = useRef("STT");
+  const [patientInfo, setPatientInfo] = useState(null);
+  const contentToPrint = useRef(null);
+
+  const handlePrint = useReactToPrint({
+    documentTitle: titleRef.current,
+
+    onBeforePrint: () => {
+      console.log("before printing...");
+    },
+    onAfterPrint: () => {
+      console.log("after printing...");
+      setPatientInfo(() => null);
+      titleRef.current = "STT";
+    },
+    removeAfterPrint: true,
   });
 
   const appointmentListPatientQuery = useQuery({
@@ -59,12 +82,18 @@ function ExaminationsPage() {
           };
         })
       );
+      const normalizedFullName = normalizeString(examState.name);
+      const searchWords = normalizedFullName.split(" ");
+
       const searchData = finalData.filter(
         (item) =>
-          item?.patient.fullName.toLowerCase().includes(examState.name) &&
+          searchWords.every((word) =>
+            normalizeString(item?.patient.fullName).includes(word)
+          ) &&
           compareDates(item?.appointmentList.scheduleDate, examState.date) &&
           checkExamState(examState.state, item?.billId)
       );
+
       return searchData;
     },
   });
@@ -138,6 +167,123 @@ function ExaminationsPage() {
   }
 
   const error = useRouteError();
+
+  const printContent = (
+    <div
+      ref={contentToPrint}
+      className="d-flex flex-column h-100 bg-white position-relative print-content"
+    >
+      <style type="text/css" media="print">
+        {
+          "\
+  @page { size: 70mm 70mm; }\
+"
+        }
+      </style>
+      <img
+        src={billtop}
+        className="w-100 position-absolute"
+        style={{
+          zIndex: "0",
+          opacity: "0.9",
+        }}
+      />
+      <div
+        style={{
+          zIndex: "1",
+          padding: "0.5rem",
+          marginTop: "1.5rem",
+        }}
+      >
+        <div className="d-flex flex-row">
+          <img
+            src={logo}
+            style={{ width: "1.6rem", height: "1.6rem", marginTop: "0.1rem" }}
+          />
+          <div
+            style={{
+              paddingLeft: "0.1rem",
+              fontWeight: "600",
+            }}
+          >
+            <p
+              style={{
+                padding: 0,
+                margin: 0,
+                color: "#022281",
+                fontSize: "0.7rem",
+              }}
+            >
+              PRIVATE MEDICAL CLINIC
+            </p>
+            <p
+              style={{
+                padding: 0,
+                margin: 0,
+                fontSize: "0.5rem",
+                color: "#021d6e",
+              }}
+            >
+              Địa chỉ: Tp.HCM - SDT: 0343 855 777
+            </p>
+          </div>
+        </div>
+        <div className="fw-bold mt-3 text-center">
+          <label style={{ color: "#022281", fontSize: "1rem" }}>
+            SỐ THỨ TỰ
+          </label>
+        </div>
+        <div className="fw-bold mt-0 text-dark text-center">
+          <label style={{ fontSize: "2rem" }}>{patientInfo?.orderNumber}</label>
+        </div>
+        <div
+          className="text-dark  text-center"
+          style={{ fontSize: "0.8rem", fontWeight: "500" }}
+        >{`Họ tên: ${patientInfo?.patient.fullName}`}</div>
+        <div
+          className="text-dark  text-center"
+          style={{ fontSize: "0.8rem", fontWeight: "500" }}
+        >{`Năm sinh: ${patientInfo?.patient.birthYear}`}</div>
+        <div
+          className="text-dark  text-center"
+          style={{ fontSize: "0.8rem", fontWeight: "500" }}
+        >{`Giới tính: ${patientInfo?.patient.gender}`}</div>
+        <div
+          className="text-dark  text-center"
+          style={{ fontSize: "0.8rem", fontWeight: "500" }}
+        >
+          {" "}
+          {`Ngày khám: ${convertDate(
+            patientInfo?.appointmentList?.scheduleDate
+          )}`}
+        </div>
+      </div>
+      <img
+        src={billbottom}
+        className="w-100 position-absolute bottom-0 start-0"
+        style={{
+          zIndex: "0",
+          opacity: "0.8",
+        }}
+      />
+    </div>
+  );
+
+  useEffect(() => {
+    if (patientInfo != null) {
+      handlePrint(null, () => contentToPrint.current);
+    }
+  }, [patientInfo]);
+
+  async function printHandler({ appointmentData }) {
+    if (appointmentData) {
+      titleRef.current = `STT-${appointmentData.orderNumber}-${
+        appointmentData.patient.fullName
+      }-${localFormat(appointmentData.appointmentList.scheduleDate)}`;
+      setPatientInfo(() => appointmentData);
+    }
+  }
+
   if (auth.isPending) {
     return <></>;
   }
@@ -147,6 +293,9 @@ function ExaminationsPage() {
 
   return (
     <>
+      <div style={{ width: "0px", height: "0px", overflow: "hidden" }}>
+        {printContent}
+      </div>
       <RescordHistoryModal ref={payModalRef} />
       <InvoiceDetail ref={invoiceRef} />
       <NotificationDialog ref={notiDialogRef} keyQuery={["appointmentList"]} />
@@ -295,6 +444,17 @@ function ExaminationsPage() {
                               <>
                                 {permission?.includes("UAppointment") && (
                                   <>
+                                    <li
+                                      className="dropdown-item"
+                                      onClick={() =>
+                                        printHandler({
+                                          appointmentData:
+                                            appointmentListPatient,
+                                        })
+                                      }
+                                    >
+                                      <span>In số thứ tự</span>
+                                    </li>
                                     <li
                                       className="dropdown-item"
                                       onClick={() =>
