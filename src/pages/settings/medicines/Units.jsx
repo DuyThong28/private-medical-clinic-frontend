@@ -144,6 +144,7 @@ function UnitsTab() {
                               name="unitname"
                               defaultValue={dialogState.data?.unitName ?? ""}
                               disabled={!dialogState.isEditable}
+                              required
                             />
                           </div>
                         </MainDialog>

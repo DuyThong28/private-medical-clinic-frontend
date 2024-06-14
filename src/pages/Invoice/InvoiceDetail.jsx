@@ -429,7 +429,7 @@ const InvoiceDetail = forwardRef(function InvoiceDetail({ children }, ref) {
           </div>
         </div>
         <div className="fw-bold mt-3 fs-4 text-center">
-          <label style={{ color: "#022281" }}>PHIẾU KHÁM BỆNH</label>
+          <label style={{ color: "#022281" }}>HÓA ĐƠN</label>
         </div>
       </div>
       <div style={{ zIndex: "1", paddingLeft: "2rem", paddingRight: "2rem" }}>

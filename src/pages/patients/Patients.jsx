@@ -206,6 +206,7 @@ function PatientsPage() {
                                 id="phonenumber"
                                 name="phonenumber"
                                 type="number"
+                                step="1"
                                 defaultValue={
                                   dialogState.data?.phoneNumber ?? ""
                                 }
@@ -246,6 +247,8 @@ function PatientsPage() {
                                 id="birthyear"
                                 name="birthyear"
                                 type="number"
+                                step="1"
+
                                 defaultValue={dialogState.data?.birthYear ?? ""}
                                 disabled={!dialogState.isEditable || false}
                                 required

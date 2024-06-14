@@ -178,8 +178,8 @@ const ExaminationModal = forwardRef(function ExaminationModal(
     setSearchData({ name: name, date: date, state: state });
   }
 
-  function changeFormHandler(event) {
-    const formData = new FormData(event.currentTarget);
+  function changeFormHandler(form) {
+    const formData = new FormData(form);
     const data = Object.fromEntries(formData);
     const resData = {
       patientId: data.patientid,
@@ -330,6 +330,8 @@ const ExaminationModal = forwardRef(function ExaminationModal(
                       id="phonenumber"
                       name="phonenumber"
                       type="number"
+                      step="1"
+
                       value={dialogState.data?.phoneNumber ?? ""}
                       readOnly={
                         dialogState.data?.patientId || !dialogState.isEditable
@@ -381,6 +383,8 @@ const ExaminationModal = forwardRef(function ExaminationModal(
                       id="birthyear"
                       name="birthyear"
                       type="number"
+                      step="1"
+
                       value={dialogState.data?.birthYear ?? ""}
                       readOnly={
                         dialogState.data?.patientId || !dialogState.isEditable

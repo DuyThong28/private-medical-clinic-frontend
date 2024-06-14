@@ -113,7 +113,10 @@ const MainModal = forwardRef(function MainModal(
     mutationFn: addFn,
     onSuccess: (data) => {
       if (modalState.current.bookingId != null) {
-        updateBookingMutate.mutate({ id: modalState.current.bookingId, bookingAppointment: data.bookingAppointment });
+        updateBookingMutate.mutate({
+          id: modalState.current.bookingId,
+          bookingAppointment: data.bookingAppointment,
+        });
       }
       queryClient.invalidateQueries({ queryKey: [...keyQuery] });
       modalState.current.isEditable = false;
@@ -249,10 +252,11 @@ const MainModal = forwardRef(function MainModal(
     event.preventDefault();
     const form = event.currentTarget;
 
-    if (form.checkValidity() === false) {
+    if (!validateForm(form)) {
       setValidated(true);
       return;
     }
+
     const formData = new FormData(form);
     const data = Object.fromEntries(formData);
     if (!onSubmit) {
@@ -264,6 +268,34 @@ const MainModal = forwardRef(function MainModal(
     }
     setValidated(false);
   }
+
+  function validateForm(form) {
+    for (const element of form.elements) {
+      if (element.tagName === "INPUT" || element.tagName === "TEXTAREA") {
+        element.value = element.value.trim();
+      }
+    }
+
+    return form.checkValidity();
+  }
+
+  function validateFormTrimStart(form) {
+    for (const element of form.elements) {
+      if (element.tagName === "INPUT" || element.tagName === "TEXTAREA") {
+        element.value = element.value.trimStart();
+      }
+    }
+  }
+
+  function changeFormTrimStartHandler(event){
+    event.preventDefault();
+    const form = event.currentTarget;
+    validateFormTrimStart(form);
+    if(onChange){
+      onChange(form)
+    }
+  }
+
 
   async function checkHandler(event) {
     existingPatientState.current.isUsingExistingData = event.target.checked;
@@ -312,7 +344,7 @@ const MainModal = forwardRef(function MainModal(
       }
     }
   }
-  
+
   const switchElement = (
     <div
       className="form-check form-switch mt-3 mb-1"
@@ -384,7 +416,7 @@ const MainModal = forwardRef(function MainModal(
             {!isPasswordChanged ? (
               <Form
                 ref={formRef}
-                onChange={onChange}
+                onChange={changeFormTrimStartHandler}
                 onSubmit={submitHandler}
                 noValidate
                 validated={validated}

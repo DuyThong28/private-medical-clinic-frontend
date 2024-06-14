@@ -21,7 +21,7 @@ export async function fetchAllDisease() {
 }
 
 export async function createNewDisease(data) {
-  const diseaseName = data.diseasename;
+  const diseaseName = data.diseasename.trim();
   const diseaseID = data?.id ?? null;
   let response;
 

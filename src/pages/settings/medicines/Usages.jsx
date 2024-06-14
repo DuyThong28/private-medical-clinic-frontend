@@ -144,6 +144,7 @@ function UsagesTab() {
                               name="usagedes"
                               defaultValue={dialogState.data?.usageDes ?? ""}
                               disabled={!dialogState.isEditable}
+                              required
                             />
                           </div>
                         </MainDialog>

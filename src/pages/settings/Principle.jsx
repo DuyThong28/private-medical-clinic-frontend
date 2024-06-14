@@ -189,6 +189,8 @@ function PrincipleView() {
                   </label>
                   <input
                     type="number"
+                    step="1"
+                    min="0"
                     id="maxpatients"
                     className="form-control fw-bold"
                     name="maxpatients"
@@ -209,6 +211,8 @@ function PrincipleView() {
                   </label>
                   <input
                     type="number"
+                    step="1"
+                    min="0"
                     id="feeconsult"
                     className="form-control fw-bold"
                     name="feeconsult"

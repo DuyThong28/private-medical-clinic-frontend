@@ -128,6 +128,11 @@ function ForgotPassword() {
     setValidated(false);
   }
 
+  function cancelHandler() {
+    localStorage.removeItem("email");
+    setResetState(resetStep.CHECKMAIL);
+  }
+
   function navigateToLoginHandler() {
     navigate("/");
   }
@@ -258,21 +263,39 @@ function ForgotPassword() {
                         </button>
                       )}
                       {resetState === resetStep.CHECKOTP && (
-                        <button
-                          className="w-100 mb-3 mt-4 btn rounded-3 btn-primary shadow"
-                          type="submit"
-                        >
-                          Xác nhận
-                        </button>
+                        <div className="w-100 mb-3 mt-4 d-flex flex-row gap-3 justify-content-center">
+                          <button
+                            className="col w-100 btn rounded-3 btn-secondary shadow"
+                            type="button"
+                            onClick={cancelHandler}
+                          >
+                            Hủy
+                          </button>
+                          <button
+                            className="col w-100 btn rounded-3 btn-primary shadow"
+                            type="submit"
+                          >
+                            Xác nhận
+                          </button>
+                        </div>
                       )}
                       {resetState === resetStep.RESET && (
-                        <button
-                          className="w-100 mb-3 mt-4 btn rounded-3 btn-primary shadow"
-                          type="submit"
-                          disabled={!dataState.isSubmitable}
-                        >
-                          Xác nhận
-                        </button>
+                        <div className="w-100 mb-3 mt-4 d-flex flex-row gap-3 justify-content-center">
+                          <button
+                            className="col w-100 btn rounded-3 btn-secondary shadow"
+                            type="button"
+                            onClick={cancelHandler}
+                          >
+                            Hủy
+                          </button>
+                          <button
+                            className="col w-100 btn rounded-3 btn-primary shadow"
+                            type="submit"
+                            disabled={!dataState.isSubmitable}
+                          >
+                            Xác nhận
+                          </button>
+                        </div>
                       )}
                     </Form>
                   </div>

@@ -845,7 +845,7 @@ function Revenue() {
           arr.push(appointmentLists[i].id);
         }
       }
-    } else if (option == "Year") {
+    } else if (option == "Year" || option == "Năm") {
       for (let i = 0; i < appointmentLists.length; i++) {
         const tmp = StringToDate(appointmentLists[i].scheduleDate);
         if (1 <= tmp.month && tmp.month <= 12 && tmp.year == date.year) {

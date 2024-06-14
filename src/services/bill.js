@@ -2,8 +2,8 @@ export async function createBill(data) {
   const bill = {
     patientId: data?.patientId,
     appointmentListId: data?.appointmentListId,
-    drugExpense: data?.drugExpense,
-    feeConsult: data?.feeConsult,
+    drugExpense: data?.drugExpense.trim(),
+    feeConsult: data?.feeConsult.trim(),
   };
 
   const billId = data?.id ?? null;

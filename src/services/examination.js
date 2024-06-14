@@ -25,7 +25,7 @@ export async function fetchAllAppointmentRecords() {
 
 export async function createAppointmentRecord(appointmentData) {
   const patientId = appointmentData.patientid;
-  const symtoms = appointmentData.symtoms;
+  const symtoms = appointmentData.symtoms.trim();
   const diseaseId = appointmentData.diseaseid;
   const appoinmentId = appointmentData.appointmentid;
 
@@ -61,7 +61,7 @@ export async function createAppointmentRecord(appointmentData) {
 
 export async function updateAppointmentRecordById({ id, appointmentData }) {
   const patientId = appointmentData.patientid;
-  const symtoms = appointmentData.symtoms;
+  const symtoms = appointmentData.symtoms.trim();
   const diseaseId = appointmentData.diseaseid;
   const appoinmentId = appointmentData.appointmentid;
 

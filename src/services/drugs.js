@@ -20,12 +20,12 @@ export async function fetchAllDrugs() {
 }
 
 export async function createNewDrug(data) {
-  const drugName = data.drugname;
-  const price = data.price;
-  const count = data.count;
+  const drugName = data.drugname.trim();
+  const price = data.price.trim();
+  const count = data.count.trim();
   const unitId = data.unitid;
   const drugID = data?.id ?? null;
-  const note = data.note;
+  const note = data.note.trim();
 
   let response;
   if (drugID) {

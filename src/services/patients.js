@@ -64,11 +64,11 @@ export async function fetchOnePatient({ name, phoneNumber }) {
 }
 
 export async function addPatient(patientData) {
-  const fullName = patientData.fullname;
-  const address = patientData.address;
-  const birthYear = patientData.birthyear;
-  const gender = patientData.gender;
-  const phoneNumber = patientData.phonenumber;
+  const fullName = patientData.fullname.trim();
+  const address = patientData.address.trim();
+  const birthYear = patientData.birthyear.trim();
+  const gender = patientData.gender.trim();
+  const phoneNumber = patientData.phonenumber.trim();
   const patientID = patientData?.id ?? patientData?.patientid ?? null;
   let response;
   const existedPatient = await findExistedPatientByPhoneNumber({ phoneNumber });

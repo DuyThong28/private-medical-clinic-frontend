@@ -223,8 +223,8 @@ const BookingModal = forwardRef(function BookingModal(
     setSearchData({ name: name, date: date, state: state });
   }
 
-  function changeFormHandler(event) {
-    const formData = new FormData(event.currentTarget);
+  function changeFormHandler(form) {
+    const formData = new FormData(form);
     const data = Object.fromEntries(formData);
     const resData = {
       patientId: data.patientid,
@@ -381,6 +381,7 @@ const BookingModal = forwardRef(function BookingModal(
                       id="phonenumber"
                       name="phonenumber"
                       type="number"
+                      step="1"
                       value={dialogState.data?.phoneNumber ?? ""}
                       readOnly={
                         dialogState.data?.patientId || !dialogState.isEditable
@@ -432,6 +433,7 @@ const BookingModal = forwardRef(function BookingModal(
                       id="birthyear"
                       name="birthyear"
                       type="number"
+                      step="1"
                       value={dialogState.data?.birthYear ?? ""}
                       readOnly={
                         dialogState.data?.patientId || !dialogState.isEditable

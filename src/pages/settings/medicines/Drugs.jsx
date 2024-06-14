@@ -264,6 +264,8 @@ function DrugTab() {
                                 id="count"
                                 name="count"
                                 type="number"
+                                step="1"
+                                min="0"
                                 defaultValue={dialogState.data?.count ?? ""}
                                 disabled={!dialogState.isEditable}
                                 required
@@ -306,6 +308,7 @@ function DrugTab() {
                                 id="price"
                                 name="price"
                                 type="number"
+                                min="0"
                                 defaultValue={dialogState.data?.price ?? ""}
                                 disabled={!dialogState.isEditable}
                                 required

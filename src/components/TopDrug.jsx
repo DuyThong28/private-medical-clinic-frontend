@@ -147,7 +147,7 @@ function TopDrug() {
     });
 
     drugInfo.sort((a, b) => b.soldout - a.soldout);
-    const topDrug = drugInfo.slice(0, 5);
+    const topDrug = drugInfo.slice(0, 6);
     const finalTopDrug = topDrug.filter((drug) => drug.soldout > 0);
     setTopDrug(finalTopDrug);
   };

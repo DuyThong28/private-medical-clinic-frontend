@@ -22,7 +22,7 @@ export async function fetchAllUsage() {
 }
 
 export async function createNewUsage(data) {
-  const usageDes = data.usagedes;
+  const usageDes = data.usagedes.trim();
   const usageId = data?.id ?? null;
   let response;
 

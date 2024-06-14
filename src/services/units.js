@@ -20,7 +20,7 @@ export async function fetchAllUnit() {
 }
 
 export async function createNewUnit(data) {
-  const unitName = data.unitname;
+  const unitName = data.unitname.trim();
   const unitID = data?.id ?? null;
   let response;
 
