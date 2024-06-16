@@ -14,6 +14,8 @@ export async function login(userData) {
       body: JSON.stringify(userData),
     });
 
+    console.log(response);
+
     if (!response.ok) {
       const error = new Error("Thông tin đăng nhập không chính xác");
       error.code = response.status;

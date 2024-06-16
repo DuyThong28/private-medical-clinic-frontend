@@ -99,12 +99,13 @@ export async function deleteBookingAppointmentById({ id }) {
 
 export async function createBookingAppointment(data) {
   const bookingDate = data.bookingDate;
-  const fullName = data.fullName.trim();
-  const phone = data.phone.trim();
-  const gender = data.gender.trim();
-  const address = data.address.trim();
-  const bookingAppointment = data.bookingAppointment;
+  const fullName = data?.fullName;
+  const phone = data?.phone;
+  const gender = data?.gender;
+  const address = data?.address;
+  const bookingAppointment = data?.bookingAppointment;
   const bookingID = data?.id || null;
+
   let response;
   if (bookingID) {
     response = await fetch(
