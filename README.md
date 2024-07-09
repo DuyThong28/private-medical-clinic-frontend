@@ -1,5 +1,7 @@
 # Private Medical Clinic Frontend
-![image](https://github.com/DuyThong28/private-medical-clinic-frontend/assets/116278919/e0d0e0c4-ba00-4777-a2e2-16dea120f253)
+![image](https://github.com/DuyThong28/private-medical-clinic-frontend/assets/116278919/9704d92c-cf8c-4ade-988a-f043a1d066b1)
+
+
 
 
 
