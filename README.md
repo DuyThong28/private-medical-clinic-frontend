@@ -25,15 +25,16 @@
 # UI Design
 ![image](https://github.com/user-attachments/assets/db7194eb-841f-49ea-8118-e4b2ae71edbc)
 
-![image](https://github.com/user-attachments/assets/4aa48cad-3ee1-47c4-9b70-17756c60675f)
+![image](https://github.com/user-attachments/assets/00191b97-ce3d-472f-b5c7-36943edf4bff)
 
-![image](https://github.com/user-attachments/assets/be2c8984-9c28-41c0-ab62-c646981ea4ab)
+![image](https://github.com/user-attachments/assets/2d934ef3-ac29-494a-bffe-609867b6f22d)
 
-![image](https://github.com/user-attachments/assets/1d98ccbe-956f-4046-90b0-45289ab85857)
+![image](https://github.com/user-attachments/assets/351c07a8-26bf-4ebb-bae9-492955414b01)
 
-![image](https://github.com/user-attachments/assets/139aa6d9-fbdc-4996-9033-227fa32cbaa1)
+![image](https://github.com/user-attachments/assets/cd629379-766f-4712-98c0-6280dd1560fe)
 
-![image](https://github.com/user-attachments/assets/e395432f-f766-4906-bf69-41b903d4f892)
+![image](https://github.com/user-attachments/assets/335b8e57-02f6-41e2-9bea-4daad97ddb7e)
+
 
 
 
