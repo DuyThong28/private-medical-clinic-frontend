@@ -23,17 +23,24 @@
 </ul>
 
 # UI Design
-![image](https://github.com/user-attachments/assets/db7194eb-841f-49ea-8118-e4b2ae71edbc)
 
-![image](https://github.com/user-attachments/assets/00191b97-ce3d-472f-b5c7-36943edf4bff)
+![image](https://github.com/user-attachments/assets/521e8092-b2ed-454a-9702-5eeee62535bc)
 
-![image](https://github.com/user-attachments/assets/351c07a8-26bf-4ebb-bae9-492955414b01)
+![image](https://github.com/user-attachments/assets/12499f74-950a-4e4a-a231-516138769de2)
 
-![image](https://github.com/user-attachments/assets/2d934ef3-ac29-494a-bffe-609867b6f22d)
+![image](https://github.com/user-attachments/assets/823f2558-fd3c-4c41-be49-c486a4733cb8)
 
-![image](https://github.com/user-attachments/assets/cd629379-766f-4712-98c0-6280dd1560fe)
+![image](https://github.com/user-attachments/assets/faf6090c-3868-4938-a437-143a1d20f74f)
 
-![image](https://github.com/user-attachments/assets/335b8e57-02f6-41e2-9bea-4daad97ddb7e)
+![image](https://github.com/user-attachments/assets/13e50cc2-257f-4c34-a314-9f423f70258f)
+
+![image](https://github.com/user-attachments/assets/5ec844f1-fe3a-4e35-a27a-77b4ca505e5e)
+
+
+
+
+
+
 
 
 
